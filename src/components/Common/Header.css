@@ -1,0 +1,326 @@
+.header {
+  width: 100%;
+  height: 70px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 48px;
+
+  background-color: #ffffff;
+  border-bottom: 1px solid #f2f2f2;
+
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+
+/* =========================
+   LOGO
+========================= */
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.header-logo a {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.header-logo img {
+  width: 160px;
+  max-height: 38px;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+
+/* =========================
+   NAVBAR
+========================= */
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 55px;
+}
+
+.navbar a {
+  text-decoration: none;
+  color: #000000;
+
+  font-family: 'Poppins', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 22px;
+
+  transition: color 0.25s ease;
+}
+
+.navbar a:hover {
+  color: #b88e2f;
+}
+
+
+/* =========================
+   HEADER ICONS
+========================= */
+
+.header-icons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 36px;
+  flex: 1;
+}
+
+.icon-btn {
+  border: none;
+  background: transparent;
+  padding: 0;
+
+  width: 26px;
+  height: 26px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  color: #000000;
+
+  transition: color 0.25s ease, transform 0.2s ease;
+}
+
+.icon-btn svg {
+  width: 26px;
+  height: 26px;
+  display: block;
+}
+
+.icon-btn:hover {
+  color: #b88e2f;
+  transform: translateY(-2px);
+}
+
+
+/* =========================
+   MOBILE MENU BUTTON
+========================= */
+
+.mobile-menu {
+  display: none;
+
+  border: none;
+  background: transparent;
+  padding: 0;
+
+  cursor: pointer;
+  color: #000000;
+
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* ==================================================
+   RESPONSIVE: 1100px
+================================================== */
+
+@media (max-width: 1100px) {
+
+  .header {
+    height: 68px;
+    padding: 0 32px;
+  }
+
+  .header-logo img {
+    width: 145px;
+    max-height: 34px;
+  }
+
+  .navbar {
+    gap: 40px;
+  }
+
+  .navbar a {
+    font-size: 14px;
+  }
+
+  .header-icons {
+    gap: 28px;
+  }
+
+  .icon-btn,
+  .icon-btn svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+
+/* ==================================================
+   RESPONSIVE: TABLET - 768px
+================================================== */
+
+@media (max-width: 768px) {
+
+  .header {
+    height: 62px;
+    padding: 0 18px;
+  }
+
+
+  /* Logo */
+
+  .header-logo {
+    flex: 0 1 auto;
+  }
+
+  .header-logo img {
+    width: 120px;
+    max-height: 30px;
+  }
+
+
+  /* Hide Desktop Navbar */
+
+  .navbar {
+    display: none;
+  }
+
+
+  /* Mobile Navbar */
+
+  .navbar.active {
+    display: flex;
+
+    position: absolute;
+
+    top: 62px;
+    left: 0;
+
+    width: 100%;
+
+    background-color: #ffffff;
+
+    flex-direction: column;
+    align-items: stretch;
+
+    gap: 0;
+
+    padding: 10px 0;
+
+    border-top: 1px solid #f0f0f0;
+
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  }
+
+
+  .navbar.active a {
+    width: 100%;
+
+    text-align: left;
+
+    padding: 12px 20px;
+
+    font-size: 14px;
+
+    border-bottom: 1px solid #fafafa;
+  }
+
+
+ 
+
+  .header-icons {
+    flex: 1;
+
+    justify-content: flex-end;
+
+    gap: 16px;
+  }
+
+  .icon-btn,
+  .icon-btn svg {
+    width: 22px;
+    height: 22px;
+  }
+
+
+
+  .mobile-menu {
+    display: flex;
+
+    margin-left: 14px;
+  }
+}
+
+
+
+
+/*  MOBILE S - 320px */
+
+@media (max-width: 320px) {
+
+  .header {
+    height: 54px;
+
+    padding: 0 10px;
+  }
+
+
+
+  .header-logo img {
+    width: 88px;
+
+    max-height: 23px;
+  }
+
+
+  
+
+  .header-icons {
+    gap: 8px;
+  }
+
+  .icon-btn,
+  .icon-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+
+  
+
+  .mobile-menu {
+    margin-left: 7px;
+  }
+
+  .mobile-menu svg {
+    width: 20px;
+    height: 20px;
+  }
+
+
+
+
+  .navbar.active {
+    top: 54px;
+  }
+
+  .navbar.active a {
+    padding: 11px 16px;
+
+    font-size: 13px;
+  }
+}
