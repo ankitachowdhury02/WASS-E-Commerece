@@ -17,10 +17,6 @@
 }
 
 
-/* =========================
-   LOGO
-========================= */
-
 .header-logo {
   display: flex;
   align-items: center;
@@ -42,9 +38,6 @@
 }
 
 
-/* =========================
-   NAVBAR
-========================= */
 
 .navbar {
   display: flex;
@@ -58,7 +51,7 @@
   text-decoration: none;
   color: #000000;
 
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 15px;
   font-weight: 500;
   line-height: 22px;
@@ -69,11 +62,6 @@
 .navbar a:hover {
   color: #b88e2f;
 }
-
-
-/* =========================
-   HEADER ICONS
-========================= */
 
 .header-icons {
   display: flex;
@@ -99,7 +87,9 @@
   cursor: pointer;
   color: #000000;
 
-  transition: color 0.25s ease, transform 0.2s ease;
+  transition:
+    color 0.25s ease,
+    transform 0.2s ease;
 }
 
 .icon-btn svg {
@@ -113,10 +103,7 @@
   transform: translateY(-2px);
 }
 
-
-/* =========================
-   MOBILE MENU BUTTON
-========================= */
+/*  MOBILE MENU BUTTON */
 
 .mobile-menu {
   display: none;
@@ -132,13 +119,9 @@
   justify-content: center;
 }
 
-
-/* ==================================================
-   RESPONSIVE: 1100px
-================================================== */
+/* RESPONSIVE*/
 
 @media (max-width: 1100px) {
-
   .header {
     height: 68px;
     padding: 0 32px;
@@ -168,20 +151,13 @@
   }
 }
 
-
-/* ==================================================
-   RESPONSIVE: TABLET - 768px
-================================================== */
+/*  TABLET - 768px */
 
 @media (max-width: 768px) {
-
   .header {
     height: 62px;
     padding: 0 18px;
   }
-
-
-  /* Logo */
 
   .header-logo {
     flex: 0 1 auto;
@@ -192,15 +168,9 @@
     max-height: 30px;
   }
 
-
-  /* Hide Desktop Navbar */
-
   .navbar {
     display: none;
   }
-
-
-  /* Mobile Navbar */
 
   .navbar.active {
     display: flex;
@@ -226,7 +196,6 @@
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   }
 
-
   .navbar.active a {
     width: 100%;
 
@@ -238,9 +207,6 @@
 
     border-bottom: 1px solid #fafafa;
   }
-
-
- 
 
   .header-icons {
     flex: 1;
@@ -256,8 +222,6 @@
     height: 22px;
   }
 
-
-
   .mobile-menu {
     display: flex;
 
@@ -265,29 +229,20 @@
   }
 }
 
-
-
-
 /*  MOBILE S - 320px */
 
 @media (max-width: 320px) {
-
   .header {
     height: 54px;
 
     padding: 0 10px;
   }
 
-
-
   .header-logo img {
     width: 88px;
 
     max-height: 23px;
   }
-
-
-  
 
   .header-icons {
     gap: 8px;
@@ -299,9 +254,6 @@
     height: 18px;
   }
 
-
-  
-
   .mobile-menu {
     margin-left: 7px;
   }
@@ -310,9 +262,6 @@
     width: 20px;
     height: 20px;
   }
-
-
-
 
   .navbar.active {
     top: 54px;
