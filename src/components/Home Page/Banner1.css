@@ -1,0 +1,175 @@
+/* ==================================================
+   BANNER (HERO SECTION)
+================================================== */
+.banner {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  line-height: 0;
+  background-color: #f9f9f9;
+}
+
+.banner-image {
+  width: 100%;
+  height: auto;
+  min-height: 560px;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* ==================================================
+   BANNER FLOATING CARD
+================================================== */
+.banner-card {
+  position: absolute;
+  top: 50%;
+  right: clamp(24px, 4.2vw, 58px);
+  transform: translateY(-50%);
+
+  width: min(643px, 48vw);
+  background-color: #fff3e3;
+  border-radius: 10px;
+
+  padding: clamp(36px, 4vw, 62px) clamp(28px, 3vw, 43px) clamp(28px, 2.8vw, 37px) clamp(28px, 3vw, 43px);
+
+  line-height: normal;
+  box-sizing: border-box;
+}
+
+.banner-card-subtitle {
+  margin: 0 0 4px 0;
+  font-size: clamp(13px, 1.1vw, 16px);
+  font-weight: 600;
+  letter-spacing: 3px;
+  color: #333333;
+}
+
+.banner-card-title {
+  margin: 0 0 17px 0;
+  font-size: clamp(28px, 3.6vw, 52px);
+  font-weight: 700;
+  line-height: 1.25;
+  color: #b88e2f;
+}
+
+.banner-description {
+  margin: 0 0 clamp(24px, 3.2vw, 46px) 0;
+  font-size: clamp(14px, 1.25vw, 18px);
+  font-weight: 500;
+  line-height: 1.45;
+  color: #333333;
+}
+
+.banner-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: clamp(16px, 1.7vw, 25px) clamp(38px, 5vw, 72px);
+
+  border: none;
+  background-color: #b88e2f;
+  color: #ffffff;
+
+  font-size: clamp(13px, 1.1vw, 16px);
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.banner-button:hover {
+  background-color: #9a7322;
+  transform: translateY(-1px);
+}
+
+.banner-button:active {
+  transform: translateY(0);
+}
+
+/* ==================================================
+   TABLET / MEDIUM SCREENS (<= 1024px)
+================================================== */
+@media (max-width: 1024px) {
+  .banner-image {
+    min-height: 520px;
+    object-position: 35% center;
+  }
+
+  .banner-card {
+    width: min(540px, 52vw);
+    right: 24px;
+    padding: 36px 30px 30px;
+  }
+}
+
+/* ==================================================
+   MOBILE / SMALL SCREENS (<= 768px)
+================================================== */
+@media (max-width: 768px) {
+  .banner-image {
+    min-height: 540px;
+    object-position: 25% center;
+  }
+
+  .banner-card {
+    top: 50%;
+    right: auto;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: calc(100% - 36px);
+    max-width: 480px;
+    padding: 32px 24px;
+  }
+
+  .banner-card-subtitle {
+    letter-spacing: 2px;
+  }
+
+  .banner-card-title {
+    font-size: 32px;
+    margin-bottom: 12px;
+  }
+
+  .banner-description {
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+
+  .banner-button {
+    padding: 16px 42px;
+  }
+}
+
+/* ==================================================
+   EXTRA SMALL MOBILE (<= 420px)
+================================================== */
+@media (max-width: 420px) {
+  .banner-card {
+    padding: 24px 18px;
+    width: calc(100% - 24px);
+  }
+
+  .banner-card-subtitle {
+    font-size: 12px;
+  }
+
+  .banner-card-title {
+    font-size: 26px;
+  }
+
+  .banner-description {
+    font-size: 13px;
+    line-height: 18px;
+    margin-bottom: 20px;
+  }
+
+  .banner-button {
+    width: 100%;
+    padding: 14px 20px;
+    font-size: 14px;
+  }
+}

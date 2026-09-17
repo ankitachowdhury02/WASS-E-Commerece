@@ -1,11 +1,45 @@
-import React from 'react'
+import React from "react";
+import "./Browser2.css";
+import diningImg from "../../assets/dining.png";
+import livingImg from "../../assets/living room.png";
+import bedroomImg from "../../assets/bedroom.png";
 
 const Browser2 = () => {
   return (
-    <div>
-      
-    </div>
-  )
-}
+    <section className="browse-section">
 
-export default Browser2
+      <div className="browse-heading">
+        <h2>Browse The Range</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+      </div>
+
+      <div className="browse-container">
+
+        <div className="browse-card">
+          <div className="browse-img-wrapper">
+            <img src={diningImg} alt="Dining" />
+          </div>
+          <h3>Dining</h3>
+        </div>
+
+
+        <div className="browse-card">
+          <div className="browse-img-wrapper">
+            <img src={livingImg} alt="Living" />
+          </div>
+          <h3>Living</h3>
+        </div>
+
+
+        <div className="browse-card">
+          <div className="browse-img-wrapper">
+            <img src={bedroomImg} alt="Bedroom" />
+          </div>
+          <h3>Bedroom</h3>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default Browser2;
