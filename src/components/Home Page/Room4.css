@@ -1,3 +1,7 @@
+/* =========================
+   ROOM INSPIRATION SECTION
+========================= */
+
 .room-section {
   width: 100%;
   background-color: #fcf8f3;
@@ -9,6 +13,10 @@
   box-sizing: border-box;
 }
 
+/* =========================
+   LEFT TEXT CONTENT
+========================= */
+
 .room-text {
   flex-shrink: 0;
   max-width: 422px;
@@ -16,6 +24,7 @@
 
 .room-text h2 {
   margin: 0 0 8px;
+  font-family: "Poppins", sans-serif;
   font-size: 40px;
   line-height: 1.2;
   font-weight: 700;
@@ -24,6 +33,7 @@
 
 .room-text p {
   margin: 0 0 25px;
+  font-family: "Poppins", sans-serif;
   font-size: 16px;
   line-height: 1.5;
   font-weight: 500;
@@ -33,6 +43,7 @@
 .room-explore-btn {
   background-color: #b88e2f;
   color: #ffffff;
+  font-family: "Poppins", sans-serif;
   font-size: 16px;
   font-weight: 600;
   padding: 12px 36px;
@@ -47,6 +58,10 @@
   background-color: #9e7820;
   transform: translateY(-2px);
 }
+
+/* =========================
+   RIGHT SLIDER AREA
+========================= */
 
 .room-slider-container {
   flex-grow: 1;
@@ -63,6 +78,10 @@
   gap: 24px;
   position: relative;
 }
+
+/* =========================
+   ACTIVE FEATURED SLIDE
+========================= */
 
 .room-active-slide {
   width: 404px;
@@ -89,12 +108,17 @@
   }
 }
 
+/* =========================
+   OVERLAY INFO CARD
+========================= */
+
 .room-info-card {
   position: absolute;
   left: 24px;
   bottom: 24px;
   display: flex;
   align-items: flex-end;
+  z-index: 2;
 }
 
 .room-info-content {
@@ -111,6 +135,7 @@
   align-items: center;
   gap: 8px;
   color: #616161;
+  font-family: "Poppins", sans-serif;
   font-size: 16px;
   font-weight: 500;
   margin-bottom: 8px;
@@ -124,6 +149,7 @@
 
 .room-info-content h3 {
   margin: 0;
+  font-family: "Poppins", sans-serif;
   font-size: 28px;
   font-weight: 600;
   color: #3a3a3a;
@@ -146,6 +172,10 @@
 .room-card-arrow:hover {
   background-color: #9e7820;
 }
+
+/* =========================
+   UPCOMING SLIDES TRACK
+========================= */
 
 .room-upcoming-track {
   display: flex;
@@ -175,11 +205,12 @@
   transform: scale(1.03);
 }
 
+/* =========================
+   NAVIGATION BUTTONS
+========================= */
+
 .slider-nav-btn {
   position: absolute;
-  left: 348px;
-  top: 243px;
-  transform: translateY(-50%);
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -200,11 +231,30 @@
 }
 
 .slider-nav-btn:hover {
-  transform: translateY(-50%) scale(1.08);
+  transform: scale(1.08);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
   background-color: #b88e2f;
   color: #ffffff;
 }
+
+/* Desktop positioning: next arrow sits between active and upcoming slide */
+.slider-nav-btn.next-btn {
+  left: 380px;
+  top: 243px;
+  transform: translateY(-50%);
+}
+
+.slider-nav-btn.next-btn:hover {
+  transform: translateY(-50%) scale(1.08);
+}
+
+.slider-nav-btn.prev-btn {
+  display: none;
+}
+
+/* =========================
+   DOTS PAGINATION
+========================= */
 
 .room-dots {
   display: flex;
@@ -245,77 +295,210 @@
   background-color: #b88e2f;
 }
 
-/* RESPONSIVE DESIGN*/
 
-@media (max-width: 768px) {
+/* =========================
+   LAPTOP (1025px - 1280px)
+========================= */
+
+@media (max-width: 1280px) and (min-width: 1025px) {
   .room-section {
-    padding: 36px 20px;
+    padding: 40px 0 40px 48px;
+    gap: 32px;
+  }
+
+  .room-text {
+    max-width: 340px;
   }
 
   .room-text h2 {
-    font-size: 30px;
+    font-size: 34px;
+  }
+
+  .room-active-slide {
+    width: 340px;
+    height: 490px;
+  }
+
+  .room-upcoming-slide {
+    width: 290px;
+    height: 410px;
+  }
+
+  .slider-nav-btn.next-btn {
+    left: 316px;
+    top: 205px;
+  }
+
+  .room-dots {
+    padding-left: 364px;
+  }
+}
+
+
+/* TABLET */
+
+@media (max-width: 1024px) {
+  .room-section {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 48px 24px;
+    gap: 36px;
+  }
+
+  .room-text {
+    max-width: 600px;
+    text-align: center;
+    margin: 0 auto;
+  }
+
+  .room-text h2 {
+    font-size: 32px;
   }
 
   .room-text p {
-    font-size: 14px;
+    font-size: 15px;
+    margin: 0 auto 20px;
+    max-width: 480px;
+  }
+
+  .room-text br {
+    display: none;
+  }
+
+  .room-slider-container {
+    width: 100%;
+    max-width: 520px;
+    align-items: center;
+    gap: 24px;
   }
 
   .room-slider-top {
-    flex-direction: column;
-    align-items: center;
     width: 100%;
+    justify-content: center;
+    position: relative;
   }
 
   .room-active-slide {
     width: 100%;
-    max-width: 420px;
-    height: 450px;
+    max-width: 480px;
+    height: 480px;
+    border-radius: 8px;
   }
 
   .room-upcoming-track {
     display: none;
   }
 
-  .room-info-card {
-    left: 16px;
-    bottom: 16px;
+  .slider-nav-btn {
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
   }
 
-  .room-info-content {
-    padding: 20px 16px;
-    min-width: 180px;
+  .slider-nav-btn.prev-btn {
+    display: flex;
+    left: 12px;
   }
 
-  .room-info-content h3 {
-    font-size: 22px;
+  .slider-nav-btn.prev-btn:hover {
+    transform: translateY(-50%) scale(1.08);
+  }
+
+  .slider-nav-btn.next-btn {
+    display: flex;
+    right: 12px;
+    left: auto;
+  }
+
+  .slider-nav-btn.next-btn:hover {
+    transform: translateY(-50%) scale(1.08);
   }
 
   .room-dots {
     padding-left: 0;
     justify-content: center;
-    margin-top: -10px;
+    margin: 0 auto;
   }
 }
 
+
+
+/* SMALL MOBILE*/
+
 @media (max-width: 480px) {
+  .room-section {
+    padding: 30px 14px;
+    gap: 22px;
+  }
+
   .room-text h2 {
-    font-size: 24px;
+    font-size: 23px;
+  }
+
+  .room-text p {
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+
+  .room-explore-btn {
+    padding: 10px 24px;
+    font-size: 13px;
   }
 
   .room-active-slide {
-    height: 380px;
+    height: 360px;
+  }
+
+  .room-info-card {
+    left: 10px;
+    bottom: 10px;
+    right: 10px;
   }
 
   .room-info-content {
-    padding: 16px 12px;
+    padding: 12px 12px;
+    min-width: 0;
+    flex-grow: 1;
   }
 
   .room-info-content h3 {
-    font-size: 18px;
+    font-size: 17px;
+  }
+
+  .room-info-meta {
+    font-size: 11px;
+    margin-bottom: 4px;
   }
 
   .room-card-arrow {
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
+  }
+
+  .slider-nav-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .slider-nav-btn.prev-btn {
+    left: 6px;
+  }
+
+  .slider-nav-btn.next-btn {
+    right: 6px;
+    left: auto;
+  }
+
+  .dot-wrapper {
+    width: 22px;
+    height: 22px;
+  }
+
+  .dot-inner {
+    width: 8px;
+    height: 8px;
   }
 }
+

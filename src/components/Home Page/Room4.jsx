@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./Room4.css";
-import { ArrowRight, ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronRight, ChevronLeft } from "lucide-react";
 
 import bedroom from "../../assets/Inner Peace.png";
 import living from "../../assets/Modern Living.png";
@@ -39,6 +39,10 @@ const Room4 = () => {
 
   const nextSlide = () => {
     setCurrent((prev) => (prev + 1) % rooms.length);
+  };
+
+  const prevSlide = () => {
+    setCurrent((prev) => (prev - 1 + rooms.length) % rooms.length);
   };
 
   const nextIndex1 = (current + 1) % rooms.length;
@@ -116,15 +120,23 @@ const Room4 = () => {
                 alt={rooms[nextIndex2].title}
               />
             </div>
-
-            <button
-              className="slider-nav-btn next-btn"
-              onClick={nextSlide}
-              aria-label="Next room inspiration"
-            >
-              <ChevronRight size={24} strokeWidth={2.5} />
-            </button>
           </div>
+
+          <button
+            className="slider-nav-btn prev-btn"
+            onClick={prevSlide}
+            aria-label="Previous room inspiration"
+          >
+            <ChevronLeft size={24} strokeWidth={2.5} />
+          </button>
+
+          <button
+            className="slider-nav-btn next-btn"
+            onClick={nextSlide}
+            aria-label="Next room inspiration"
+          >
+            <ChevronRight size={24} strokeWidth={2.5} />
+          </button>
         </div>
 
 

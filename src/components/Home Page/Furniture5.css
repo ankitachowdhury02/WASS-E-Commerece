@@ -1,10 +1,19 @@
+/* =========================
+   FURNITURE SHOWCASE SECTION
+========================= */
+
 .furniture-section {
   width: 100%;
   background-color: #ffffff;
   padding: 45px 0 60px;
   overflow: hidden;
   position: relative;
+  box-sizing: border-box;
 }
+
+/* =========================
+   HEADING
+========================= */
 
 .furniture-heading {
   text-align: center;
@@ -13,6 +22,7 @@
 
 .furniture-heading p {
   margin: 0 0 8px;
+  font-family: "Poppins", sans-serif;
   font-size: 20px;
   font-weight: 600;
   color: #616161;
@@ -20,11 +30,16 @@
 
 .furniture-heading h2 {
   margin: 0;
+  font-family: "Poppins", sans-serif;
   font-size: 40px;
   line-height: 1.2;
   font-weight: 700;
   color: #3a3a3a;
 }
+
+/* =========================
+   GALLERY WRAPPER
+========================= */
 
 .furniture-gallery-wrapper {
   width: 100%;
@@ -32,6 +47,7 @@
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .furniture-gallery {
@@ -43,6 +59,10 @@
   flex-shrink: 0;
   margin: 0 auto;
 }
+
+/* =========================
+   WINGS & ROWS
+========================= */
 
 .gallery-wing {
   display: flex;
@@ -94,11 +114,16 @@
   gap: 16px;
 }
 
+/* =========================
+   GALLERY ITEM BASE
+========================= */
+
 .gallery-item {
   overflow: hidden;
   position: relative;
   flex-shrink: 0;
   background-color: #f4f5f7;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .gallery-item img {
@@ -110,8 +135,12 @@
 }
 
 .gallery-item:hover img {
-  transform: scale(1.03);
+  transform: scale(1.04);
 }
+
+/* =========================
+   DESKTOP ITEM DIMENSIONS
+========================= */
 
 .item-shelf {
   width: 274px;
@@ -121,6 +150,7 @@
 .item-shelf img {
   object-position: 82% center;
 }
+
 .item-laptop {
   width: 451px;
   height: 312px;
@@ -193,15 +223,76 @@
   object-position: center 25%;
 }
 
-/* RESPONSIVE DESIGN */
+
+/* ==================================================
+   DESKTOP & LAPTOP RESPONSIVE SCALING (769px - 1800px)
+   Smoothly scales the signature collage to fit 100vw
+================================================== */
+
+@media (min-width: 1600px) and (max-width: 1799px) {
+  .furniture-gallery-wrapper {
+    height: 640px;
+  }
+  .furniture-gallery {
+    transform: scale(0.89);
+    transform-origin: center center;
+  }
+}
+
+@media (min-width: 1441px) and (max-width: 1599px) {
+  .furniture-gallery-wrapper {
+    height: 580px;
+  }
+  .furniture-gallery {
+    transform: scale(0.80);
+    transform-origin: center center;
+  }
+}
+
+@media (min-width: 1281px) and (max-width: 1440px) {
+  .furniture-gallery-wrapper {
+    height: 520px;
+  }
+  .furniture-gallery {
+    transform: scale(0.72);
+    transform-origin: center center;
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1280px) {
+  .furniture-gallery-wrapper {
+    height: 450px;
+  }
+  .furniture-gallery {
+    transform: scale(0.62);
+    transform-origin: center center;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .furniture-gallery-wrapper {
+    height: 380px;
+  }
+  .furniture-gallery {
+    transform: scale(0.52);
+    transform-origin: center center;
+  }
+}
+
+
+/* ==================================================
+   MOBILE (<= 768px): 2-COLUMN RESPONSIVE GRID
+   Rock-solid layout with zero overflow on any phone
+================================================== */
 
 @media (max-width: 768px) {
   .furniture-section {
-    padding: 30px 16px 40px;
+    padding: 36px 0 44px;
   }
 
   .furniture-heading {
-    margin-bottom: 24px;
+    margin-bottom: 22px;
+    padding: 0 16px;
   }
 
   .furniture-heading p {
@@ -209,60 +300,156 @@
   }
 
   .furniture-heading h2 {
-    font-size: 26px;
+    font-size: 27px;
   }
 
   .furniture-gallery-wrapper {
     width: 100%;
-    overflow: visible;
+    padding: 0 16px;
+    overflow: hidden;
+    height: auto !important;
   }
 
   .furniture-gallery {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    width: 100%;
-    max-width: 600px;
-    margin: 0 auto;
-    transform: none;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+    width: 100% !important;
+    max-width: 560px !important;
+    margin: 0 auto !important;
+    transform: none !important;
   }
 
   .gallery-wing,
   .gallery-center,
   .wing-row {
-    display: contents;
+    display: contents !important;
   }
 
-  .gallery-item {
+  /* Reset all individual item dimensions so they never blow out grid */
+  .gallery-item,
+  .item-shelf,
+  .item-laptop,
+  .item-chair,
+  .item-stools,
+  .item-bedroom,
+  .item-breakfast,
+  .item-vase,
+  .item-kitchen {
     width: 100% !important;
-    height: 170px !important;
-    border-radius: 4px;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: 175px !important;
+    border-radius: 6px;
+    overflow: hidden;
   }
 
+  /* Center lamp image spans both columns */
   .item-center {
-    grid-column: 1 / -1;
-    height: 220px !important;
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: 230px !important;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .gallery-item img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
   }
 }
 
+
+/* =========================
+   SMALL MOBILE (<= 480px)
+========================= */
+
 @media (max-width: 480px) {
+  .furniture-section {
+    padding: 30px 0 38px;
+  }
+
+  .furniture-heading {
+    margin-bottom: 18px;
+    padding: 0 12px;
+  }
+
   .furniture-heading p {
     font-size: 13px;
+    margin-bottom: 4px;
   }
 
   .furniture-heading h2 {
-    font-size: 22px;
+    font-size: 23px;
+  }
+
+  .furniture-gallery-wrapper {
+    padding: 0 12px;
   }
 
   .furniture-gallery {
-    gap: 8px;
+    gap: 8px !important;
   }
 
-  .gallery-item {
+  .gallery-item,
+  .item-shelf,
+  .item-laptop,
+  .item-chair,
+  .item-stools,
+  .item-bedroom,
+  .item-breakfast,
+  .item-vase,
+  .item-kitchen {
     height: 140px !important;
   }
 
   .item-center {
     height: 190px !important;
+  }
+}
+
+
+/* =========================
+   EXTRA SMALL MOBILE (<= 360px)
+========================= */
+
+@media (max-width: 360px) {
+  .furniture-section {
+    padding: 24px 0 32px;
+  }
+
+  .furniture-heading h2 {
+    font-size: 20px;
+  }
+
+  .furniture-heading p {
+    font-size: 12px;
+  }
+
+  .furniture-gallery-wrapper {
+    padding: 0 8px;
+  }
+
+  .furniture-gallery {
+    gap: 6px !important;
+  }
+
+  .gallery-item,
+  .item-shelf,
+  .item-laptop,
+  .item-chair,
+  .item-stools,
+  .item-bedroom,
+  .item-breakfast,
+  .item-vase,
+  .item-kitchen {
+    height: 115px !important;
+  }
+
+  .item-center {
+    height: 160px !important;
   }
 }
