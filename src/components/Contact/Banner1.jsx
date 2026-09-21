@@ -1,8 +1,7 @@
 import React from "react";
 import "./Banner1.css";
-
 import contactBg from "../../assets/Contact Banner.png";
-import logo from "../../assets/furniro-logo.png";
+import logo from "../../assets/logo-icon.png";
 
 const Banner1 = () => {
   return (
@@ -11,14 +10,14 @@ const Banner1 = () => {
       style={{ backgroundImage: `url(${contactBg})` }}
     >
       <div className="contact-overlay">
-        <img src={logo} alt="Furniro" className="contact-logo" />
+        <img src={logo} alt="Furniro Logo Icon" className="contact-logo" />
 
         <h1>Contact</h1>
 
         <div className="contact-breadcrumb">
-          <span>Home</span>
+          <span className="crumb-home">Home</span>
           <span className="arrow">›</span>
-          <span>Contact</span>
+          <span className="crumb-current">Contact</span>
         </div>
       </div>
     </section>
@@ -26,3 +25,4 @@ const Banner1 = () => {
 };
 
 export default Banner1;
+
