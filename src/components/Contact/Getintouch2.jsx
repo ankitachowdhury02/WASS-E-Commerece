@@ -1,11 +1,93 @@
-import React from 'react'
+import React from "react";
+import "./Getintouch2.css";
+
+import location from "../../assets/location.png";
+import phone from "../../assets/phone.png";
+import waiting from "../../assets/waiting.png";
 
 const Getintouch2 = () => {
   return (
-    <div>
-      
-    </div>
-  )
-}
+    <section className="get-touch-section">
+      <div className="get-touch-heading">
+        <h2>Get In Touch With Us</h2>
 
-export default Getintouch2
+        <p>
+          For More Information About Our Product & Services, Please Feel Free To
+          Drop Us
+          <br />
+          An Email. Our Staff Always Be There To Help You Out. Do Not Hesitate!
+        </p>
+      </div>
+
+      <div className="get-touch-container">
+        <div className="contact-info">
+          <div className="info-box">
+            <img src={location} alt="Location" />
+
+            <div>
+              <h3>Address</h3>
+
+              <p>
+                236 5th SE Avenue, New
+                <br />
+                York NY10000, United
+                <br />
+                States
+              </p>
+            </div>
+          </div>
+
+          <div className="info-box">
+            <img src={phone} alt="Phone" />
+
+            <div>
+              <h3>Phone</h3>
+
+              <p>
+                Mobile: +84 546-6789
+                <br />
+                Hotline: +84 456-6789
+              </p>
+            </div>
+          </div>
+
+          <div className="info-box">
+            <img src={waiting} alt="Working Time" />
+
+            <div>
+              <h3>Working Time</h3>
+
+              <p>
+                Monday-Friday: 9:00 -
+                <br />
+                22:00
+                <br />
+                Saturday-Sunday: 9:00 -
+                <br />
+                21:00
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <form className="contact-form">
+          <label>Your name</label>
+          <input type="text" placeholder="Abc" />
+
+          <label>Email address</label>
+          <input type="email" placeholder="Abc@def.com" />
+
+          <label>Subject</label>
+          <input type="text" placeholder="This is an optional" />
+
+          <label>Message</label>
+          <textarea placeholder="Hi! I'd like to ask about"></textarea>
+
+          <button type="submit">Submit</button>
+        </form>
+      </div>
+    </section>
+  );
+};
+
+export default Getintouch2;

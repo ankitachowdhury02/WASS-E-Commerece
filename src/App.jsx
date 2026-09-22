@@ -1,28 +1,31 @@
-import Header from './components/Common/Header'
-//import Home from './Pages/Home'
-import Footer from './components/Common/Footer'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import Header from "./components/Common/Header";
+import Footer from "./components/Common/Footer";
+
+import Home from "./Pages/Home";
 import Contact from "./Pages/Contact";
 
-
 function App() {
-
   return (
-    <div>
+    <BrowserRouter>
 
       <Header />
 
-      {/* <Home /> */}
+      <Routes>
 
-      <Contact />
+        {/* Home Page */}
+        <Route path="/" element={<Home />} />
 
+        {/* Contact Page */}
+        <Route path="/contact" element={<Contact />} />
 
-
-      
+      </Routes>
 
       <Footer />
 
-    </div>
-  )
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;

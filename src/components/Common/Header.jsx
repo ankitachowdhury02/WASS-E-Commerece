@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   UserRound,
   Search,
@@ -20,18 +21,18 @@ const Header = () => {
     <header className="header">
 
       <div className="header-logo">
-        <a href="/">
+        <Link to="/" onClick={() => setMenuOpen(false)}>
           <img src={logo} alt="Furniro Logo" />
-        </a>
+        </Link>
       </div>
 
 
       <nav className={`navbar ${menuOpen ? "active" : ""}`}>
 
-        <a href="/">Home</a>
-        <a href="/shop">Shop</a>
-        <a href="/about">About</a>
-        <a href="/contact">Contact</a>
+        <Link to="/" onClick={() => setMenuOpen(false)}>Home</Link>
+        <Link to="/shop" onClick={() => setMenuOpen(false)}>Shop</Link>
+        <Link to="/about" onClick={() => setMenuOpen(false)}>About</Link>
+        <Link to="/contact" onClick={() => setMenuOpen(false)}>Contact</Link>
 
       </nav>
 
