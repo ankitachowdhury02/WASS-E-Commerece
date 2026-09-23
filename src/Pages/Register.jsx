@@ -1,5 +1,8 @@
+
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./Register.css";
 
 const Register = () => {
@@ -12,32 +15,30 @@ const Register = () => {
     password: "",
   });
 
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Handle input change
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: value,
-    });
+    }));
   };
 
+  // Handle registration
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setMessage("");
-    setError("");
-
+    // Validation
     if (
-      !formData.name ||
-      !formData.phone ||
-      !formData.email ||
-      !formData.password
+      !formData.name.trim() ||
+      !formData.phone.trim() ||
+      !formData.email.trim() ||
+      !formData.password.trim()
     ) {
-      setError("Please fill all the fields.");
+      toast.error("Please fill all the fields.");
       return;
     }
 
@@ -64,13 +65,21 @@ const Register = () => {
 
       console.log("Register API Response:", data);
 
+      // Backend error
       if (!response.ok) {
-        throw new Error(data.message || "Registration failed.");
+        throw new Error(
+          data.message || "Registration failed."
+        );
       }
 
       // Success message
-      setMessage(
-        data.message || "Account created successfully!"
+      toast.success(
+        data.message || "Account created successfully!",
+        {
+          position: "top-right",
+          autoClose: 2000,
+          theme: "colored",
+        }
       );
 
       // Clear form
@@ -81,19 +90,25 @@ const Register = () => {
         password: "",
       });
 
+      // Go to login page
+      setTimeout(() => {
+        navigate("/login");
+      }, 2200);
+
     } catch (error) {
       console.error("Registration Error:", error);
 
-      setError(error.message || "Something went wrong.");
+      toast.error(
+        error.message || "Something went wrong.",
+        {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        }
+      );
     } finally {
       setLoading(false);
     }
-  };
-
-  // Popup OK button
-  const handlePopupClose = () => {
-    setMessage("");
-    navigate("/login");
   };
 
   return (
@@ -109,76 +124,88 @@ const Register = () => {
 
         <form onSubmit={handleSubmit}>
 
-          {/* Name */}
+          {/* Full Name */}
           <div className="register-field">
-            <label>Full Name</label>
+            <label htmlFor="name">
+              Full Name
+            </label>
 
             <input
+              id="name"
               type="text"
               name="name"
               value={formData.name}
               onChange={handleChange}
               placeholder="Enter your name"
+              autoComplete="name"
             />
           </div>
 
-          {/* Phone */}
+          {/* Phone Number */}
           <div className="register-field">
-            <label>Phone Number</label>
+            <label htmlFor="phone">
+              Phone Number
+            </label>
 
             <input
+              id="phone"
               type="tel"
               name="phone"
               value={formData.phone}
               onChange={handleChange}
               placeholder="Enter your phone number"
+              autoComplete="tel"
             />
           </div>
 
           {/* Email */}
           <div className="register-field">
-            <label>Email Address</label>
+            <label htmlFor="email">
+              Email Address
+            </label>
 
             <input
+              id="email"
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
               placeholder="Enter your email"
+              autoComplete="email"
             />
           </div>
 
           {/* Password */}
           <div className="register-field">
-            <label>Create Password</label>
+            <label htmlFor="password">
+              Create Password
+            </label>
 
             <input
+              id="password"
               type="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
               placeholder="Create your password"
+              autoComplete="new-password"
             />
           </div>
 
+          {/* Create Account Button */}
           <button
             type="submit"
             className="register-button"
             disabled={loading}
           >
-            {loading ? "Creating Account..." : "Create Account"}
+            {loading
+              ? "Creating Account..."
+              : "Create Account"}
           </button>
 
         </form>
 
-        {/* Error message */}
-        {error && (
-          <p className="register-error">
-            ❌ {error}
-          </p>
-        )}
-
-        {/* Login link */}
+        {/* Login */}
         <div className="already-account">
           <p>Already have an account?</p>
 
@@ -189,35 +216,8 @@ const Register = () => {
 
       </div>
 
-
-      {/* ================= SUCCESS POPUP ================= */}
-
-      {message && (
-        <div className="popup-overlay">
-
-          <div className="success-popup">
-
-            <div className="success-icon">
-              ✓
-            </div>
-
-            <h2>Account Created!</h2>
-
-            <p>
-              {message}
-            </p>
-
-            <button
-              className="popup-ok-button"
-              onClick={handlePopupClose}
-            >
-              OK
-            </button>
-
-          </div>
-
-        </div>
-      )}
+      {/* Toast */}
+      <ToastContainer />
 
     </section>
   );
