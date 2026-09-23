@@ -6,11 +6,13 @@ import {
   Heart,
   ShoppingCart,
   Menu,
-  X
+  X,
+   ChevronDown
 } from "lucide-react";
 
 import logo from "../../assets/furniro-logo.png";
 import "./Header.css";
+
 
 
 const Header = () => {
@@ -39,10 +41,10 @@ const Header = () => {
 
       <div className="header-icons">
 
-        <button className="icon-btn">
-          <UserRound size={26} />
-        </button>
-
+       <Link to="/login" className="icon-btn">
+  <UserRound size={26} />
+   
+</Link>
         <button className="icon-btn">
           <Search size={26} />
         </button>
