@@ -195,7 +195,9 @@
 }
 
 .show-more {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 245px;
   height: 48px;
   margin: 32px auto 0;

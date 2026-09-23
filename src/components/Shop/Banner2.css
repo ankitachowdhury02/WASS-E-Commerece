@@ -1,0 +1,183 @@
+.filter-bar,
+.banner2 {
+  width: 100%;
+  min-height: 80px;
+
+  background: #f9f1e7;
+
+  padding: 0 7%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  box-sizing: border-box;
+}
+
+
+.filter-left {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.filter-btn,
+.icon-btn {
+  border: none;
+  background: transparent;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  cursor: pointer;
+
+  color: #111;
+}
+
+.filter-btn span {
+  font-size: 16px;
+}
+
+.icon-btn {
+  padding: 0;
+}
+
+.vertical-line {
+  width: 1px;
+  height: 35px;
+  background: #999;
+}
+
+.filter-left p {
+  margin: 0;
+  font-size: 14px;
+}
+
+
+
+
+.filter-right {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.show-box,
+.sort-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.show-box span,
+.sort-box span {
+  font-size: 16px;
+}
+
+.show-box select {
+  width: 55px;
+  height: 55px;
+
+  border: none;
+  background: white;
+
+  text-align: center;
+
+  font-size: 16px;
+  color: #999;
+
+  outline: none;
+}
+
+.sort-box select {
+  width: 185px;
+  height: 55px;
+
+  border: none;
+  background: white;
+
+  padding: 0 20px;
+
+  font-size: 16px;
+  color: #999;
+
+  outline: none;
+}
+
+
+/* TABLET */
+
+@media (max-width: 900px) {
+
+  .filter-bar {
+    padding: 0 30px;
+  }
+
+  .filter-left {
+    gap: 15px;
+  }
+
+  .filter-left p {
+    font-size: 12px;
+  }
+
+  .filter-right {
+    gap: 15px;
+  }
+
+  .sort-box select {
+    width: 140px;
+  }
+
+}
+
+
+/* MOBILE */
+
+@media (max-width: 650px) {
+
+  .filter-bar {
+    min-height: auto;
+    padding: 20px 15px;
+
+    flex-direction: column;
+    gap: 20px;
+
+    align-items: flex-start;
+  }
+
+  .filter-left {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .vertical-line {
+    display: none;
+  }
+
+  .filter-left p {
+    font-size: 11px;
+  }
+
+  .filter-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .show-box span,
+  .sort-box span {
+    font-size: 13px;
+  }
+
+  .show-box select {
+    width: 50px;
+    height: 45px;
+  }
+
+  .sort-box select {
+    width: 120px;
+    height: 45px;
+  }
+
+}

@@ -55,4 +55,9 @@ const Support3 = () => {
   );
 };
 
-export default Support3;
+export default Support3;import React from "react";
+import React from "react";
+import support from "../../assets/customer-support.png";
+import warranty from "../../assets/Group.png";
+import shipping from "../../assets/shipping.png";
+import quality from "../../assets/trophy 1.png";

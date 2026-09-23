@@ -1,5 +1,6 @@
 import React from "react";
 import "./Products3.css";
+import { Link } from "react-router-dom";
 
 import image1 from "../../assets/Balcony.png";
 import image2 from "../../assets/Laptop.png";
@@ -191,10 +192,10 @@ const Products3 = () => {
       </div>
 
 
-      {/* Show More */}
-      <button className="show-more">
-        Show More
-      </button>
+      {/* Show More button */}
+     <Link to="/shop" className="show-more">
+  Show More
+</Link>
 
     </section>
   );
