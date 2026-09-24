@@ -10,13 +10,12 @@ import Contact from "./Pages/Contact";
 import Checkout from "./Pages/Checkout";
 import Login from "./Pages/Login";
 import Register from "./Pages/Register";
+import Cart from "./Pages/Cart";
 
 function App() {
   return (
     <BrowserRouter>
-
       <Routes>
-
         {/* Pages with Header and Footer */}
         <Route
           path="/"
@@ -62,19 +61,22 @@ function App() {
           }
         />
 
-        {/* Login page - NO Header, NO Footer */}
         <Route
-          path="/login"
-          element={<Login />}
+          path="/cart"
+          element={
+            <>
+              <Header />
+              <Cart />
+              <Footer />
+            </>
+          }
         />
 
+        {/* Login page - NO Header, NO Footer */}
+        <Route path="/login" element={<Login />} />
 
-  <Route
-          path="/register"
-          element={<Register />}
-        />
+        <Route path="/register" element={<Register />} />
       </Routes>
-
     </BrowserRouter>
   );
 }

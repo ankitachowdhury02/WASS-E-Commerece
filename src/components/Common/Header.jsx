@@ -51,9 +51,9 @@ const Header = () => {
           <Heart size={26} />
         </button>
 
-        <button className="icon-btn">
-          <ShoppingCart size={26} />
-        </button>
+      <Link to="/cart" className="icon-btn">
+  <ShoppingCart size={26} />
+</Link>
       </div>
 
       {/* Mobile Menu */}

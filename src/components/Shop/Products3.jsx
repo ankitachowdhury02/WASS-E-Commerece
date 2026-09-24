@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import "./Products3.css";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useCart } from "../../context/CartContext";
 
 import image1 from "../../assets/Balcony.png";
 import image2 from "../../assets/Laptop.png";
@@ -24,6 +26,7 @@ const Products3 = ({
   currentPage: externalPage,
   setCurrentPage: setExternalPage,
 }) => {
+  const { addToCart } = useCart();
   // All 48 distinct products (16 items per page for 3 full distinct pages)
   const allProducts = [
     // --- PAGE 1 (Items 1 to 16) ---
@@ -571,7 +574,16 @@ const Products3 = ({
 
               {/* Hover Overlay */}
               <div className="product-overlay">
-                <button className="cart-button">Add to cart</button>
+           <button
+  className="cart-button"
+  onClick={() => {
+    addToCart(product);
+
+    toast.success(`${product.name} added to cart!`);
+  }}
+>
+  Add to cart
+</button>
 
                 <div className="product-actions">
                   <button className="action-btn">
