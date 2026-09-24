@@ -67,7 +67,7 @@ const Login = () => {
       */
 
       const response = await fetch(
-        "YOUR_LOGIN_API_URL",
+        "https://ecomm-qy13.onrender.com/api/auth/login",
         {
           method: "POST",
 
@@ -76,7 +76,7 @@ const Login = () => {
           },
 
           body: JSON.stringify({
-            login: formData.login,
+            email: formData.login,
             password: formData.password,
           }),
         }
@@ -169,7 +169,7 @@ const Login = () => {
             </label>
 
             <input
-              type="text"
+              type="email"
               name="login"
               value={formData.login}
               onChange={handleChange}

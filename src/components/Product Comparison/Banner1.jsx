@@ -12,12 +12,12 @@ const Banner1 = () => {
       <div className="contact-overlay">
         <img src={logo} alt="Furniro Logo Icon" className="contact-logo" />
 
-        <h1>Contact</h1>
+        <h1>Product Comparison</h1>
 
         <div className="contact-breadcrumb">
           <span className="crumb-home">Home</span>
           <span className="arrow">›</span>
-          <span className="crumb-current">Contact</span>
+          <span className="crumb-current">Product Comparison</span>
         </div>
       </div>
     </section>
