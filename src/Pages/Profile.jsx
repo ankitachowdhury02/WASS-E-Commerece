@@ -15,6 +15,8 @@ import {
 
 import "./Profile.css";
 
+const API_URL = "https://ecomm-qy13.onrender.com";
+
 const Profile = () => {
   const navigate = useNavigate();
 
@@ -36,27 +38,138 @@ const Profile = () => {
 
   const [error, setError] = useState("");
 
+  // =====================================================
+  // REFRESH ACCESS TOKEN
+  // =====================================================
 
-  // =========================
+  const refreshAccessToken = async () => {
+    const refreshToken =
+      localStorage.getItem("refreshToken");
+
+    console.log(
+      "Refresh token available:",
+      !!refreshToken
+    );
+
+    // Refresh token না থাকলে
+    if (!refreshToken) {
+      return null;
+    }
+
+    try {
+      const response = await fetch(
+        `${API_URL}/api/auth/refresh`,
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify({
+            refreshToken: refreshToken,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      console.log(
+        "REFRESH API STATUS:",
+        response.status
+      );
+
+      console.log(
+        "REFRESH API RESPONSE:",
+        data
+      );
+
+      // Refresh failed
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+            "Unable to refresh session."
+        );
+      }
+
+      // =========================
+      // GET NEW ACCESS TOKEN
+      // =========================
+
+      const newAccessToken =
+        data.token ||
+        data.accessToken ||
+        data.data?.token ||
+        data.data?.accessToken;
+
+      if (!newAccessToken) {
+        throw new Error(
+          "New access token was not received."
+        );
+      }
+
+      // =========================
+      // SAVE NEW ACCESS TOKEN
+      // =========================
+
+      localStorage.setItem(
+        "token",
+        newAccessToken
+      );
+
+      console.log(
+        "New access token saved."
+      );
+
+      return newAccessToken;
+
+    } catch (refreshError) {
+
+      console.error(
+        "REFRESH TOKEN ERROR:",
+        refreshError
+      );
+
+      // Refresh token invalid/expired
+      localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
+
+      return null;
+    }
+  };
+
+  // =====================================================
   // FETCH PROFILE
-  // =========================
+  // =====================================================
 
   useEffect(() => {
 
     const fetchProfile = async () => {
 
-      // Get token from localStorage
-      const token = localStorage.getItem("token");
+      setLoading(true);
+      setError("");
 
-      console.log("================================");
-      console.log("PROFILE TOKEN:", token);
-      console.log("================================");
+      // =========================
+      // GET ACCESS TOKEN
+      // =========================
 
+      let token =
+        localStorage.getItem("token");
 
-      // Token না থাকলে Login page
+      console.log(
+        "Access token available:",
+        !!token
+      );
+
+      // =========================
+      // NO TOKEN
+      // =========================
+
       if (!token) {
 
-        console.log("No token found.");
+        console.log(
+          "No access token found."
+        );
 
         setError(
           "You are not logged in."
@@ -67,67 +180,119 @@ const Profile = () => {
         return;
       }
 
-
       try {
 
-        // =========================
-        // PROFILE API
-        // =========================
+        // =================================================
+        // FIRST PROFILE REQUEST
+        // =================================================
 
-        const response = await fetch(
-          "https://ecomm-qy13.onrender.com/api/users/profile",
+        let response = await fetch(
+          `${API_URL}/api/users/profile`,
           {
             method: "GET",
 
             headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
+              Authorization:
+                `Bearer ${token}`,
+
+              "Content-Type":
+                "application/json",
             },
           }
         );
 
-
-        // Convert response to JSON
-        const data = await response.json();
-
-
-        // =========================
-        // FULL API RESPONSE
-        // =========================
+        let data = await response.json();
 
         console.log(
-          "================================"
+          "PROFILE API STATUS:",
+          response.status
         );
 
         console.log(
-          "PROFILE API RESPONSE:"
-        );
-
-        console.log(
-          JSON.stringify(data, null, 2)
-        );
-
-        console.log(
-          "================================"
+          "PROFILE API RESPONSE:",
+          data
         );
 
 
-        // =========================
-        // API ERROR
-        // =========================
+        // =================================================
+        // ACCESS TOKEN EXPIRED
+        // =================================================
+
+        if (response.status === 401) {
+
+          console.log(
+            "Access token expired. Trying refresh token..."
+          );
+
+          // =========================
+          // REFRESH TOKEN
+          // =========================
+
+          const newToken =
+            await refreshAccessToken();
+
+
+          // =========================
+          // REFRESH FAILED
+          // =========================
+
+          if (!newToken) {
+
+            throw new Error(
+              "Your session has expired. Please login again."
+            );
+          }
+
+
+          // =================================================
+          // PROFILE REQUEST WITH NEW TOKEN
+          // =================================================
+
+          response = await fetch(
+            `${API_URL}/api/users/profile`,
+            {
+              method: "GET",
+
+              headers: {
+                Authorization:
+                  `Bearer ${newToken}`,
+
+                "Content-Type":
+                  "application/json",
+              },
+            }
+          );
+
+          data = await response.json();
+
+          console.log(
+            "PROFILE API AFTER REFRESH STATUS:",
+            response.status
+          );
+
+          console.log(
+            "PROFILE API AFTER REFRESH:",
+            data
+          );
+        }
+
+
+        // =================================================
+        // OTHER API ERROR
+        // =================================================
 
         if (!response.ok) {
 
           throw new Error(
             data.message ||
-            "Unable to load profile."
+              "Unable to load profile."
           );
         }
 
 
-        // =========================
+        // =================================================
         // FIND USER DATA
-        // =========================
+        // =================================================
 
         const userData =
           data.user ||
@@ -137,21 +302,16 @@ const Profile = () => {
 
 
         console.log(
-          "FINAL USER DATA:"
-        );
-
-        console.log(
-          JSON.stringify(
-            userData,
-            null,
-            2
-          )
+          "FINAL USER DATA:",
+          userData
         );
 
 
-        // Save user data
+        // =========================
+        // SAVE USER DATA
+        // =========================
+
         setUser(userData);
-
 
       } catch (err) {
 
@@ -162,7 +322,7 @@ const Profile = () => {
 
         setError(
           err.message ||
-          "Unable to fetch profile."
+            "Unable to fetch profile."
         );
 
       } finally {
@@ -178,27 +338,87 @@ const Profile = () => {
   }, []);
 
 
-  // =========================
+  // =====================================================
   // LOGOUT
-  // =========================
+  // =====================================================
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
 
-    // Remove token
-    localStorage.removeItem("token");
+    const token =
+      localStorage.getItem("token");
 
-    // Clear user
-    setUser(null);
+    try {
 
-    // Go Login
-    navigate("/login");
+      // =========================
+      // LOGOUT API
+      // =========================
 
+      if (token) {
+
+        const response = await fetch(
+          `${API_URL}/api/auth/logout`,
+          {
+            method: "POST",
+
+            headers: {
+              Authorization:
+                `Bearer ${token}`,
+
+              "Content-Type":
+                "application/json",
+            },
+          }
+        );
+
+        const data =
+          await response.json();
+
+        console.log(
+          "LOGOUT API STATUS:",
+          response.status
+        );
+
+        console.log(
+          "LOGOUT API RESPONSE:",
+          data
+        );
+
+      }
+
+    } catch (logoutError) {
+
+      console.error(
+        "LOGOUT ERROR:",
+        logoutError
+      );
+
+    } finally {
+
+      // =========================
+      // CLEAR SESSION
+      // =========================
+
+      localStorage.removeItem("token");
+
+      localStorage.removeItem(
+        "refreshToken"
+      );
+
+      setUser(null);
+
+      // =========================
+      // GO LOGIN
+      // =========================
+
+      navigate("/login");
+
+    }
   };
 
 
-  // =========================
+  // =====================================================
   // LOADING SCREEN
-  // =========================
+  // =====================================================
 
   if (loading) {
 
@@ -216,9 +436,9 @@ const Profile = () => {
   }
 
 
-  // =========================
+  // =====================================================
   // ERROR SCREEN
-  // =========================
+  // =====================================================
 
   if (error) {
 
@@ -236,7 +456,9 @@ const Profile = () => {
           </p>
 
           <button
-            onClick={() => navigate("/login")}
+            onClick={() =>
+              navigate("/login")
+            }
           >
             Go to Login
           </button>
@@ -248,22 +470,21 @@ const Profile = () => {
   }
 
 
-  // =========================
+  // =====================================================
   // PROFILE PAGE
-  // =========================
+  // =====================================================
 
   return (
+
     <section className="profile-page">
 
-
-      {/* =================================
+      {/* =================================================
           PROFILE HEADER
-      ================================= */}
+      ================================================= */}
 
       <div className="profile-cover">
 
         <div className="profile-cover-content">
-
 
           {/* Avatar */}
 
@@ -282,13 +503,11 @@ const Profile = () => {
               MY ACCOUNT
             </p>
 
-
             <h1>
               {user?.name ||
                 user?.fullName ||
                 "User"}
             </h1>
-
 
             <span>
               {user?.email ||
@@ -302,30 +521,25 @@ const Profile = () => {
       </div>
 
 
-
-      {/* =================================
+      {/* =================================================
           MAIN CONTAINER
-      ================================= */}
+      ================================================= */}
 
       <div className="profile-container">
 
-
-        {/* =================================
+        {/* =================================================
             LEFT SIDE
-        ================================= */}
+        ================================================= */}
 
         <div className="profile-main">
 
-
-          {/* =================================
+          {/* =================================================
               PERSONAL INFORMATION
-          ================================= */}
+          ================================================= */}
 
           <div className="profile-card">
 
-
             <div className="profile-card-heading">
-
 
               <div>
 
@@ -354,15 +568,11 @@ const Profile = () => {
             </div>
 
 
-
-            {/* Details */}
+            {/* DETAILS */}
 
             <div className="profile-details">
 
-
-              {/* =========================
-                  NAME
-              ========================= */}
+              {/* NAME */}
 
               <div className="detail-item">
 
@@ -372,20 +582,16 @@ const Profile = () => {
 
                 </div>
 
-
                 <div>
 
                   <span>
                     Full Name
                   </span>
 
-
                   <strong>
-
                     {user?.name ||
                       user?.fullName ||
                       "Not available"}
-
                   </strong>
 
                 </div>
@@ -393,10 +599,7 @@ const Profile = () => {
               </div>
 
 
-
-              {/* =========================
-                  EMAIL
-              ========================= */}
+              {/* EMAIL */}
 
               <div className="detail-item">
 
@@ -406,19 +609,15 @@ const Profile = () => {
 
                 </div>
 
-
                 <div>
 
                   <span>
                     Email Address
                   </span>
 
-
                   <strong>
-
                     {user?.email ||
                       "Not available"}
-
                   </strong>
 
                 </div>
@@ -426,10 +625,7 @@ const Profile = () => {
               </div>
 
 
-
-              {/* =========================
-                  PHONE
-              ========================= */}
+              {/* PHONE */}
 
               <div className="detail-item">
 
@@ -439,13 +635,11 @@ const Profile = () => {
 
                 </div>
 
-
                 <div>
 
                   <span>
                     Phone Number
                   </span>
-
 
                   <strong>
 
@@ -464,13 +658,11 @@ const Profile = () => {
           </div>
 
 
-
-          {/* =================================
+          {/* =================================================
               QUICK ACCESS
-          ================================= */}
+          ================================================= */}
 
           <div className="profile-card">
-
 
             <div className="profile-card-heading">
 
@@ -489,13 +681,9 @@ const Profile = () => {
             </div>
 
 
-
             <div className="account-grid">
 
-
-              {/* =========================
-                  CART
-              ========================= */}
+              {/* CART */}
 
               <Link
                 to="/cart"
@@ -509,7 +697,6 @@ const Profile = () => {
                   />
 
                 </div>
-
 
                 <div>
 
@@ -526,10 +713,7 @@ const Profile = () => {
               </Link>
 
 
-
-              {/* =========================
-                  ORDERS
-              ========================= */}
+              {/* ORDERS */}
 
               <div className="account-option">
 
@@ -540,7 +724,6 @@ const Profile = () => {
                   />
 
                 </div>
-
 
                 <div>
 
@@ -557,10 +740,7 @@ const Profile = () => {
               </div>
 
 
-
-              {/* =========================
-                  WISHLIST
-              ========================= */}
+              {/* WISHLIST */}
 
               <div className="account-option">
 
@@ -571,7 +751,6 @@ const Profile = () => {
                   />
 
                 </div>
-
 
                 <div>
 
@@ -588,10 +767,7 @@ const Profile = () => {
               </div>
 
 
-
-              {/* =========================
-                  SECURITY
-              ========================= */}
+              {/* SECURITY */}
 
               <div className="account-option">
 
@@ -602,7 +778,6 @@ const Profile = () => {
                   />
 
                 </div>
-
 
                 <div>
 
@@ -625,20 +800,15 @@ const Profile = () => {
         </div>
 
 
-
-        {/* =================================
+        {/* =================================================
             RIGHT SIDEBAR
-        ================================= */}
+        ================================================= */}
 
         <aside className="profile-sidebar">
 
-
-          {/* =========================
-              ACCOUNT STATUS
-          ========================= */}
+          {/* ACCOUNT STATUS */}
 
           <div className="account-status">
-
 
             <div className="status-icon">
 
@@ -648,16 +818,13 @@ const Profile = () => {
 
             </div>
 
-
             <p>
               ACCOUNT STATUS
             </p>
 
-
             <h3>
               Active Account
             </h3>
-
 
             <span>
               Your account is active and secure.
@@ -666,29 +833,22 @@ const Profile = () => {
           </div>
 
 
-
-          {/* =========================
-              SHOPPING
-          ========================= */}
+          {/* SHOPPING */}
 
           <div className="profile-side-card">
-
 
             <p className="small-title">
               SHOPPING
             </p>
 
-
             <h3>
               Continue Shopping
             </h3>
-
 
             <p>
               Discover something beautiful
               for your home.
             </p>
-
 
             <Link to="/shop">
               Explore Shop
@@ -697,10 +857,7 @@ const Profile = () => {
           </div>
 
 
-
-          {/* =========================
-              LOGOUT
-          ========================= */}
+          {/* LOGOUT */}
 
           <button
             className="logout-button"

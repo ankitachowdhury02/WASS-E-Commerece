@@ -16,37 +16,288 @@ import {
 import logo from "../../assets/furniro-logo.png";
 import "./Header.css";
 
+const API_URL = "https://ecomm-qy13.onrender.com";
+
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-
   const [user, setUser] = useState(null);
 
   const profileRef = useRef(null);
 
   const navigate = useNavigate();
 
+  /* =====================================================
+     REFRESH ACCESS TOKEN
+  ===================================================== */
 
-  /* =========================
-     FETCH USER PROFILE
-  ========================= */
+  const refreshAccessToken = async () => {
+    const refreshToken = localStorage.getItem("refreshToken");
 
-  useEffect(() => {
-    const fetchUserProfile = async () => {
+    if (!refreshToken) {
+      return null;
+    }
 
-      const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(
+        `${API_URL}/api/auth/refresh`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            refreshToken: refreshToken,
+          }),
+        }
+      );
 
-      // Login করা না থাকলে API call করবে না
-      if (!token) {
-        return;
+      const data = await response.json();
+
+      console.log("Refresh API Response:", data);
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Unable to refresh token"
+        );
       }
 
-      try {
+      /*
+        Backend নতুন token যেকোনো common format-এ
+        দিলে handle করার চেষ্টা করবে।
+      */
 
-        const response = await fetch(
-          "https://ecomm-qy13.onrender.com/api/users/profile",
+      const newAccessToken =
+        data.token ||
+        data.accessToken ||
+        data.data?.token ||
+        data.data?.accessToken;
+
+      if (!newAccessToken) {
+        throw new Error(
+          "New access token not received."
+        );
+      }
+
+      localStorage.setItem(
+        "token",
+        newAccessToken
+      );
+
+      return newAccessToken;
+
+    } catch (error) {
+
+      console.error(
+        "Refresh Token Error:",
+        error
+      );
+
+      localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
+
+      return null;
+    }
+  };
+
+
+  /* =====================================================
+     FETCH USER PROFILE
+  ===================================================== */
+
+  const fetchUserProfile = async () => {
+
+    let token = localStorage.getItem("token");
+
+    if (!token) {
+      setUser(null);
+      return;
+    }
+
+    try {
+
+      let response = await fetch(
+        `${API_URL}/api/users/profile`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      let data = await response.json();
+
+      console.log("Profile API Status:", response.status);
+      console.log("Profile API Response:", data);
+
+
+      /* =================================================
+         TOKEN EXPIRED → REFRESH TOKEN
+      ================================================= */
+
+      if (response.status === 401) {
+
+        console.log(
+          "Access token expired. Trying refresh token..."
+        );
+
+        const newToken =
+          await refreshAccessToken();
+
+        if (!newToken) {
+
+          setUser(null);
+
+          return;
+        }
+
+
+        /*
+          নতুন access token দিয়ে
+          Profile API আবার call
+        */
+
+        response = await fetch(
+          `${API_URL}/api/users/profile`,
           {
             method: "GET",
+            headers: {
+              Authorization: `Bearer ${newToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        data = await response.json();
+
+        console.log(
+          "Profile API After Refresh:",
+          data
+        );
+      }
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          data.message ||
+          "Unable to fetch profile"
+        );
+      }
+
+
+      /*
+        Backend যদি দেয়:
+
+        {
+          user: {...}
+        }
+
+        অথবা সরাসরি:
+
+        {
+          name: "...",
+          email: "...",
+          phone: "..."
+        }
+      */
+
+      const userData =
+        data.user ||
+        data.data?.user ||
+        data.data ||
+        data;
+
+      console.log(
+        "Final User Data:",
+        userData
+      );
+
+      setUser(userData);
+
+    } catch (error) {
+
+      console.error(
+        "Profile Fetch Error:",
+        error
+      );
+
+      setUser(null);
+    }
+  };
+
+
+  /* =====================================================
+     FETCH PROFILE ON PAGE LOAD
+  ===================================================== */
+
+  useEffect(() => {
+
+    fetchUserProfile();
+
+  }, []);
+
+
+  /* =====================================================
+     CLOSE DROPDOWN OUTSIDE CLICK
+  ===================================================== */
+
+  useEffect(() => {
+
+    const handleOutsideClick = (event) => {
+
+      if (
+        profileRef.current &&
+        !profileRef.current.contains(
+          event.target
+        )
+      ) {
+        setProfileOpen(false);
+      }
+
+    };
+
+    document.addEventListener(
+      "mousedown",
+      handleOutsideClick
+    );
+
+    return () => {
+
+      document.removeEventListener(
+        "mousedown",
+        handleOutsideClick
+      );
+
+    };
+
+  }, []);
+
+
+  /* =====================================================
+     LOGOUT
+  ===================================================== */
+
+  const handleLogout = async () => {
+
+    let token =
+      localStorage.getItem("token");
+
+    try {
+
+      /*
+        প্রথমে current access token দিয়ে
+        logout করার চেষ্টা
+      */
+
+      if (token) {
+
+        let response = await fetch(
+          `${API_URL}/api/auth/logout`,
+          {
+            method: "POST",
 
             headers: {
               Authorization: `Bearer ${token}`,
@@ -55,111 +306,109 @@ const Header = () => {
           }
         );
 
+        let data = await response.json();
 
-        const data = await response.json();
+        console.log(
+          "Logout API Status:",
+          response.status
+        );
 
-        console.log("Profile API Response:", data);
-
-
-        if (!response.ok) {
-          throw new Error(
-            data.message || "Unable to fetch profile"
-          );
-        }
+        console.log(
+          "Logout API Response:",
+          data
+        );
 
 
         /*
-          Backend response যদি সরাসরি user data দেয়
-          অথবা { user: {...} } দেয়,
-          দুই ক্ষেত্রেই handle করবে।
+          Access token expired হলে
+          refresh করে আবার logout
         */
 
-        setUser(data.user || data);
+        if (response.status === 401) {
 
-      } catch (error) {
+          console.log(
+            "Access token expired during logout. Refreshing..."
+          );
 
-        console.error(
-          "Profile Fetch Error:",
-          error
-        );
+          const newToken =
+            await refreshAccessToken();
+
+          if (newToken) {
+
+            response = await fetch(
+              `${API_URL}/api/auth/logout`,
+              {
+                method: "POST",
+
+                headers: {
+                  Authorization:
+                    `Bearer ${newToken}`,
+                  "Content-Type":
+                    "application/json",
+                },
+              }
+            );
+
+            data = await response.json();
+
+            console.log(
+              "Logout After Refresh:",
+              data
+            );
+          }
+        }
 
       }
-    };
 
+    } catch (error) {
 
-    fetchUserProfile();
-
-  }, []);
-
-
-  /* =========================
-     CLOSE DROPDOWN OUTSIDE CLICK
-  ========================= */
-
-  useEffect(() => {
-
-    const handleOutsideClick = (event) => {
-
-      if (
-        profileRef.current &&
-        !profileRef.current.contains(event.target)
-      ) {
-        setProfileOpen(false);
-      }
-
-    };
-
-
-    document.addEventListener(
-      "mousedown",
-      handleOutsideClick
-    );
-
-
-    return () => {
-      document.removeEventListener(
-        "mousedown",
-        handleOutsideClick
+      console.error(
+        "Logout Error:",
+        error
       );
-    };
 
-  }, []);
+    } finally {
 
+      /*
+        Backend logout success/error যাই হোক,
+        local session clear হবে
+      */
 
-  /* =========================
-     LOGOUT
-  ========================= */
+      localStorage.removeItem("token");
 
-  const handleLogout = () => {
+      localStorage.removeItem(
+        "refreshToken"
+      );
 
-    localStorage.removeItem("token");
+      setUser(null);
 
-    setUser(null);
+      setProfileOpen(false);
 
-    setProfileOpen(false);
+      setMenuOpen(false);
 
-    navigate("/login");
-
+      navigate("/login");
+    }
   };
 
 
-  /* =========================
+  /* =====================================================
      MOBILE MENU CLOSE
-  ========================= */
+  ===================================================== */
 
   const closeMobileMenu = () => {
     setMenuOpen(false);
   };
 
 
+  /* =====================================================
+     JSX
+  ===================================================== */
+
   return (
 
     <header className="header">
 
-
-      {/* =========================
-          LOGO
-      ========================= */}
+      {/* LOGO */}
 
       <div className="header-logo">
 
@@ -167,18 +416,18 @@ const Header = () => {
           to="/"
           onClick={closeMobileMenu}
         >
+
           <img
             src={logo}
             alt="Furniro Logo"
           />
+
         </Link>
 
       </div>
 
 
-      {/* =========================
-          NAVBAR
-      ========================= */}
+      {/* NAVBAR */}
 
       <nav
         className={`navbar ${
@@ -193,7 +442,6 @@ const Header = () => {
           Home
         </Link>
 
-
         <Link
           to="/shop"
           onClick={closeMobileMenu}
@@ -201,14 +449,12 @@ const Header = () => {
           Shop
         </Link>
 
-
         <Link
           to="/about"
           onClick={closeMobileMenu}
         >
           About
         </Link>
-
 
         <Link
           to="/contact"
@@ -220,16 +466,11 @@ const Header = () => {
       </nav>
 
 
-      {/* =========================
-          HEADER ICONS
-      ========================= */}
+      {/* HEADER ICONS */}
 
       <div className="header-icons">
 
-
-        {/* =========================
-            PROFILE
-        ========================= */}
+        {/* PROFILE */}
 
         <div
           className="profile-wrapper"
@@ -237,11 +478,16 @@ const Header = () => {
         >
 
           <button
+            type="button"
             className={`profile-icon-btn ${
-              profileOpen ? "profile-active" : ""
+              profileOpen
+                ? "profile-active"
+                : ""
             }`}
             onClick={() =>
-              setProfileOpen(!profileOpen)
+              setProfileOpen(
+                !profileOpen
+              )
             }
           >
 
@@ -250,16 +496,13 @@ const Header = () => {
           </button>
 
 
-          {/* =========================
-              PROFILE DROPDOWN
-          ========================= */}
+          {/* PROFILE DROPDOWN */}
 
           {profileOpen && (
 
             <div className="profile-dropdown">
 
-
-              {/* User Information */}
+              {/* USER INFO */}
 
               <div className="profile-user-info">
 
@@ -273,13 +516,18 @@ const Header = () => {
                 <div className="profile-user-text">
 
                   <h3>
-                    {user?.name || "Hello User"}
+                    {user?.name ||
+                      user?.fullName ||
+                      "User"}
                   </h3>
 
                   <p>
+
                     {user?.phone
                       ? `+91 ${user.phone}`
-                      : user?.email || "Please login"}
+                      : user?.email ||
+                        "Please login"}
+
                   </p>
 
                 </div>
@@ -287,7 +535,7 @@ const Header = () => {
               </div>
 
 
-              {/* My Orders */}
+              {/* MY ORDERS */}
 
               <Link
                 to="/profile"
@@ -306,7 +554,7 @@ const Header = () => {
               </Link>
 
 
-              {/* My Profile */}
+              {/* MY PROFILE */}
 
               <Link
                 to="/profile"
@@ -325,26 +573,46 @@ const Header = () => {
               </Link>
 
 
-              {/* Logout or Login */}
-              {user || localStorage.getItem("token") ? (
+              {/* LOGIN / LOGOUT */}
+
+              {user ||
+              localStorage.getItem(
+                "token"
+              ) ? (
+
                 <button
+                  type="button"
                   className="profile-menu-item logout-item"
                   onClick={handleLogout}
                 >
+
                   <LogOut size={21} />
-                  <span>Logout</span>
+
+                  <span>
+                    Logout
+                  </span>
+
                 </button>
+
               ) : (
+
                 <Link
                   to="/login"
                   className="profile-menu-item login-item"
-                  onClick={() => setProfileOpen(false)}
+                  onClick={() =>
+                    setProfileOpen(false)
+                  }
                 >
-                  <LogIn size={21} />
-                  <span>Login / Register</span>
-                </Link>
-              )}
 
+                  <LogIn size={21} />
+
+                  <span>
+                    Login / Register
+                  </span>
+
+                </Link>
+
+              )}
 
             </div>
 
@@ -353,9 +621,7 @@ const Header = () => {
         </div>
 
 
-        {/* =========================
-            SEARCH
-        ========================= */}
+        {/* SEARCH */}
 
         <button
           className="icon-btn"
@@ -367,9 +633,7 @@ const Header = () => {
         </button>
 
 
-        {/* =========================
-            WISHLIST
-        ========================= */}
+        {/* WISHLIST */}
 
         <button
           className="icon-btn"
@@ -381,9 +645,7 @@ const Header = () => {
         </button>
 
 
-        {/* =========================
-            CART
-        ========================= */}
+        {/* CART */}
 
         <Link
           to="/cart"
@@ -394,15 +656,13 @@ const Header = () => {
 
         </Link>
 
-
       </div>
 
 
-      {/* =========================
-          MOBILE MENU
-      ========================= */}
+      {/* MOBILE MENU */}
 
       <button
+        type="button"
         className="mobile-menu"
         onClick={() =>
           setMenuOpen(!menuOpen)
@@ -417,11 +677,8 @@ const Header = () => {
 
       </button>
 
-
     </header>
-
   );
 };
-
 
 export default Header;

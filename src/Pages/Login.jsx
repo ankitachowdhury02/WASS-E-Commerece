@@ -3,69 +3,61 @@ import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
 
 const Login = () => {
+  // =========================
+  // FORM DATA
+  // =========================
 
-  // Login form data
   const [formData, setFormData] = useState({
     login: "",
     password: "",
   });
 
-  // Error message
+  // =========================
+  // STATES
+  // =========================
+
   const [error, setError] = useState("");
-
-  // Success message
   const [message, setMessage] = useState("");
-
-  // Loading state
   const [loading, setLoading] = useState(false);
 
-  // Navigation
   const navigate = useNavigate();
-
 
   // =========================
   // INPUT CHANGE
   // =========================
 
   const handleChange = (e) => {
-
     const { name, value } = e.target;
 
-    setFormData({
-      ...formData,
+    setFormData((previousData) => ({
+      ...previousData,
       [name]: value,
-    });
+    }));
   };
-
 
   // =========================
   // LOGIN SUBMIT
   // =========================
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
 
-    // Clear previous messages
     setError("");
     setMessage("");
 
+    // =========================
+    // VALIDATION
+    // =========================
 
-    // Check empty fields
     if (!formData.login || !formData.password) {
-
       setError(
         "Please enter your Email and Password."
       );
-
       return;
     }
 
-
     try {
-
       setLoading(true);
-
 
       // =========================
       // LOGIN API
@@ -81,114 +73,130 @@ const Login = () => {
           },
 
           body: JSON.stringify({
-            email: formData.login,
+            email: formData.login.trim(),
             password: formData.password,
           }),
         }
       );
 
+      // =========================
+      // READ RESPONSE
+      // =========================
 
-      // Convert response to JSON
       const data = await response.json();
 
+      console.log(
+        "LOGIN API STATUS:",
+        response.status
+      );
 
-      // Check response in Console
       console.log(
         "LOGIN API RESPONSE:",
         data
       );
 
-
       // =========================
-      // API ERROR
+      // LOGIN ERROR
       // =========================
 
       if (!response.ok) {
-
         throw new Error(
-          data.message || "Login failed."
+          data.message ||
+          "Invalid email or password."
         );
       }
 
-
       // =========================
-      // GET TOKEN
+      // GET ACCESS TOKEN
       // =========================
 
-      /*
-        Different backend APIs may
-        return token in different places.
-
-        We check all common formats.
-      */
-
-      const token =
+      const accessToken =
         data.token ||
         data.accessToken ||
         data.data?.token ||
         data.data?.accessToken;
 
-
-      console.log(
-        "TOKEN FROM API:",
-        token
-      );
-
-
       // =========================
-      // TOKEN NOT FOUND
+      // GET REFRESH TOKEN
       // =========================
 
-      if (!token) {
+      const refreshToken =
+        data.refreshToken ||
+        data.data?.refreshToken;
+
+      // =========================
+      // CHECK ACCESS TOKEN
+      // =========================
+
+      if (!accessToken) {
+        console.error(
+          "Login response did not contain an access token."
+        );
 
         setError(
           "Login successful, but authentication token was not received."
         );
 
-        console.log(
-          "No token found in login response."
-        );
-
         return;
       }
 
+      // =========================
+      // CLEAR OLD TOKENS
+      // =========================
+
+      localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
 
       // =========================
-      // SAVE TOKEN
+      // SAVE ACCESS TOKEN
       // =========================
 
       localStorage.setItem(
         "token",
-        token
+        accessToken
       );
 
+      // =========================
+      // SAVE REFRESH TOKEN
+      // =========================
 
-      // Check saved token
+      if (refreshToken) {
+        localStorage.setItem(
+          "refreshToken",
+          refreshToken
+        );
+      }
+
+      // =========================
+      // CHECK TOKEN STATUS
+      // =========================
+
       console.log(
-        "TOKEN SAVED:",
-        localStorage.getItem("token")
+        "Access token saved:",
+        !!localStorage.getItem("token")
       );
 
+      console.log(
+        "Refresh token saved:",
+        !!localStorage.getItem("refreshToken")
+      );
 
       // =========================
       // SUCCESS MESSAGE
       // =========================
 
       setMessage(
-        data.message || "Login successful!"
+        data.message ||
+        "Login successful!"
       );
 
-
       // =========================
-      // GO TO HOME
+      // GO HOME
       // =========================
 
       setTimeout(() => {
-
         navigate("/");
-
       }, 1000);
-
 
     } catch (error) {
 
@@ -199,7 +207,7 @@ const Login = () => {
 
       setError(
         error.message ||
-        "Something went wrong."
+        "Something went wrong. Please try again."
       );
 
     } finally {
@@ -209,6 +217,9 @@ const Login = () => {
     }
   };
 
+  // =========================
+  // JSX
+  // =========================
 
   return (
     <section className="login-page">
@@ -230,8 +241,9 @@ const Login = () => {
 
         <form onSubmit={handleSubmit}>
 
-
-          {/* Email */}
+          {/* =========================
+              EMAIL
+          ========================= */}
 
           <div className="login-field">
 
@@ -245,12 +257,16 @@ const Login = () => {
               value={formData.login}
               onChange={handleChange}
               placeholder="Enter your Email"
+              autoComplete="email"
+              required
             />
 
           </div>
 
 
-          {/* Password */}
+          {/* =========================
+              PASSWORD
+          ========================= */}
 
           <div className="login-field">
 
@@ -264,12 +280,16 @@ const Login = () => {
               value={formData.password}
               onChange={handleChange}
               placeholder="Enter your Password"
+              autoComplete="current-password"
+              required
             />
 
           </div>
 
 
-          {/* Remember + Forgot */}
+          {/* =========================
+              REMEMBER + FORGOT
+          ========================= */}
 
           <div className="login-options">
 
@@ -283,7 +303,6 @@ const Login = () => {
 
             </label>
 
-
             <a href="#">
               Forgot Password?
             </a>
@@ -291,7 +310,9 @@ const Login = () => {
           </div>
 
 
-          {/* Error */}
+          {/* =========================
+              ERROR
+          ========================= */}
 
           {error && (
             <p className="login-error">
@@ -300,7 +321,9 @@ const Login = () => {
           )}
 
 
-          {/* Success */}
+          {/* =========================
+              SUCCESS
+          ========================= */}
 
           {message && (
             <p className="login-success">
@@ -309,7 +332,9 @@ const Login = () => {
           )}
 
 
-          {/* Login Button */}
+          {/* =========================
+              LOGIN BUTTON
+          ========================= */}
 
           <button
             type="submit"
