@@ -23,7 +23,10 @@ const Login = () => {
   const navigate = useNavigate();
 
 
-  // Input change
+  // =========================
+  // INPUT CHANGE
+  // =========================
+
   const handleChange = (e) => {
 
     const { name, value } = e.target;
@@ -35,20 +38,25 @@ const Login = () => {
   };
 
 
-  // Login submit
+  // =========================
+  // LOGIN SUBMIT
+  // =========================
+
   const handleSubmit = async (e) => {
 
     e.preventDefault();
 
-    // Previous message clear
+    // Clear previous messages
     setError("");
     setMessage("");
 
 
-    // Empty field check
+    // Check empty fields
     if (!formData.login || !formData.password) {
 
-      setError("Please enter your Email/Phone and Password.");
+      setError(
+        "Please enter your Email and Password."
+      );
 
       return;
     }
@@ -59,12 +67,9 @@ const Login = () => {
       setLoading(true);
 
 
-      /*
-        LOGIN API
-
-        IMPORTANT:
-        এখানে তোমার actual login API URL বসাতে হবে।
-      */
+      // =========================
+      // LOGIN API
+      // =========================
 
       const response = await fetch(
         "https://ecomm-qy13.onrender.com/api/auth/login",
@@ -83,13 +88,21 @@ const Login = () => {
       );
 
 
-      // API response
+      // Convert response to JSON
       const data = await response.json();
 
-      console.log("Login API Response:", data);
+
+      // Check response in Console
+      console.log(
+        "LOGIN API RESPONSE:",
+        data
+      );
 
 
-      // API error
+      // =========================
+      // API ERROR
+      // =========================
+
       if (!response.ok) {
 
         throw new Error(
@@ -98,43 +111,95 @@ const Login = () => {
       }
 
 
-      // Success
+      // =========================
+      // GET TOKEN
+      // =========================
+
+      /*
+        Different backend APIs may
+        return token in different places.
+
+        We check all common formats.
+      */
+
+      const token =
+        data.token ||
+        data.accessToken ||
+        data.data?.token ||
+        data.data?.accessToken;
+
+
+      console.log(
+        "TOKEN FROM API:",
+        token
+      );
+
+
+      // =========================
+      // TOKEN NOT FOUND
+      // =========================
+
+      if (!token) {
+
+        setError(
+          "Login successful, but authentication token was not received."
+        );
+
+        console.log(
+          "No token found in login response."
+        );
+
+        return;
+      }
+
+
+      // =========================
+      // SAVE TOKEN
+      // =========================
+
+      localStorage.setItem(
+        "token",
+        token
+      );
+
+
+      // Check saved token
+      console.log(
+        "TOKEN SAVED:",
+        localStorage.getItem("token")
+      );
+
+
+      // =========================
+      // SUCCESS MESSAGE
+      // =========================
+
       setMessage(
         data.message || "Login successful!"
       );
 
 
-      /*
-        যদি API থেকে token আসে,
-        পরে আমরা এখানে token save করব।
-      */
+      // =========================
+      // GO TO HOME
+      // =========================
 
-      if (data.token) {
-
-        localStorage.setItem(
-          "token",
-          data.token
-        );
-      }
-
-
-      // Login successful হলে Home page
       setTimeout(() => {
 
         navigate("/");
 
-      }, 1500);
+      }, 1000);
 
 
     } catch (error) {
 
       console.error(
-        "Login Error:",
+        "LOGIN ERROR:",
         error
       );
 
       setError(
-        error.message || "Something went wrong."
+        error.message ||
+        "Something went wrong."
       );
 
     } finally {
@@ -150,22 +215,28 @@ const Login = () => {
 
       <div className="login-box">
 
-        <h1>Welcome Back</h1>
+        <h1>
+          Welcome Back
+        </h1>
 
         <p className="login-subtitle">
           Please login to your Account
         </p>
 
 
-        {/* Login Form */}
+        {/* =========================
+            LOGIN FORM
+        ========================= */}
+
         <form onSubmit={handleSubmit}>
 
 
-          {/* Email / Phone */}
+          {/* Email */}
+
           <div className="login-field">
 
             <label>
-              Email Address / Phone No.
+              Email Address
             </label>
 
             <input
@@ -173,13 +244,14 @@ const Login = () => {
               name="login"
               value={formData.login}
               onChange={handleChange}
-              placeholder="Enter your Email / Phone"
+              placeholder="Enter your Email"
             />
 
           </div>
 
 
           {/* Password */}
+
           <div className="login-field">
 
             <label>
@@ -198,6 +270,7 @@ const Login = () => {
 
 
           {/* Remember + Forgot */}
+
           <div className="login-options">
 
             <label>
@@ -219,6 +292,7 @@ const Login = () => {
 
 
           {/* Error */}
+
           {error && (
             <p className="login-error">
               {error}
@@ -227,6 +301,7 @@ const Login = () => {
 
 
           {/* Success */}
+
           {message && (
             <p className="login-success">
               {message}
@@ -235,6 +310,7 @@ const Login = () => {
 
 
           {/* Login Button */}
+
           <button
             type="submit"
             className="login-button"
@@ -248,11 +324,13 @@ const Login = () => {
 
           </button>
 
-
         </form>
 
 
-        {/* Create Account */}
+        {/* =========================
+            CREATE ACCOUNT
+        ========================= */}
+
         <div className="create-account">
 
           <p>
@@ -266,7 +344,10 @@ const Login = () => {
         </div>
 
 
-        {/* Admin Login */}
+        {/* =========================
+            ADMIN LOGIN
+        ========================= */}
+
         <div className="admin-section">
 
           <p className="admin-title">
@@ -281,7 +362,6 @@ const Login = () => {
           </Link>
 
         </div>
-
 
       </div>
 

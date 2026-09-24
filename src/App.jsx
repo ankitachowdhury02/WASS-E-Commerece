@@ -11,6 +11,7 @@ import Checkout from "./Pages/Checkout";
 import Login from "./Pages/Login";
 import Register from "./Pages/Register";
 import Cart from "./Pages/Cart";
+import Profile from "./Pages/Profile";
 
 function App() {
   return (
@@ -71,6 +72,17 @@ function App() {
             </>
           }
         />
+
+        <Route
+  path="/profile"
+  element={
+    <>
+      <Header />
+      <Profile />
+      <Footer />
+    </>
+  }
+/>
 
         {/* Login page - NO Header, NO Footer */}
         <Route path="/login" element={<Login />} />
