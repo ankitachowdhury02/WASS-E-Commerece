@@ -14,7 +14,6 @@
   box-sizing: border-box;
 }
 
-
 .filter-left {
   display: flex;
   align-items: center;
@@ -53,9 +52,6 @@
   margin: 0;
   font-size: 14px;
 }
-
-
-
 
 .filter-right {
   display: flex;
@@ -105,79 +101,92 @@
   outline: none;
 }
 
+/* TABLET - 768px */
 
-/* TABLET */
-
-@media (max-width: 900px) {
-
+@media (max-width: 768px) {
   .filter-bar {
-    padding: 0 30px;
+    padding: 0 24px;
+    min-height: 72px;
   }
 
   .filter-left {
-    gap: 15px;
+    gap: 16px;
   }
 
   .filter-left p {
-    font-size: 12px;
-  }
-
-  .filter-right {
-    gap: 15px;
-  }
-
-  .sort-box select {
-    width: 140px;
-  }
-
-}
-
-
-/* MOBILE */
-
-@media (max-width: 650px) {
-
-  .filter-bar {
-    min-height: auto;
-    padding: 20px 15px;
-
-    flex-direction: column;
-    gap: 20px;
-
-    align-items: flex-start;
-  }
-
-  .filter-left {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .vertical-line {
-    display: none;
-  }
-
-  .filter-left p {
-    font-size: 11px;
-  }
-
-  .filter-right {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .show-box span,
-  .sort-box span {
     font-size: 13px;
+  }
+
+  .filter-right {
+    gap: 16px;
   }
 
   .show-box select {
     width: 50px;
-    height: 45px;
+    height: 48px;
+    font-size: 14px;
   }
 
   .sort-box select {
-    width: 120px;
-    height: 45px;
+    width: 135px;
+    height: 48px;
+    font-size: 14px;
+    padding: 0 14px;
+  }
+}
+
+/* MOBILE S - 320px */
+
+@media (max-width: 320px) {
+  .filter-bar {
+    padding: 14px 10px;
+    gap: 14px;
   }
 
+  .filter-left {
+    gap: 8px;
+  }
+
+  .filter-btn {
+    gap: 6px;
+  }
+
+  .filter-btn span {
+    font-size: 13px;
+  }
+
+  .filter-left p {
+    width: 100%;
+    font-size: 11px;
+    color: #555;
+    margin-top: 2px;
+  }
+
+  .filter-right {
+    gap: 8px;
+    justify-content: space-between;
+  }
+
+  .show-box,
+  .sort-box {
+    gap: 6px;
+  }
+
+  .show-box span,
+  .sort-box span {
+    font-size: 12px;
+  }
+
+  .show-box select {
+    width: 42px;
+    height: 38px;
+    font-size: 12px;
+  }
+
+  .sort-box select {
+    width: 95px;
+    height: 38px;
+    font-size: 12px;
+    padding: 0 8px;
+  }
 }

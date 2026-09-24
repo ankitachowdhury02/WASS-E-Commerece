@@ -1,5 +1,3 @@
-
-
 .footer {
   width: 100%;
 
@@ -9,9 +7,6 @@
 
   padding: 40px 7% 0;
 }
-
-
-
 
 .footer-container {
   max-width: 1200px;
@@ -26,8 +21,6 @@
 
   padding-bottom: 35px;
 }
-
-
 
 .footer-company h2 {
   margin: 0 0 40px;
@@ -49,8 +42,6 @@
   line-height: 20px;
 }
 
-
-
 .footer-column {
   display: flex;
 
@@ -67,8 +58,6 @@
 
   font-weight: 400;
 }
-
-
 
 .footer-column a {
   margin-bottom: 28px;
@@ -87,8 +76,6 @@
 .footer-column a:hover {
   color: #b88e2f;
 }
-
-
 
 .footer-newsletter {
   display: flex;
@@ -124,7 +111,6 @@
   color: #999999;
 }
 
-
 /* Subscribe Button */
 
 .subscribe-box button {
@@ -151,7 +137,6 @@
   border-color: #b88e2f;
 }
 
-
 .footer-bottom {
   max-width: 1200px;
 
@@ -171,20 +156,17 @@
 }
 /* RESPONSIVE */
 
-/* TABLET - 768px*/
+/* TABLET - 768px */
 
 @media (max-width: 768px) {
-
   .footer {
-    padding: 40px 30px 0;
+    padding: 40px 24px 0;
   }
 
   .footer-container {
     grid-template-columns: 1fr 1fr;
-
-    gap: 35px;
-
-    padding-bottom: 30px;
+    gap: 32px;
+    padding-bottom: 28px;
   }
 
   .footer-company {
@@ -192,34 +174,51 @@
   }
 
   .footer-company h2 {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
+    font-size: 20px;
   }
 
   .footer-column h3,
   .footer-newsletter h3 {
-    margin-bottom: 25px;
+    margin: 0 0 20px;
+    font-size: 14px;
   }
 
+  .footer-newsletter {
+    grid-column: 1 / -1;
+    margin-top: 8px;
+  }
+
+  .subscribe-box {
+    max-width: 360px;
+  }
+
+  .subscribe-box input {
+    flex: 1;
+    width: auto;
+  }
 }
-
-
-
-
 
 /* MOBILE S - 320px */
 
 @media (max-width: 320px) {
-
   .footer {
-    padding: 30px 15px 0;
+    padding: 28px 12px 0;
   }
 
   .footer-container {
-    gap: 25px;
+    grid-template-columns: 1fr;
+    gap: 22px;
+    padding-bottom: 22px;
+  }
+
+  .footer-company {
+    grid-column: 1 / -1;
   }
 
   .footer-company h2 {
-    font-size: 19px;
+    font-size: 18px;
+    margin-bottom: 12px;
   }
 
   .footer-company p {
@@ -230,18 +229,45 @@
   .footer-column h3,
   .footer-newsletter h3 {
     font-size: 13px;
+    margin: 0 0 14px;
   }
 
   .footer-column a {
-    font-size: 12px;
-    margin-bottom: 12px;
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+
+  .footer-newsletter {
+    grid-column: 1 / -1;
+  }
+
+  .subscribe-box {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
   .subscribe-box input {
-    width: 65%;
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+    font-size: 11px;
+    padding: 6px 0;
+  }
+
+  .subscribe-box button {
+    font-size: 11px;
+    padding: 6px 0;
+    flex-shrink: 0;
+  }
+
+  .footer-bottom {
+    padding: 18px 0 16px;
   }
 
   .footer-bottom p {
-    font-size: 10px;
+    font-size: 11px;
+    text-align: center;
   }
 }

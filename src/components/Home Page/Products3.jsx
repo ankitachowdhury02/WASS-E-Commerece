@@ -14,7 +14,6 @@ import image8 from "../../assets/Flowervase.png";
 import { Share2, ArrowLeftRight, Heart } from "lucide-react";
 
 const Products3 = () => {
-
   const products = [
     {
       image: image1,
@@ -23,7 +22,7 @@ const Products3 = () => {
       price: "Rp 2.500.000",
       oldPrice: "Rp 3.500.000",
       badge: "-30%",
-      badgeType: "discount"
+      badgeType: "discount",
     },
 
     {
@@ -33,7 +32,7 @@ const Products3 = () => {
       price: "Rp 2.500.000",
       oldPrice: "",
       badge: "",
-      badgeType: ""
+      badgeType: "",
     },
 
     {
@@ -43,7 +42,7 @@ const Products3 = () => {
       price: "Rp 7.000.000",
       oldPrice: "Rp 14.000.000",
       badge: "-50%",
-      badgeType: "discount"
+      badgeType: "discount",
     },
 
     {
@@ -53,7 +52,7 @@ const Products3 = () => {
       price: "Rp 500.000",
       oldPrice: "",
       badge: "New",
-      badgeType: "new"
+      badgeType: "new",
     },
 
     {
@@ -63,7 +62,7 @@ const Products3 = () => {
       price: "Rp 1.500.000",
       oldPrice: "",
       badge: "",
-      badgeType: ""
+      badgeType: "",
     },
 
     {
@@ -73,7 +72,7 @@ const Products3 = () => {
       price: "Rp 150.000",
       oldPrice: "",
       badge: "New",
-      badgeType: "new"
+      badgeType: "new",
     },
 
     {
@@ -83,7 +82,7 @@ const Products3 = () => {
       price: "Rp 7.000.000",
       oldPrice: "Rp 14.000.000",
       badge: "-50%",
-      badgeType: "discount"
+      badgeType: "discount",
     },
 
     {
@@ -93,48 +92,28 @@ const Products3 = () => {
       price: "Rp 500.000",
       oldPrice: "",
       badge: "New",
-      badgeType: "new"
-    }
+      badgeType: "new",
+    },
   ];
 
   return (
     <section className="products-section">
+      <h2 className="products-title">Our Products</h2>
 
-      {/* Heading */}
-      <h2 className="products-title">
-        Our Products
-      </h2>
-
-
-      {/* Products */}
       <div className="products-container">
-
         {products.map((product, index) => (
-
           <div className="product-card" key={index}>
-
-            {/* Image */}
             <div className="product-image">
+              <img src={product.image} alt={product.name} />
 
-              <img
-                src={product.image}
-                alt={product.name}
-              />
-
-              {/* Badge */}
               {product.badge && (
                 <span className={`product-badge ${product.badgeType}`}>
                   {product.badge}
                 </span>
               )}
 
-
-              {/* Hover Overlay */}
               <div className="product-overlay">
-
-                <button className="cart-button">
-                  Add to cart
-                </button>
+                <button className="cart-button">Add to cart</button>
 
                 <div className="product-actions">
                   <button className="action-btn">
@@ -152,51 +131,27 @@ const Products3 = () => {
                     <span>Like</span>
                   </button>
                 </div>
-
               </div>
-
             </div>
 
-
-            {/* Product Information */}
             <div className="product-info">
+              <h3>{product.name}</h3>
 
-              <h3>
-                {product.name}
-              </h3>
-
-              <p className="product-category">
-                {product.category}
-              </p>
+              <p className="product-category">{product.category}</p>
 
               <div className="product-price">
+                <strong>{product.price}</strong>
 
-                <strong>
-                  {product.price}
-                </strong>
-
-                {product.oldPrice && (
-                  <del>
-                    {product.oldPrice}
-                  </del>
-                )}
-
+                {product.oldPrice && <del>{product.oldPrice}</del>}
               </div>
-
             </div>
-
           </div>
-
         ))}
-
       </div>
 
-
-      {/* Show More button */}
-     <Link to="/shop" className="show-more">
-  Show More
-</Link>
-
+      <Link to="/shop" className="show-more">
+        Show More
+      </Link>
     </section>
   );
 };

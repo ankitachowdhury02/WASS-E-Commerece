@@ -1,18 +1,19 @@
 import React from "react";
-import {
-  SlidersHorizontal,
-  Grid2X2,
-  List,
-} from "lucide-react";
+import { SlidersHorizontal, Grid2X2, List } from "lucide-react";
 
 import "./Banner2.css";
 
-const Banner2 = () => {
+const Banner2 = ({
+  currentPage = 1,
+  productsPerPage = 16,
+  totalProducts = 48,
+}) => {
+  const startItem = (currentPage - 1) * productsPerPage + 1;
+  const endItem = Math.min(currentPage * productsPerPage, totalProducts);
+
   return (
     <section className="filter-bar banner2">
-
       <div className="filter-left">
-
         <button className="filter-btn">
           <SlidersHorizontal size={20} />
           <span>Filter</span>
@@ -28,14 +29,12 @@ const Banner2 = () => {
 
         <div className="vertical-line"></div>
 
-        <p>Showing 1–16 of 32 results</p>
-
+        <p>
+          Showing {startItem}–{endItem} of {totalProducts} results
+        </p>
       </div>
 
-
-     
       <div className="filter-right">
-
         <div className="show-box">
           <span>Show</span>
 
@@ -46,7 +45,6 @@ const Banner2 = () => {
           </select>
         </div>
 
-
         <div className="sort-box">
           <span>Short by</span>
 
@@ -56,9 +54,7 @@ const Banner2 = () => {
             <option>Name</option>
           </select>
         </div>
-
       </div>
-
     </section>
   );
 };

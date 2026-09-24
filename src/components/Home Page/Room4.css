@@ -1,7 +1,3 @@
-/* =========================
-   ROOM INSPIRATION SECTION
-========================= */
-
 .room-section {
   width: 100%;
   background-color: #fcf8f3;
@@ -12,10 +8,6 @@
   overflow: hidden;
   box-sizing: border-box;
 }
-
-/* =========================
-   LEFT TEXT CONTENT
-========================= */
 
 .room-text {
   flex-shrink: 0;
@@ -59,10 +51,6 @@
   transform: translateY(-2px);
 }
 
-/* =========================
-   RIGHT SLIDER AREA
-========================= */
-
 .room-slider-container {
   flex-grow: 1;
   min-width: 0;
@@ -78,10 +66,6 @@
   gap: 24px;
   position: relative;
 }
-
-/* =========================
-   ACTIVE FEATURED SLIDE
-========================= */
 
 .room-active-slide {
   width: 404px;
@@ -107,10 +91,6 @@
     opacity: 1;
   }
 }
-
-/* =========================
-   OVERLAY INFO CARD
-========================= */
 
 .room-info-card {
   position: absolute;
@@ -173,10 +153,6 @@
   background-color: #9e7820;
 }
 
-/* =========================
-   UPCOMING SLIDES TRACK
-========================= */
-
 .room-upcoming-track {
   display: flex;
   align-items: flex-start;
@@ -204,10 +180,6 @@
 .room-upcoming-slide:hover img {
   transform: scale(1.03);
 }
-
-/* =========================
-   NAVIGATION BUTTONS
-========================= */
 
 .slider-nav-btn {
   position: absolute;
@@ -237,7 +209,6 @@
   color: #ffffff;
 }
 
-/* Desktop positioning: next arrow sits between active and upcoming slide */
 .slider-nav-btn.next-btn {
   left: 380px;
   top: 243px;
@@ -251,10 +222,6 @@
 .slider-nav-btn.prev-btn {
   display: none;
 }
-
-/* =========================
-   DOTS PAGINATION
-========================= */
 
 .room-dots {
   display: flex;
@@ -294,46 +261,6 @@
 .dot-wrapper:hover .dot-inner {
   background-color: #b88e2f;
 }
-
-
-/* =========================
-   LAPTOP (1025px - 1280px)
-========================= */
-
-@media (max-width: 1280px) and (min-width: 1025px) {
-  .room-section {
-    padding: 40px 0 40px 48px;
-    gap: 32px;
-  }
-
-  .room-text {
-    max-width: 340px;
-  }
-
-  .room-text h2 {
-    font-size: 34px;
-  }
-
-  .room-active-slide {
-    width: 340px;
-    height: 490px;
-  }
-
-  .room-upcoming-slide {
-    width: 290px;
-    height: 410px;
-  }
-
-  .slider-nav-btn.next-btn {
-    left: 316px;
-    top: 205px;
-  }
-
-  .room-dots {
-    padding-left: 364px;
-  }
-}
-
 
 /* TABLET */
 
@@ -423,82 +350,80 @@
   }
 }
 
-
-
-/* SMALL MOBILE*/
-
-@media (max-width: 480px) {
+/* MOBILE S - 320px */
+@media (max-width: 320px) {
   .room-section {
-    padding: 30px 14px;
-    gap: 22px;
+    padding: 24px 10px;
+    gap: 18px;
   }
 
   .room-text h2 {
-    font-size: 23px;
+    font-size: 20px;
   }
 
   .room-text p {
-    font-size: 13px;
-    margin-bottom: 16px;
+    font-size: 12px;
+    margin-bottom: 12px;
   }
 
   .room-explore-btn {
-    padding: 10px 24px;
-    font-size: 13px;
+    padding: 9px 20px;
+    font-size: 12px;
   }
 
   .room-active-slide {
-    height: 360px;
+    height: 310px;
+    border-radius: 6px;
   }
 
   .room-info-card {
-    left: 10px;
-    bottom: 10px;
-    right: 10px;
+    left: 8px;
+    bottom: 8px;
+    right: 8px;
   }
 
   .room-info-content {
-    padding: 12px 12px;
-    min-width: 0;
-    flex-grow: 1;
+    padding: 10px 10px;
   }
 
   .room-info-content h3 {
-    font-size: 17px;
+    font-size: 15px;
   }
 
   .room-info-meta {
-    font-size: 11px;
-    margin-bottom: 4px;
+    font-size: 10px;
   }
 
   .room-card-arrow {
-    width: 38px;
-    height: 38px;
+    width: 34px;
+    height: 34px;
   }
 
   .slider-nav-btn {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
+    top: 45%;
   }
 
   .slider-nav-btn.prev-btn {
-    left: 6px;
+    left: 4px;
   }
 
   .slider-nav-btn.next-btn {
-    right: 6px;
-    left: auto;
+    right: 4px;
+  }
+
+  .room-dots {
+    gap: 12px;
   }
 
   .dot-wrapper {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
   }
 
   .dot-inner {
-    width: 8px;
-    height: 8px;
+    width: 7px;
+    height: 7px;
   }
 }
-

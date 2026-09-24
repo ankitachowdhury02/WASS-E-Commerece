@@ -26,6 +26,3 @@ const Banner1 = () => {
 
 export default Banner1;
 
-import React from "react";
-import contactBg from "../../assets/Contact Banner.png";
-import logo from "../../assets/logo-icon.png";

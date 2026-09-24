@@ -340,10 +340,21 @@
     font-size: 34px;
   }
 }
+/* TABLET - 768px */
+@media (max-width: 768px) {
+  .register-page {
+    padding: 50px 20px;
+  }
+
+  .register-box {
+    max-width: 400px;
+    padding: 36px 28px;
+  }
+}
+
 /* Mobile */
 
 @media (max-width: 450px) {
-
   .register-page {
     padding: 40px 15px;
   }
@@ -362,5 +373,69 @@
 
   .register-field input {
     height: 48px;
+  }
+}
+
+/* MOBILE S - 320px */
+@media (max-width: 320px) {
+  .register-page {
+    padding: 24px 8px;
+  }
+
+  .register-box {
+    padding: 20px 12px;
+    border-radius: 8px;
+  }
+
+  .register-box h1 {
+    font-size: 22px;
+  }
+
+  .register-subtitle {
+    font-size: 12px;
+    margin: 6px 0 20px;
+  }
+
+  .register-field {
+    margin-bottom: 14px;
+  }
+
+  .register-field input {
+    height: 44px;
+    padding: 0 12px;
+    font-size: 12px;
+  }
+
+  .register-button {
+    height: 44px;
+    font-size: 14px;
+  }
+
+  .already-account {
+    font-size: 12px;
+    margin-top: 18px;
+  }
+
+  .success-popup {
+    width: 290px;
+    max-width: calc(100% - 20px);
+    padding: 24px 14px;
+    border-radius: 12px;
+  }
+
+  .success-popup h2 {
+    font-size: 20px;
+  }
+
+  .success-popup p {
+    font-size: 13px;
+    margin-bottom: 18px;
+  }
+
+  .success-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 28px;
+    margin-bottom: 14px;
   }
 }

@@ -79,18 +79,18 @@
   color: #000000;
 }
 
-
 .contact-form {
   display: flex;
   flex-direction: column;
-  width: 450px;
- 
+  width: 100%;
+  max-width: 450px;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
   margin-bottom: 34px;
+  width: 100%;
 }
 
 .contact-form label,
@@ -108,7 +108,8 @@
 .contact-form textarea,
 .form-group input,
 .form-group textarea {
-  width: 450px;
+  width: 100%;
+  max-width: 100%;
   border: 1px solid #9f9f9f;
   border-radius: 10px;
   background-color: #ffffff;
@@ -118,7 +119,9 @@
   color: #000000;
   outline: none;
   box-sizing: border-box;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .contact-form input,
@@ -165,7 +168,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.15s ease;
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.15s ease;
 }
 
 .contact-form button:hover,
@@ -178,7 +184,6 @@
 .contact-form .submit-btn:active {
   transform: translateY(1px);
 }
-
 
 /* TABLET - 768px */
 @media (max-width: 768px) {
@@ -268,88 +273,91 @@
   }
 }
 
-/* MOBILE - 480px */
-@media (max-width: 480px) {
+/* MOBILE S - 320px */
+@media (max-width: 320px) {
   .get-touch-section {
-    padding: 36px 16px 36px;
+    padding: 26px 10px 30px;
   }
 
   .get-touch-heading {
-    margin-bottom: 28px;
+    margin-bottom: 22px;
   }
 
   .get-touch-heading h2 {
-    font-size: 24px;
+    font-size: 21px;
+    margin-bottom: 6px;
   }
 
   .get-touch-heading p {
-    font-size: 13px;
-    line-height: 19px;
-  }
-
-  .get-touch-container {
-    row-gap: 36px;
-  }
-
-  .contact-info {
-    gap: 20px;
-  }
-
-  .info-box {
-    gap: 14px;
-  }
-
-  .info-box img {
-    width: 20px;
-    height: 22px;
-  }
-
-  .info-box h3 {
-    font-size: 17px;
-  }
-
-  .info-box p {
-    font-size: 13px;
+    font-size: 12px;
     line-height: 18px;
   }
 
+  .get-touch-container {
+    row-gap: 28px;
+  }
+
+  .contact-info {
+    gap: 18px;
+  }
+
+  .info-box {
+    gap: 12px;
+  }
+
+  .info-box img {
+    width: 18px;
+    height: 20px;
+    margin-top: 2px;
+  }
+
+  .info-box h3 {
+    font-size: 16px;
+    margin-bottom: 2px;
+  }
+
+  .info-box p {
+    font-size: 12px;
+    line-height: 17px;
+  }
+
   .form-group {
-    margin-bottom: 18px;
+    margin-bottom: 14px;
   }
 
   .contact-form label,
   .form-group label {
-    font-size: 14px;
-    margin-bottom: 8px;
+    font-size: 13px;
+    margin-bottom: 6px;
   }
 
   .contact-form input,
   .form-group input {
-    height: 50px;
-    border-radius: 8px;
-    padding: 0 15px;
-    font-size: 14px;
+    height: 44px;
+    padding: 0 12px;
+    font-size: 13px;
+    border-radius: 6px;
   }
 
   .contact-form textarea,
   .form-group textarea {
-    height: 95px;
-    border-radius: 8px;
-    padding: 14px 15px;
-    font-size: 14px;
+    height: 85px;
+    padding: 10px 12px;
+    font-size: 13px;
+    border-radius: 6px;
   }
 
   .contact-form input::placeholder,
   .contact-form textarea::placeholder,
   .form-group input::placeholder,
   .form-group textarea::placeholder {
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .contact-form button,
   .contact-form .submit-btn {
-    width: 125px;
-    height: 38px;
+    width: 100%;
+    height: 42px;
     font-size: 13px;
   }
 }

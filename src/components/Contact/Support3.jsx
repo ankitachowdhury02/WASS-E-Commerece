@@ -9,8 +9,6 @@ import support from "../../assets/customer-support.png";
 const Support3 = () => {
   return (
     <section className="supports-section">
-
-     
       <div className="support-item">
         <img src={quality} alt="High Quality" />
 
@@ -19,7 +17,6 @@ const Support3 = () => {
           <p>crafted from top materials</p>
         </div>
       </div>
-
 
       <div className="support-item">
         <img src={warranty} alt="Warranty Protection" />
@@ -30,7 +27,6 @@ const Support3 = () => {
         </div>
       </div>
 
-
       <div className="support-item">
         <img src={shipping} alt="Free Shipping" />
 
@@ -40,8 +36,6 @@ const Support3 = () => {
         </div>
       </div>
 
-
-   
       <div className="support-item">
         <img src={support} alt="24 / 7 Support" />
 
@@ -50,7 +44,6 @@ const Support3 = () => {
           <p>Dedicated support</p>
         </div>
       </div>
-
     </section>
   );
 };

@@ -236,8 +236,19 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
-@media (max-width: 450px) {
+/* TABLET - 768px */
+@media (max-width: 768px) {
+  .login-page {
+    padding: 50px 20px;
+  }
 
+  .login-box {
+    max-width: 400px;
+    padding: 36px 28px;
+  }
+}
+
+@media (max-width: 450px) {
   .login-page {
     padding: 40px 15px;
   }
@@ -252,5 +263,53 @@
 
   .login-field input {
     height: 48px;
+  }
+}
+
+/* MOBILE S - 320px */
+@media (max-width: 320px) {
+  .login-page {
+    padding: 24px 8px;
+  }
+
+  .login-box {
+    padding: 20px 12px;
+    border-radius: 8px;
+  }
+
+  .login-box h1 {
+    font-size: 22px;
+  }
+
+  .login-subtitle {
+    font-size: 12px;
+    margin: 6px 0 20px;
+  }
+
+  .login-field {
+    margin-bottom: 14px;
+  }
+
+  .login-field input {
+    height: 44px;
+    padding: 0 12px;
+    font-size: 12px;
+  }
+
+  .login-options {
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 11px;
+    margin: 4px 0 20px;
+  }
+
+  .login-button {
+    height: 44px;
+    font-size: 14px;
+  }
+
+  .create-account {
+    font-size: 12px;
+    margin-top: 18px;
   }
 }
