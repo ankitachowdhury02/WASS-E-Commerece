@@ -23,6 +23,7 @@ const Admin = () => {
     name: "",
     sku: "",
     category: "",
+    otherCategory: "",
     description: "",
     price: "",
     discountPrice: "",
@@ -31,6 +32,10 @@ const Admin = () => {
     sizes: "",
     colors: "",
   });
+
+  // =========================================
+  // INPUT CHANGE
+  // =========================================
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,20 +46,26 @@ const Admin = () => {
     }));
   };
 
+  // =========================================
+  // ADD PRODUCT
+  // =========================================
+
   const handleAddProduct = async (e) => {
     e.preventDefault();
 
     const token = localStorage.getItem("adminToken");
 
+    // Check admin login
     if (!token) {
       toast.error("Admin session not found. Please login again.");
       navigate("/admin-login");
       return;
     }
 
+    // Required fields
     if (
-      !product.name ||
-      !product.sku ||
+      !product.name.trim() ||
+      !product.sku.trim() ||
       !product.category ||
       !product.price ||
       !product.stock
@@ -63,18 +74,46 @@ const Admin = () => {
       return;
     }
 
+    // OTHER category validation
+    if (
+      product.category === "OTHER" &&
+      !product.otherCategory.trim()
+    ) {
+      toast.error("Please enter your custom category.");
+      return;
+    }
+
     try {
       setLoading(true);
 
+      // =========================================
+      // FINAL CATEGORY
+      // =========================================
+
+      const finalCategory =
+        product.category === "OTHER"
+          ? product.otherCategory.trim()
+          : product.category;
+
+      // =========================================
+      // PRODUCT DATA
+      // =========================================
+
       const productData = {
-        name: product.name,
-        sku: product.sku,
-        category: product.category,
-        description: product.description,
+        name: product.name.trim(),
+
+        sku: product.sku.trim(),
+
+        category: finalCategory,
+
+        description: product.description.trim(),
+
         price: Number(product.price),
+
         discountPrice: product.discountPrice
           ? Number(product.discountPrice)
           : 0,
+
         stock: Number(product.stock),
 
         images: product.images
@@ -101,14 +140,20 @@ const Admin = () => {
 
       console.log("PRODUCT DATA:", productData);
 
+      // =========================================
+      // API CALL
+      // =========================================
+
       const response = await fetch(
         `${API_URL}/api/products`,
         {
           method: "POST",
+
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
+
           body: JSON.stringify(productData),
         }
       );
@@ -125,20 +170,31 @@ const Admin = () => {
         data
       );
 
+      // =========================================
+      // ERROR
+      // =========================================
+
       if (!response.ok) {
         throw new Error(
-          data.message || "Product could not be added."
+          data.message ||
+            "Product could not be added."
         );
       }
+
+      // =========================================
+      // SUCCESS
+      // =========================================
 
       toast.success(
         "Product added successfully!"
       );
 
+      // Reset form
       setProduct({
         name: "",
         sku: "",
         category: "",
+        otherCategory: "",
         description: "",
         price: "",
         discountPrice: "",
@@ -147,7 +203,6 @@ const Admin = () => {
         sizes: "",
         colors: "",
       });
-
     } catch (error) {
       console.error(
         "ADD PRODUCT ERROR:",
@@ -156,20 +211,25 @@ const Admin = () => {
 
       toast.error(
         error.message ||
-        "Something went wrong while adding product."
+          "Something went wrong while adding product."
       );
-
     } finally {
       setLoading(false);
     }
   };
+
+  // =========================================
+  // ADMIN LOGOUT
+  // =========================================
 
   const handleAdminLogout = () => {
     localStorage.removeItem("adminToken");
     localStorage.removeItem("adminRefreshToken");
     localStorage.removeItem("adminLoggedIn");
 
-    toast.success("Admin logged out.");
+    toast.success(
+      "Admin logged out successfully."
+    );
 
     setTimeout(() => {
       navigate("/login");
@@ -179,87 +239,133 @@ const Admin = () => {
   return (
     <section className="admin-page">
 
-      {/* ================= HEADER ================= */}
+      {/* =====================================
+          ADMIN TOP BAR
+      ====================================== */}
 
       <div className="admin-topbar">
 
         <div className="admin-brand">
-          <ShieldCheck size={25} />
+
+          <div className="admin-brand-icon">
+            <ShieldCheck size={25} />
+          </div>
 
           <div>
-            <h2>Admin Portal</h2>
-            <span>Furniro Administration</span>
+            <h2>
+              Admin Portal
+            </h2>
+
+            <span>
+              Furniro Administration
+            </span>
           </div>
+
         </div>
 
         <button
+          type="button"
           className="admin-logout"
           onClick={handleAdminLogout}
         >
           <LogOut size={17} />
+
           Logout
         </button>
 
       </div>
 
 
-      {/* ================= MAIN ================= */}
+      {/* =====================================
+          MAIN CONTAINER
+      ====================================== */}
 
       <div className="admin-container">
 
-        {/* Welcome */}
+
+        {/* =====================================
+            WELCOME SECTION
+        ====================================== */}
 
         <div className="admin-welcome">
 
-          <div>
-            <p>ADMINISTRATION</p>
+          <div className="admin-welcome-text">
+
+            <p>
+              ADMINISTRATION
+            </p>
 
             <h1>
               Admin Dashboard
             </h1>
 
             <span>
-              Your admin authentication is working successfully.
+              Manage your store products from
+              the administration portal.
             </span>
+
           </div>
 
+
           <div className="admin-status">
+
             <span></span>
+
             Admin Online
+
           </div>
 
         </div>
 
 
-        {/* ================= ADD PRODUCT ================= */}
+        {/* =====================================
+            ADD PRODUCT CARD
+        ====================================== */}
 
         <div className="admin-card">
+
+
+          {/* Card Header */}
 
           <div className="admin-card-title">
 
             <div className="admin-title-icon">
+
               <PackagePlus size={24} />
+
             </div>
 
             <div>
-              <h2>Add New Product</h2>
+
+              <h2>
+                Add New Product
+              </h2>
 
               <p>
                 Add a new product to your store.
               </p>
+
             </div>
 
           </div>
 
+
+          {/* =====================================
+              PRODUCT FORM
+          ====================================== */}
 
           <form
             className="product-form"
             onSubmit={handleAddProduct}
           >
 
-            {/* Product Name */}
+
+            {/* =====================================
+                PRODUCT NAME
+            ====================================== */}
 
             <div className="form-group">
+
               <label>
                 Product Name *
               </label>
@@ -271,12 +377,16 @@ const Admin = () => {
                 onChange={handleChange}
                 placeholder="Example: Wooden Chair"
               />
+
             </div>
 
 
-            {/* SKU */}
+            {/* =====================================
+                SKU
+            ====================================== */}
 
             <div className="form-group">
+
               <label>
                 SKU *
               </label>
@@ -288,29 +398,100 @@ const Admin = () => {
                 onChange={handleChange}
                 placeholder="Example: WC001"
               />
+
             </div>
 
 
-            {/* Category */}
+            {/* =====================================
+                CATEGORY
+            ====================================== */}
 
             <div className="form-group">
+
               <label>
                 Category *
               </label>
 
-              <input
-                type="text"
+              <select
                 name="category"
                 value={product.category}
                 onChange={handleChange}
-                placeholder="Example: CHAIRS"
-              />
+                required
+                className="category-select"
+              >
+
+                <option value="">
+                  Select Category
+                </option>
+
+                <option value="SOFAS">
+                  SOFAS
+                </option>
+
+                <option value="CHAIRS">
+                  CHAIRS
+                </option>
+
+                <option value="TABLES">
+                  TABLES
+                </option>
+
+                <option value="BEDS">
+                  BEDS
+                </option>
+
+                <option value="STORAGE">
+                  STORAGE
+                </option>
+
+                <option value="LIGHTING">
+                  LIGHTING
+                </option>
+
+                <option value="DECOR">
+                  DECOR
+                </option>
+
+                <option value="OTHER">
+                  OTHER
+                </option>
+
+              </select>
+
             </div>
 
 
-            {/* Price */}
+            {/* =====================================
+                OTHER CATEGORY
+            ====================================== */}
+
+            {product.category === "OTHER" && (
+
+              <div className="form-group">
+
+                <label>
+                  Other Category *
+                </label>
+
+                <input
+                  type="text"
+                  name="otherCategory"
+                  value={product.otherCategory}
+                  onChange={handleChange}
+                  placeholder="Enter your custom category"
+                />
+
+              </div>
+
+            )}
+
+
+            {/* =====================================
+                PRICE
+            ====================================== */}
 
             <div className="form-group">
+
               <label>
                 Price *
               </label>
@@ -321,13 +502,18 @@ const Admin = () => {
                 value={product.price}
                 onChange={handleChange}
                 placeholder="Example: 6500"
+                min="0"
               />
+
             </div>
 
 
-            {/* Discount Price */}
+            {/* =====================================
+                DISCOUNT PRICE
+            ====================================== */}
 
             <div className="form-group">
+
               <label>
                 Discount Price
               </label>
@@ -338,13 +524,18 @@ const Admin = () => {
                 value={product.discountPrice}
                 onChange={handleChange}
                 placeholder="Example: 250"
+                min="0"
               />
+
             </div>
 
 
-            {/* Stock */}
+            {/* =====================================
+                STOCK
+            ====================================== */}
 
             <div className="form-group">
+
               <label>
                 Stock *
               </label>
@@ -355,13 +546,18 @@ const Admin = () => {
                 value={product.stock}
                 onChange={handleChange}
                 placeholder="Example: 10"
+                min="0"
               />
+
             </div>
 
 
-            {/* Description */}
+            {/* =====================================
+                DESCRIPTION
+            ====================================== */}
 
             <div className="form-group full-width">
+
               <label>
                 Description
               </label>
@@ -373,12 +569,16 @@ const Admin = () => {
                 placeholder="Enter product description..."
                 rows="4"
               ></textarea>
+
             </div>
 
 
-            {/* Images */}
+            {/* =====================================
+                IMAGES
+            ====================================== */}
 
             <div className="form-group full-width">
+
               <label>
                 Images
               </label>
@@ -392,14 +592,19 @@ const Admin = () => {
               />
 
               <small>
-                Separate multiple image names with comma.
+                Separate multiple image names
+                with commas.
               </small>
+
             </div>
 
 
-            {/* Sizes */}
+            {/* =====================================
+                SIZES
+            ====================================== */}
 
             <div className="form-group">
+
               <label>
                 Sizes
               </label>
@@ -411,12 +616,20 @@ const Admin = () => {
                 onChange={handleChange}
                 placeholder="XS, L, XL"
               />
+
+              <small>
+                Example: XS, L, XL
+              </small>
+
             </div>
 
 
-            {/* Colors */}
+            {/* =====================================
+                COLORS
+            ====================================== */}
 
             <div className="form-group">
+
               <label>
                 Colors
               </label>
@@ -428,10 +641,17 @@ const Admin = () => {
                 onChange={handleChange}
                 placeholder="Black, Blue, Pink, Green"
               />
+
+              <small>
+                Separate colors with commas.
+              </small>
+
             </div>
 
 
-            {/* Submit */}
+            {/* =====================================
+                SUBMIT
+            ====================================== */}
 
             <div className="form-submit">
 
@@ -441,6 +661,7 @@ const Admin = () => {
               >
 
                 {loading ? (
+
                   <>
                     <LoaderCircle
                       size={18}
@@ -449,12 +670,17 @@ const Admin = () => {
 
                     Adding Product...
                   </>
+
                 ) : (
+
                   <>
-                    <PackagePlus size={18} />
+                    <PackagePlus
+                      size={18}
+                    />
 
                     Add Product
                   </>
+
                 )}
 
               </button>
