@@ -12,6 +12,8 @@ import Login from "./Pages/Login";
 import Register from "./Pages/Register";
 import Cart from "./Pages/Cart";
 import Profile from "./Pages/Profile";
+import AdminLogin from "./Pages/AdminLogin";
+import Admin from "./Pages/Admin";
 
 function App() {
   return (
@@ -83,7 +85,15 @@ function App() {
     </>
   }
 />
+<Route
+  path="/admin-login"
+  element={<AdminLogin />}
+/>
 
+<Route
+  path="/admin"
+  element={<Admin />}
+/>
         {/* Login page - NO Header, NO Footer */}
         <Route path="/login" element={<Login />} />
 
