@@ -14,6 +14,7 @@ import Cart from "./Pages/Cart";
 import Profile from "./Pages/Profile";
 import AdminLogin from "./Pages/AdminLogin";
 import Admin from "./Pages/Admin";
+import Blog from "./Pages/Blog";
 
 function App() {
   return (
@@ -30,6 +31,16 @@ function App() {
             </>
           }
         />
+        <Route
+  path="/blog"
+  element={
+    <>
+      <Header />
+      <Blog />
+      <Footer />
+    </>
+  }
+/>
 
         <Route
           path="/shop"

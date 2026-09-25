@@ -10,7 +10,7 @@ const Browser2 = () => {
 
       <div className="browse-heading">
         <h2>Browse The Range</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        <p>Explore our collection of beautifully crafted furniture designed to bring comfort and style to every room.</p>
       </div>
 
       <div className="browse-container">

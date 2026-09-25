@@ -12,9 +12,9 @@ const Footer = () => {
           <h2>Furniro.</h2>
 
           <p>
-            400 University Drive Suite 200 Coral Gables,
+            Sector 5, Kolkata, 700091,
             <br />
-            FL 33134 USA
+           West Bengal, India
           </p>
 
         </div>
@@ -65,7 +65,7 @@ const Footer = () => {
 
       <div className="footer-bottom">
 
-        <p>2023 furniro. All rights reserved</p>
+        <p>2026 furniro. All rights reserved</p>
 
       </div>
 

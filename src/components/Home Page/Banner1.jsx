@@ -19,8 +19,7 @@ const Banner1 = () => {
           New Collection
         </h1>
         <p className="banner-description">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit
-          tellus, luctus nec ullamcorper mattis.
+          Adorn every corner of your home with our modern and minimalist furniture.
         </p>
         <button className="banner-button">
           BUY NOW

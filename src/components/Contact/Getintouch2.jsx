@@ -28,11 +28,11 @@ const Getintouch2 = () => {
               <h3>Address</h3>
 
               <p>
-                236 5th SE Avenue, New
+                Sector 5, 
                 <br />
-                York NY10000, United
+                Kolkata, 700091
                 <br />
-                States
+                West Bengal, India
               </p>
             </div>
           </div>
@@ -44,9 +44,9 @@ const Getintouch2 = () => {
               <h3>Phone</h3>
 
               <p>
-                Mobile: +84 546-6789
+                Mobile: +91 6294373448
                 <br />
-                Hotline: +84 456-6789
+                Mobile: +91 9933906020
               </p>
             </div>
           </div>
