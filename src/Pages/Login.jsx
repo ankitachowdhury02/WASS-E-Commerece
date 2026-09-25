@@ -3,28 +3,16 @@ import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
 
 const Login = () => {
-  // =========================
-  // FORM DATA
-  // =========================
-
   const [formData, setFormData] = useState({
     login: "",
     password: "",
   });
-
-  // =========================
-  // STATES
-  // =========================
 
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-
-  // =========================
-  // INPUT CHANGE
-  // =========================
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,9 +23,7 @@ const Login = () => {
     }));
   };
 
-  // =========================
   // LOGIN SUBMIT
-  // =========================
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,23 +31,17 @@ const Login = () => {
     setError("");
     setMessage("");
 
-    // =========================
     // VALIDATION
-    // =========================
 
     if (!formData.login || !formData.password) {
-      setError(
-        "Please enter your Email and Password."
-      );
+      setError("Please enter your Email and Password.");
       return;
     }
 
     try {
       setLoading(true);
 
-      // =========================
       // LOGIN API
-      // =========================
 
       const response = await fetch(
         "https://ecomm-qy13.onrender.com/api/auth/login",
@@ -76,39 +56,20 @@ const Login = () => {
             email: formData.login.trim(),
             password: formData.password,
           }),
-        }
+        },
       );
-
-      // =========================
-      // READ RESPONSE
-      // =========================
 
       const data = await response.json();
 
-      console.log(
-        "LOGIN API STATUS:",
-        response.status
-      );
+      console.log("LOGIN API STATUS:", response.status);
 
-      console.log(
-        "LOGIN API RESPONSE:",
-        data
-      );
-
-      // =========================
-      // LOGIN ERROR
-      // =========================
+      console.log("LOGIN API RESPONSE:", data);
 
       if (!response.ok) {
-        throw new Error(
-          data.message ||
-          "Invalid email or password."
-        );
+        throw new Error(data.message || "Invalid email or password.");
       }
 
-      // =========================
       // GET ACCESS TOKEN
-      // =========================
 
       const accessToken =
         data.token ||
@@ -116,140 +77,64 @@ const Login = () => {
         data.data?.token ||
         data.data?.accessToken;
 
-      // =========================
       // GET REFRESH TOKEN
-      // =========================
 
-      const refreshToken =
-        data.refreshToken ||
-        data.data?.refreshToken;
+      const refreshToken = data.refreshToken || data.data?.refreshToken;
 
-      // =========================
       // CHECK ACCESS TOKEN
-      // =========================
 
       if (!accessToken) {
-        console.error(
-          "Login response did not contain an access token."
-        );
+        console.error("Login response did not contain an access token.");
 
         setError(
-          "Login successful, but authentication token was not received."
+          "Login successful, but authentication token was not received.",
         );
 
         return;
       }
 
-      // =========================
       // CLEAR OLD TOKENS
-      // =========================
 
       localStorage.removeItem("token");
       localStorage.removeItem("refreshToken");
 
-      // =========================
-      // SAVE ACCESS TOKEN
-      // =========================
-
-      localStorage.setItem(
-        "token",
-        accessToken
-      );
-
-      // =========================
-      // SAVE REFRESH TOKEN
-      // =========================
+      localStorage.setItem("token", accessToken);
 
       if (refreshToken) {
-        localStorage.setItem(
-          "refreshToken",
-          refreshToken
-        );
+        localStorage.setItem("refreshToken", refreshToken);
       }
 
-      // =========================
-      // CHECK TOKEN STATUS
-      // =========================
-
-      console.log(
-        "Access token saved:",
-        !!localStorage.getItem("token")
-      );
+      console.log("Access token saved:", !!localStorage.getItem("token"));
 
       console.log(
         "Refresh token saved:",
-        !!localStorage.getItem("refreshToken")
+        !!localStorage.getItem("refreshToken"),
       );
 
-      // =========================
-      // SUCCESS MESSAGE
-      // =========================
-
-      setMessage(
-        data.message ||
-        "Login successful!"
-      );
-
-      // =========================
-      // GO HOME
-      // =========================
+      setMessage(data.message || "Login successful!");
 
       setTimeout(() => {
         navigate("/");
       }, 1000);
-
     } catch (error) {
+      console.error("LOGIN ERROR:", error);
 
-      console.error(
-        "LOGIN ERROR:",
-        error
-      );
-
-      setError(
-        error.message ||
-        "Something went wrong. Please try again."
-      );
-
+      setError(error.message || "Something went wrong. Please try again.");
     } finally {
-
       setLoading(false);
-
     }
   };
 
-  // =========================
-  // JSX
-  // =========================
-
   return (
     <section className="login-page">
-
       <div className="login-box">
+        <h1>Welcome Back</h1>
 
-        <h1>
-          Welcome Back
-        </h1>
-
-        <p className="login-subtitle">
-          Please login to your Account
-        </p>
-
-
-        {/* =========================
-            LOGIN FORM
-        ========================= */}
+        <p className="login-subtitle">Please login to your Account</p>
 
         <form onSubmit={handleSubmit}>
-
-          {/* =========================
-              EMAIL
-          ========================= */}
-
           <div className="login-field">
-
-            <label>
-              Email Address
-            </label>
+            <label>Email Address</label>
 
             <input
               type="email"
@@ -260,19 +145,10 @@ const Login = () => {
               autoComplete="email"
               required
             />
-
           </div>
 
-
-          {/* =========================
-              PASSWORD
-          ========================= */}
-
           <div className="login-field">
-
-            <label>
-              Password
-            </label>
+            <label>Password</label>
 
             <input
               type="password"
@@ -283,113 +159,44 @@ const Login = () => {
               autoComplete="current-password"
               required
             />
-
           </div>
-
-
-          {/* =========================
-              REMEMBER + FORGOT
-          ========================= */}
 
           <div className="login-options">
-
             <label>
-
-              <input
-                type="checkbox"
-              />
-
+              <input type="checkbox" />
               Remember me
-
             </label>
 
-            <a href="#">
-              Forgot Password?
-            </a>
-
+            <a href="#">Forgot Password?</a>
           </div>
 
+          {error && <p className="login-error">{error}</p>}
 
-          {/* =========================
-              ERROR
-          ========================= */}
+          {message && <p className="login-success">{message}</p>}
 
-          {error && (
-            <p className="login-error">
-              {error}
-            </p>
-          )}
-
-
-          {/* =========================
-              SUCCESS
-          ========================= */}
-
-          {message && (
-            <p className="login-success">
-              {message}
-            </p>
-          )}
-
-
-          {/* =========================
-              LOGIN BUTTON
-          ========================= */}
-
-          <button
-            type="submit"
-            className="login-button"
-            disabled={loading}
-          >
-
-            {loading
-              ? "Logging in..."
-              : "Login"
-            }
-
+          <button type="submit" className="login-button" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
           </button>
-
         </form>
 
-
-        {/* =========================
-            CREATE ACCOUNT
-        ========================= */}
+        {/* CREATE ACCOUNT*/}
 
         <div className="create-account">
+          <p>Don't have an account?</p>
 
-          <p>
-            Don't have an account?
-          </p>
-
-          <Link to="/register">
-            Create Account
-          </Link>
-
+          <Link to="/register">Create Account</Link>
         </div>
 
-
-        {/* =========================
-            ADMIN LOGIN
-        ========================= */}
+        {/* ADMIN LOGIN*/}
 
         <div className="admin-section">
+          <p className="admin-title">Admin / Staff Access</p>
 
-          <p className="admin-title">
-            Admin / Staff Access
-          </p>
-
-          <Link
-            to="/admin-login"
-            className="admin-button"
-          >
+          <Link to="/admin-login" className="admin-button">
             Admin Login
           </Link>
-
         </div>
-
       </div>
-
     </section>
   );
 };

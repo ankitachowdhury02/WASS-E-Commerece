@@ -115,9 +115,6 @@
   align-items: center;
   justify-content: center;
 }
-/* =========================
-   PROFILE WRAPPER
-========================= */
 
 .profile-wrapper {
   position: relative;
@@ -126,9 +123,6 @@
 }
 
 
-/* =========================
-   PROFILE BUTTON
-========================= */
 
 .profile-icon-btn {
   width: 42px;

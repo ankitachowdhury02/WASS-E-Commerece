@@ -12,26 +12,12 @@ import image6 from "../../assets/Decorate room.png";
 import image7 from "../../assets/breakfast.png";
 import image8 from "../../assets/Flowervase.png";
 
-import {
-  Share2,
-  ArrowLeftRight,
-  Heart,
-} from "lucide-react";
+import { Share2, ArrowLeftRight, Heart } from "lucide-react";
 
 import { useCart } from "../../context/CartContext";
 
 const Products3 = () => {
-
-  // =========================================
-  // CART FUNCTION
-  // =========================================
-
   const { addToCart } = useCart();
-
-
-  // =========================================
-  // PRODUCTS
-  // =========================================
 
   const products = [
     {
@@ -123,196 +109,87 @@ const Products3 = () => {
     },
   ];
 
+  const handleAddToCart = (product) => {
+    addToCart(product);
 
-  // =========================================
-  // ADD TO CART
-  // =========================================
-
-const handleAddToCart = (product) => {
-  addToCart(product);
-
-  toast.success(`${product.name} added to cart!`);
-};
-
-  // =========================================
-  // JSX
-  // =========================================
+    toast.success(`${product.name} added to cart!`);
+  };
 
   return (
-
     <section className="products-section">
-
-      <h2 className="products-title">
-        Our Products
-      </h2>
-
+      <h2 className="products-title">Our Products</h2>
 
       <div className="products-container">
-
         {products.map((product) => (
-
-          <div
-            className="product-card"
-            key={product.id}
-          >
-
-            {/* =================================
-                PRODUCT IMAGE
-            ================================= */}
-
+          <div className="product-card" key={product.id}>
             <div className="product-image">
-
-              <img
-                src={product.image}
-                alt={product.name}
-              />
-
+              <img src={product.image} alt={product.name} />
 
               {/* BADGE */}
 
               {product.badge && (
-
-                <span
-                  className={`product-badge ${product.badgeType}`}
-                >
+                <span className={`product-badge ${product.badgeType}`}>
                   {product.badge}
                 </span>
-
               )}
 
-
-              {/* =================================
-                  PRODUCT OVERLAY
-              ================================= */}
-
               <div className="product-overlay">
-
-
                 {/* ADD TO CART */}
 
                 <button
                   type="button"
                   className="cart-button"
-                  onClick={() =>
-                    handleAddToCart(product)
-                  }
+                  onClick={() => handleAddToCart(product)}
                 >
                   Add to cart
                 </button>
 
-
-                {/* =================================
-                    PRODUCT ACTIONS
-                ================================= */}
-
                 <div className="product-actions">
-
-
                   {/* SHARE */}
 
-                  <button
-                    type="button"
-                    className="action-btn"
-                  >
-
+                  <button type="button" className="action-btn">
                     <Share2 size={16} />
 
-                    <span>
-                      Share
-                    </span>
-
+                    <span>Share</span>
                   </button>
-
 
                   {/* COMPARE */}
 
-                  <button
-                    type="button"
-                    className="action-btn"
-                  >
-
+                  <button type="button" className="action-btn">
                     <ArrowLeftRight size={16} />
 
-                    <span>
-                      Compare
-                    </span>
-
+                    <span>Compare</span>
                   </button>
-
 
                   {/* LIKE */}
 
-                  <button
-                    type="button"
-                    className="action-btn"
-                  >
-
+                  <button type="button" className="action-btn">
                     <Heart size={16} />
 
-                    <span>
-                      Like
-                    </span>
-
+                    <span>Like</span>
                   </button>
-
                 </div>
-
               </div>
-
             </div>
-
-
-            {/* =================================
-                PRODUCT INFO
-            ================================= */}
 
             <div className="product-info">
+              <h3>{product.name}</h3>
 
-              <h3>
-                {product.name}
-              </h3>
-
-              <p className="product-category">
-                {product.category}
-              </p>
-
+              <p className="product-category">{product.category}</p>
 
               <div className="product-price">
+                <strong>{product.price}</strong>
 
-                <strong>
-                  {product.price}
-                </strong>
-
-                {product.oldPrice && (
-
-                  <del>
-                    {product.oldPrice}
-                  </del>
-
-                )}
-
+                {product.oldPrice && <del>{product.oldPrice}</del>}
               </div>
-
             </div>
-
           </div>
-
         ))}
-
       </div>
 
-
-      {/* =================================
-          SHOW MORE
-      ================================= */}
-
-      <Link
-        to="/shop"
-        className="show-more"
-      >
+      <Link to="/shop" className="show-more">
         Show More
       </Link>
-
     </section>
   );
 };
