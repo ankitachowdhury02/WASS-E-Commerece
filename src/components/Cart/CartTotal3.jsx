@@ -41,7 +41,7 @@ const CartTotal3 = () => {
   // Price format
   const formatPrice = (price) => {
 
-    return `Rp ${price.toLocaleString("id-ID")}`;
+    return `₹ ${price.toLocaleString("en-IN")}`;
 
   };
 

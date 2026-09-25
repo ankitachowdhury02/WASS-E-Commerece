@@ -28,51 +28,58 @@ const Checkout2 = () => {
 
         <div className="field">
           <label>Country / Region</label>
-          <select>
-            <option>Sri Lanka</option>
+          <select defaultValue="India">
             <option>India</option>
+            <option>Sri Lanka</option>
             <option>Bangladesh</option>
           </select>
         </div>
 
         <div className="field">
           <label>Street address</label>
-          <input type="text" />
+          <input type="text" placeholder="House number and street name" />
         </div>
 
         <div className="field">
           <label>Town / City</label>
-          <input type="text" />
+          <input type="text" placeholder="City / District" />
         </div>
 
         <div className="field">
-          <label>Province</label>
-          <select>
-            <option>Western Province</option>
-            <option>Eastern Province</option>
-            <option>Northern Province</option>
+          <label>State</label>
+          <select defaultValue="West Bengal">
+            <option>West Bengal</option>
+            <option>Maharashtra</option>
+            <option>Delhi NCR</option>
+            <option>Karnataka</option>
+            <option>Tamil Nadu</option>
+            <option>Gujarat</option>
+            <option>Uttar Pradesh</option>
+            <option>Rajasthan</option>
+            <option>Telangana</option>
+            <option>Kerala</option>
           </select>
         </div>
 
         <div className="field">
-          <label>ZIP code</label>
-          <input type="text" />
+          <label>PIN Code</label>
+          <input type="text" placeholder="6-digit PIN Code" />
         </div>
 
         <div className="field">
           <label>Phone</label>
-          <input type="text" />
+          <input type="text" placeholder="+91 98765 43210" />
         </div>
 
         <div className="field">
           <label>Email address</label>
-          <input type="email" />
+          <input type="email" placeholder="email@example.com" />
         </div>
 
         <div className="field">
           <input
             type="text"
-            placeholder="Additional information"
+            placeholder="Additional information (e.g. landmark, delivery instructions)"
           />
         </div>
       </div>
@@ -87,42 +94,40 @@ const Checkout2 = () => {
         </div>
 
         <div className="product-row">
-          <p>Asgaard sofa&nbsp;&nbsp; × 1</p>
-          <p>Rs. 250,000.00</p>
+          <p>Syltherine Sheesham Chair&nbsp;&nbsp; × 1</p>
+          <p>₹ 2,499.00</p>
         </div>
 
         <div className="subtotal-row">
           <p>Subtotal</p>
-          <p>Rs. 250,000.00</p>
+          <p>₹ 2,499.00</p>
         </div>
 
         <div className="total-row">
           <p>Total</p>
-          <strong>Rs. 250,000.00</strong>
+          <strong>₹ 2,499.00</strong>
         </div>
 
         <hr />
 
         <div className="payment">
           <p className="active-payment">
-            ● &nbsp; Direct Bank Transfer
+            ● &nbsp; UPI / Online Payment
           </p>
 
           <p className="payment-text">
-            Make your payment directly into our bank account.
-            Please use your Order ID as the payment reference.
-            Your order will not be shipped until the funds have
-            cleared in our account.
+            Pay instantly and securely using Google Pay, PhonePe, Paytm,
+            BHIM UPI, Credit/Debit Card, or Net Banking.
           </p>
 
           <label>
-            <input type="radio" name="payment" />
-            Direct Bank Transfer
+            <input type="radio" name="payment" defaultChecked />
+            UPI / Net Banking / Cards
           </label>
 
           <label>
             <input type="radio" name="payment" />
-            Cash On Delivery
+            Cash On Delivery (COD)
           </label>
         </div>
 

@@ -36,7 +36,7 @@ const Support3 = () => {
 
         <div>
           <h3>Free Shipping</h3>
-          <p>Order over 150 $</p>
+          <p>Orders over ₹999</p>
         </div>
       </div>
 

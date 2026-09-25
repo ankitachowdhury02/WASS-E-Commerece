@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ShieldCheck, ArrowLeft } from "lucide-react";
+import { toast } from "react-toastify";
 import "./AdminLogin.css";
 
 const API_URL = "https://ecomm-qy13.onrender.com";
@@ -14,7 +15,6 @@ const AdminLogin = () => {
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,26 +28,27 @@ const AdminLogin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setError("");
-
     if (!formData.email || !formData.password) {
-      setError("Please enter admin email and password.");
+      toast.error("Please enter admin email and password.");
       return;
     }
 
     try {
       setLoading(true);
 
-      const response = await fetch(`${API_URL}/api/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: formData.email.trim(),
-          password: formData.password,
-        }),
-      });
+      const response = await fetch(
+        `${API_URL}/api/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: formData.email.trim(),
+            password: formData.password,
+          }),
+        }
+      );
 
       const data = await response.json();
 
@@ -72,27 +73,44 @@ const AdminLogin = () => {
 
       if (!accessToken) {
         throw new Error(
-          "Login successful, but authentication token was not received."
+          "Login successful, but token was not received."
         );
       }
 
-      // Save admin session separately
-      localStorage.setItem("adminToken", accessToken);
+      // Admin token আলাদা করে save করছি
+      localStorage.setItem(
+        "adminToken",
+        accessToken
+      );
 
       if (refreshToken) {
-        localStorage.setItem("adminRefreshToken", refreshToken);
+        localStorage.setItem(
+          "adminRefreshToken",
+          refreshToken
+        );
       }
 
-      localStorage.setItem("adminLoggedIn", "true");
-
-      // Go to temporary admin page
-      navigate("/admin");
-    } catch (error) {
-      console.error("ADMIN LOGIN ERROR:", error);
-
-      setError(
-        error.message || "Something went wrong. Please try again."
+      localStorage.setItem(
+        "adminLoggedIn",
+        "true"
       );
+
+      toast.success("Admin login successful!");
+
+      setTimeout(() => {
+        navigate("/admin");
+      }, 800);
+
+    } catch (error) {
+      console.error(
+        "ADMIN LOGIN ERROR:",
+        error
+      );
+
+      toast.error(
+        error.message || "Admin login failed."
+      );
+
     } finally {
       setLoading(false);
     }
@@ -128,7 +146,6 @@ const AdminLogin = () => {
               value={formData.email}
               onChange={handleChange}
               placeholder="Enter admin email"
-              autoComplete="email"
               required
             />
           </div>
@@ -142,16 +159,9 @@ const AdminLogin = () => {
               value={formData.password}
               onChange={handleChange}
               placeholder="Enter admin password"
-              autoComplete="current-password"
               required
             />
           </div>
-
-          {error && (
-            <p className="admin-error">
-              {error}
-            </p>
-          )}
 
           <button
             type="submit"
@@ -165,7 +175,10 @@ const AdminLogin = () => {
 
         </form>
 
-        <Link to="/login" className="back-login">
+        <Link
+          to="/login"
+          className="back-login"
+        >
           <ArrowLeft size={16} />
           Back to User Login
         </Link>

@@ -153,7 +153,7 @@ const Register = () => {
               name="phone"
               value={formData.phone}
               onChange={handleChange}
-              placeholder="Enter your phone number"
+              placeholder="Enter 10-digit mobile number"
               autoComplete="tel"
             />
           </div>

@@ -49,7 +49,7 @@ const Blog2 = () => {
     },
     {
       image: image1,
-      title: "Modern home in Milan",
+      title: "Modern home in Mumbai",
       date: "03 Aug 2022",
     },
     {
