@@ -1,6 +1,7 @@
 import React from "react";
 import "./Products3.css";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import image1 from "../../assets/Balcony.png";
 import image2 from "../../assets/Laptop.png";
@@ -11,11 +12,30 @@ import image6 from "../../assets/Decorate room.png";
 import image7 from "../../assets/breakfast.png";
 import image8 from "../../assets/Flowervase.png";
 
-import { Share2, ArrowLeftRight, Heart } from "lucide-react";
+import {
+  Share2,
+  ArrowLeftRight,
+  Heart,
+} from "lucide-react";
+
+import { useCart } from "../../context/CartContext";
 
 const Products3 = () => {
+
+  // =========================================
+  // CART FUNCTION
+  // =========================================
+
+  const { addToCart } = useCart();
+
+
+  // =========================================
+  // PRODUCTS
+  // =========================================
+
   const products = [
     {
+      id: 1,
       image: image1,
       name: "Syltherine",
       category: "Stylish cafe chair",
@@ -26,6 +46,7 @@ const Products3 = () => {
     },
 
     {
+      id: 2,
       image: image2,
       name: "Leviosa",
       category: "Stylish cafe chair",
@@ -36,6 +57,7 @@ const Products3 = () => {
     },
 
     {
+      id: 3,
       image: image3,
       name: "Lolito",
       category: "Luxury big sofa",
@@ -46,6 +68,7 @@ const Products3 = () => {
     },
 
     {
+      id: 4,
       image: image4,
       name: "Respira",
       category: "Outdoor bar table and stool",
@@ -56,6 +79,7 @@ const Products3 = () => {
     },
 
     {
+      id: 5,
       image: image5,
       name: "Grifo",
       category: "Night lamp",
@@ -66,6 +90,7 @@ const Products3 = () => {
     },
 
     {
+      id: 6,
       image: image6,
       name: "Muggo",
       category: "Small mug",
@@ -76,6 +101,7 @@ const Products3 = () => {
     },
 
     {
+      id: 7,
       image: image7,
       name: "Pingky",
       category: "Cute bed set",
@@ -86,6 +112,7 @@ const Products3 = () => {
     },
 
     {
+      id: 8,
       image: image8,
       name: "Potty",
       category: "Minimalist flower pot",
@@ -96,62 +123,196 @@ const Products3 = () => {
     },
   ];
 
+
+  // =========================================
+  // ADD TO CART
+  // =========================================
+
+const handleAddToCart = (product) => {
+  addToCart(product);
+
+  toast.success(`${product.name} added to cart!`);
+};
+
+  // =========================================
+  // JSX
+  // =========================================
+
   return (
+
     <section className="products-section">
-      <h2 className="products-title">Our Products</h2>
+
+      <h2 className="products-title">
+        Our Products
+      </h2>
+
 
       <div className="products-container">
-        {products.map((product, index) => (
-          <div className="product-card" key={index}>
+
+        {products.map((product) => (
+
+          <div
+            className="product-card"
+            key={product.id}
+          >
+
+            {/* =================================
+                PRODUCT IMAGE
+            ================================= */}
+
             <div className="product-image">
-              <img src={product.image} alt={product.name} />
+
+              <img
+                src={product.image}
+                alt={product.name}
+              />
+
+
+              {/* BADGE */}
 
               {product.badge && (
-                <span className={`product-badge ${product.badgeType}`}>
+
+                <span
+                  className={`product-badge ${product.badgeType}`}
+                >
                   {product.badge}
                 </span>
+
               )}
 
+
+              {/* =================================
+                  PRODUCT OVERLAY
+              ================================= */}
+
               <div className="product-overlay">
-                <button className="cart-button">Add to cart</button>
+
+
+                {/* ADD TO CART */}
+
+                <button
+                  type="button"
+                  className="cart-button"
+                  onClick={() =>
+                    handleAddToCart(product)
+                  }
+                >
+                  Add to cart
+                </button>
+
+
+                {/* =================================
+                    PRODUCT ACTIONS
+                ================================= */}
 
                 <div className="product-actions">
-                  <button className="action-btn">
+
+
+                  {/* SHARE */}
+
+                  <button
+                    type="button"
+                    className="action-btn"
+                  >
+
                     <Share2 size={16} />
-                    <span>Share</span>
+
+                    <span>
+                      Share
+                    </span>
+
                   </button>
 
-                  <button className="action-btn">
+
+                  {/* COMPARE */}
+
+                  <button
+                    type="button"
+                    className="action-btn"
+                  >
+
                     <ArrowLeftRight size={16} />
-                    <span>Compare</span>
+
+                    <span>
+                      Compare
+                    </span>
+
                   </button>
 
-                  <button className="action-btn">
+
+                  {/* LIKE */}
+
+                  <button
+                    type="button"
+                    className="action-btn"
+                  >
+
                     <Heart size={16} />
-                    <span>Like</span>
+
+                    <span>
+                      Like
+                    </span>
+
                   </button>
+
                 </div>
+
               </div>
+
             </div>
+
+
+            {/* =================================
+                PRODUCT INFO
+            ================================= */}
 
             <div className="product-info">
-              <h3>{product.name}</h3>
 
-              <p className="product-category">{product.category}</p>
+              <h3>
+                {product.name}
+              </h3>
+
+              <p className="product-category">
+                {product.category}
+              </p>
+
 
               <div className="product-price">
-                <strong>{product.price}</strong>
 
-                {product.oldPrice && <del>{product.oldPrice}</del>}
+                <strong>
+                  {product.price}
+                </strong>
+
+                {product.oldPrice && (
+
+                  <del>
+                    {product.oldPrice}
+                  </del>
+
+                )}
+
               </div>
+
             </div>
+
           </div>
+
         ))}
+
       </div>
 
-      <Link to="/shop" className="show-more">
+
+      {/* =================================
+          SHOW MORE
+      ================================= */}
+
+      <Link
+        to="/shop"
+        className="show-more"
+      >
         Show More
       </Link>
+
     </section>
   );
 };
