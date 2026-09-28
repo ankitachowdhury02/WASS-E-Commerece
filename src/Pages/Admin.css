@@ -719,3 +719,169 @@
   }
 
 }
+
+
+
+/* =========================================
+   IMAGE UPLOAD
+========================================= */
+
+.image-upload-box {
+  width: 100%;
+  border: 1.5px dashed #d5c8ad;
+  border-radius: 6px;
+  background: #faf8f3;
+  transition: all 0.2s ease;
+}
+
+.image-upload-box:hover {
+  border-color: #b88e2f;
+  background: #fcfaf5;
+}
+
+.image-file-input {
+  display: none;
+}
+
+.image-upload-label {
+  min-height: 130px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #b88e2f;
+  cursor: pointer;
+  text-align: center;
+}
+
+.image-upload-label span {
+  color: #333333;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.image-upload-label small {
+  margin: 0;
+  color: #999999;
+  font-size: 11px;
+}
+
+
+/* =========================================
+   IMAGE PREVIEW
+========================================= */
+
+.image-preview-grid {
+  width: 100%;
+  margin-top: 15px;
+
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+
+  gap: 12px;
+}
+
+.image-preview-card {
+  position: relative;
+
+  width: 100%;
+  aspect-ratio: 1 / 1;
+
+  overflow: hidden;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 6px;
+
+  background: #f7f7f7;
+}
+
+.image-preview-card img {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+}
+
+
+/* =========================================
+   REMOVE IMAGE BUTTON
+========================================= */
+
+.remove-image-button {
+  position: absolute;
+
+  top: 6px;
+  right: 6px;
+
+  width: 26px;
+  height: 26px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: rgba(0, 0, 0, 0.7);
+
+  color: #ffffff;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.remove-image-button:hover {
+  background: #b88e2f;
+
+  transform: scale(1.05);
+}
+
+
+/* =========================================
+   IMAGE COUNT
+========================================= */
+
+.image-count {
+  display: block;
+
+  margin-top: 8px;
+
+  color: #777777;
+
+  font-size: 11px;
+}
+
+
+/* =========================================
+   IMAGE UPLOAD MOBILE
+========================================= */
+
+@media (max-width: 700px) {
+
+  .image-preview-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+}
+
+@media (max-width: 450px) {
+
+  .image-preview-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .image-upload-label {
+    min-height: 115px;
+  }
+
+}

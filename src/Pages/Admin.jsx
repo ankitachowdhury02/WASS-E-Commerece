@@ -6,6 +6,8 @@ import {
   LogOut,
   PackagePlus,
   LoaderCircle,
+  ImagePlus,
+  X,
 } from "lucide-react";
 
 import { toast } from "react-toastify";
@@ -28,10 +30,16 @@ const Admin = () => {
     price: "",
     discountPrice: "",
     stock: "",
-    images: "",
     sizes: "",
     colors: "",
   });
+
+  // Selected image files
+  const [selectedImages, setSelectedImages] = useState([]);
+
+  // Image previews
+  const [imagePreviews, setImagePreviews] = useState([]);
+
 
   // =========================================
   // INPUT CHANGE
@@ -46,6 +54,95 @@ const Admin = () => {
     }));
   };
 
+
+  // =========================================
+  // IMAGE SELECT
+  // =========================================
+
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+
+    if (files.length === 0) {
+      return;
+    }
+
+    // Only image files
+    const imageFiles = files.filter((file) =>
+      file.type.startsWith("image/")
+    );
+
+    if (imageFiles.length !== files.length) {
+      toast.error("Only image files are allowed.");
+    }
+
+    // Maximum 5 images
+    const totalImages = [
+      ...selectedImages,
+      ...imageFiles,
+    ];
+
+    if (totalImages.length > 5) {
+      toast.error("You can upload maximum 5 images.");
+      return;
+    }
+
+    setSelectedImages(totalImages);
+
+    // Create previews
+    const newPreviews = imageFiles.map((file) => ({
+      file: file,
+      url: URL.createObjectURL(file),
+    }));
+
+    setImagePreviews((previousPreviews) => [
+      ...previousPreviews,
+      ...newPreviews,
+    ]);
+
+    // Reset input so same image can be selected again
+    e.target.value = "";
+  };
+
+
+  // =========================================
+  // REMOVE IMAGE
+  // =========================================
+
+  const handleRemoveImage = (index) => {
+    setSelectedImages((previousImages) =>
+      previousImages.filter(
+        (_, imageIndex) => imageIndex !== index
+      )
+    );
+
+    setImagePreviews((previousPreviews) => {
+      const previewToRemove = previousPreviews[index];
+
+      if (previewToRemove) {
+        URL.revokeObjectURL(previewToRemove.url);
+      }
+
+      return previousPreviews.filter(
+        (_, imageIndex) => imageIndex !== index
+      );
+    });
+  };
+
+
+  // =========================================
+  // RESET IMAGES
+  // =========================================
+
+  const resetImages = () => {
+    imagePreviews.forEach((preview) => {
+      URL.revokeObjectURL(preview.url);
+    });
+
+    setSelectedImages([]);
+    setImagePreviews([]);
+  };
+
+
   // =========================================
   // ADD PRODUCT
   // =========================================
@@ -57,12 +154,20 @@ const Admin = () => {
 
     // Check admin login
     if (!token) {
-      toast.error("Admin session not found. Please login again.");
+      toast.error(
+        "Admin session not found. Please login again."
+      );
+
       navigate("/admin-login");
+
       return;
     }
 
-    // Required fields
+
+    // =========================================
+    // REQUIRED FIELD VALIDATION
+    // =========================================
+
     if (
       !product.name.trim() ||
       !product.sku.trim() ||
@@ -70,21 +175,46 @@ const Admin = () => {
       !product.price ||
       !product.stock
     ) {
-      toast.error("Please fill all required fields.");
+      toast.error(
+        "Please fill all required fields."
+      );
+
       return;
     }
 
-    // OTHER category validation
+
+    // =========================================
+    // OTHER CATEGORY VALIDATION
+    // =========================================
+
     if (
       product.category === "OTHER" &&
       !product.otherCategory.trim()
     ) {
-      toast.error("Please enter your custom category.");
+      toast.error(
+        "Please enter your custom category."
+      );
+
       return;
     }
 
+
+    // =========================================
+    // IMAGE VALIDATION
+    // =========================================
+
+    if (selectedImages.length === 0) {
+      toast.error(
+        "Please select at least one product image."
+      );
+
+      return;
+    }
+
+
     try {
       setLoading(true);
+
 
       // =========================================
       // FINAL CATEGORY
@@ -95,50 +225,95 @@ const Admin = () => {
           ? product.otherCategory.trim()
           : product.category;
 
+
       // =========================================
-      // PRODUCT DATA
+      // FORM DATA
       // =========================================
 
-      const productData = {
-        name: product.name.trim(),
+      const formData = new FormData();
 
-        sku: product.sku.trim(),
+      formData.append(
+        "name",
+        product.name.trim()
+      );
 
-        category: finalCategory,
+      formData.append(
+        "sku",
+        product.sku.trim()
+      );
 
-        description: product.description.trim(),
+      formData.append(
+        "category",
+        finalCategory
+      );
 
-        price: Number(product.price),
+      formData.append(
+        "description",
+        product.description.trim()
+      );
 
-        discountPrice: product.discountPrice
-          ? Number(product.discountPrice)
-          : 0,
+      formData.append(
+        "price",
+        product.price
+      );
 
-        stock: Number(product.stock),
+      formData.append(
+        "discountPrice",
+        product.discountPrice || "0"
+      );
 
-        images: product.images
-          ? product.images
-              .split(",")
-              .map((item) => item.trim())
-              .filter(Boolean)
-          : [],
+      formData.append(
+        "stock",
+        product.stock
+      );
 
-        sizes: product.sizes
-          ? product.sizes
-              .split(",")
-              .map((item) => item.trim())
-              .filter(Boolean)
-          : [],
 
-        colors: product.colors
-          ? product.colors
-              .split(",")
-              .map((item) => item.trim())
-              .filter(Boolean)
-          : [],
-      };
+      // =========================================
+      // SIZES
+      // =========================================
 
-      console.log("PRODUCT DATA:", productData);
+      formData.append(
+        "sizes",
+        product.sizes
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean)
+          .join(",")
+      );
+
+
+      // =========================================
+      // COLORS
+      // =========================================
+
+      formData.append(
+        "colors",
+        product.colors
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean)
+          .join(",")
+      );
+
+
+      // =========================================
+      // IMAGES
+      // =========================================
+
+      selectedImages.forEach((image) => {
+        formData.append(
+          "images",
+          image
+        );
+      });
+
+
+      console.log(
+        "Product form submitted with",
+        selectedImages.length,
+        "image(s)"
+      );
+
 
       // =========================================
       // API CALL
@@ -150,15 +325,26 @@ const Admin = () => {
           method: "POST",
 
           headers: {
-            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
 
-          body: JSON.stringify(productData),
+          body: formData,
         }
       );
 
-      const data = await response.json();
+
+      // =========================================
+      // RESPONSE
+      // =========================================
+
+      let data = {};
+
+      try {
+        data = await response.json();
+      } catch {
+        data = {};
+      }
+
 
       console.log(
         "ADD PRODUCT STATUS:",
@@ -169,6 +355,7 @@ const Admin = () => {
         "ADD PRODUCT RESPONSE:",
         data
       );
+
 
       // =========================================
       // ERROR
@@ -181,6 +368,7 @@ const Admin = () => {
         );
       }
 
+
       // =========================================
       // SUCCESS
       // =========================================
@@ -189,7 +377,11 @@ const Admin = () => {
         "Product added successfully!"
       );
 
-      // Reset form
+
+      // =========================================
+      // RESET FORM
+      // =========================================
+
       setProduct({
         name: "",
         sku: "",
@@ -199,11 +391,14 @@ const Admin = () => {
         price: "",
         discountPrice: "",
         stock: "",
-        images: "",
         sizes: "",
         colors: "",
       });
+
+      resetImages();
+
     } catch (error) {
+
       console.error(
         "ADD PRODUCT ERROR:",
         error
@@ -213,19 +408,32 @@ const Admin = () => {
         error.message ||
           "Something went wrong while adding product."
       );
+
     } finally {
+
       setLoading(false);
+
     }
   };
+
 
   // =========================================
   // ADMIN LOGOUT
   // =========================================
 
   const handleAdminLogout = () => {
-    localStorage.removeItem("adminToken");
-    localStorage.removeItem("adminRefreshToken");
-    localStorage.removeItem("adminLoggedIn");
+
+    localStorage.removeItem(
+      "adminToken"
+    );
+
+    localStorage.removeItem(
+      "adminRefreshToken"
+    );
+
+    localStorage.removeItem(
+      "adminLoggedIn"
+    );
 
     toast.success(
       "Admin logged out successfully."
@@ -236,8 +444,14 @@ const Admin = () => {
     }, 500);
   };
 
+
+  // =========================================
+  // UI
+  // =========================================
+
   return (
     <section className="admin-page">
+
 
       {/* =====================================
           ADMIN TOP BAR
@@ -252,6 +466,7 @@ const Admin = () => {
           </div>
 
           <div>
+
             <h2>
               Admin Portal
             </h2>
@@ -259,18 +474,22 @@ const Admin = () => {
             <span>
               Furniro Administration
             </span>
+
           </div>
 
         </div>
+
 
         <button
           type="button"
           className="admin-logout"
           onClick={handleAdminLogout}
         >
+
           <LogOut size={17} />
 
           Logout
+
         </button>
 
       </div>
@@ -325,7 +544,7 @@ const Admin = () => {
         <div className="admin-card">
 
 
-          {/* Card Header */}
+          {/* CARD HEADER */}
 
           <div className="admin-card-title">
 
@@ -360,9 +579,7 @@ const Admin = () => {
           >
 
 
-            {/* =====================================
-                PRODUCT NAME
-            ====================================== */}
+            {/* PRODUCT NAME */}
 
             <div className="form-group">
 
@@ -381,9 +598,7 @@ const Admin = () => {
             </div>
 
 
-            {/* =====================================
-                SKU
-            ====================================== */}
+            {/* SKU */}
 
             <div className="form-group">
 
@@ -402,9 +617,7 @@ const Admin = () => {
             </div>
 
 
-            {/* =====================================
-                CATEGORY
-            ====================================== */}
+            {/* CATEGORY */}
 
             <div className="form-group">
 
@@ -461,9 +674,7 @@ const Admin = () => {
             </div>
 
 
-            {/* =====================================
-                OTHER CATEGORY
-            ====================================== */}
+            {/* OTHER CATEGORY */}
 
             {product.category === "OTHER" && (
 
@@ -486,9 +697,7 @@ const Admin = () => {
             )}
 
 
-            {/* =====================================
-                PRICE
-            ====================================== */}
+            {/* PRICE */}
 
             <div className="form-group">
 
@@ -508,9 +717,7 @@ const Admin = () => {
             </div>
 
 
-            {/* =====================================
-                DISCOUNT PRICE
-            ====================================== */}
+            {/* DISCOUNT PRICE */}
 
             <div className="form-group">
 
@@ -530,9 +737,7 @@ const Admin = () => {
             </div>
 
 
-            {/* =====================================
-                STOCK
-            ====================================== */}
+            {/* STOCK */}
 
             <div className="form-group">
 
@@ -552,9 +757,7 @@ const Admin = () => {
             </div>
 
 
-            {/* =====================================
-                DESCRIPTION
-            ====================================== */}
+            {/* DESCRIPTION */}
 
             <div className="form-group full-width">
 
@@ -574,34 +777,108 @@ const Admin = () => {
 
 
             {/* =====================================
-                IMAGES
+                PRODUCT IMAGES
             ====================================== */}
 
             <div className="form-group full-width">
 
               <label>
-                Images
+                Product Images *
               </label>
 
-              <input
-                type="text"
-                name="images"
-                value={product.images}
-                onChange={handleChange}
-                placeholder="sofa-1.jpg, sofa-2.jpg"
-              />
 
-              <small>
-                Separate multiple image names
-                with commas.
-              </small>
+              <div className="image-upload-box">
+
+                <input
+                  id="product-images"
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleImageChange}
+                  className="image-file-input"
+                />
+
+
+                <label
+                  htmlFor="product-images"
+                  className="image-upload-label"
+                >
+
+                  <ImagePlus size={25} />
+
+                  <span>
+                    Choose Product Images
+                  </span>
+
+                  <small>
+                    JPG, PNG, WEBP — Maximum 5 images
+                  </small>
+
+                </label>
+
+              </div>
+
+
+              {/* IMAGE PREVIEWS */}
+
+              {imagePreviews.length > 0 && (
+
+                <div className="image-preview-grid">
+
+                  {imagePreviews.map(
+                    (preview, index) => (
+
+                      <div
+                        className="image-preview-card"
+                        key={`${preview.url}-${index}`}
+                      >
+
+                        <img
+                          src={preview.url}
+                          alt={`Product preview ${index + 1}`}
+                        />
+
+
+                        <button
+                          type="button"
+                          className="remove-image-button"
+                          onClick={() =>
+                            handleRemoveImage(index)
+                          }
+                          aria-label="Remove image"
+                        >
+
+                          <X size={15} />
+
+                        </button>
+
+                      </div>
+
+                    )
+                  )}
+
+                </div>
+
+              )}
+
+
+              {selectedImages.length > 0 && (
+
+                <small className="image-count">
+
+                  {selectedImages.length} image
+                  {selectedImages.length > 1
+                    ? "s"
+                    : ""} selected
+
+                </small>
+
+              )}
 
             </div>
 
 
-            {/* =====================================
-                SIZES
-            ====================================== */}
+            {/* SIZES */}
 
             <div className="form-group">
 
@@ -624,9 +901,7 @@ const Admin = () => {
             </div>
 
 
-            {/* =====================================
-                COLORS
-            ====================================== */}
+            {/* COLORS */}
 
             <div className="form-group">
 
@@ -649,9 +924,7 @@ const Admin = () => {
             </div>
 
 
-            {/* =====================================
-                SUBMIT
-            ====================================== */}
+            {/* SUBMIT */}
 
             <div className="form-submit">
 
@@ -674,9 +947,7 @@ const Admin = () => {
                 ) : (
 
                   <>
-                    <PackagePlus
-                      size={18}
-                    />
+                    <PackagePlus size={18} />
 
                     Add Product
                   </>

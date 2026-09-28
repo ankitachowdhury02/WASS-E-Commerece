@@ -23,7 +23,7 @@ const Login = () => {
     }));
   };
 
-  // LOGIN SUBMIT
+  // LOGIN SUBMIT 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -116,7 +116,7 @@ const Login = () => {
       setTimeout(() => {
         navigate("/");
       }, 1000);
-    } catch (error) {
+    } catch (error) {                      
       console.error("LOGIN ERROR:", error);
 
       setError(error.message || "Something went wrong. Please try again.");
@@ -170,7 +170,7 @@ const Login = () => {
             <a href="#">Forgot Password?</a>
           </div>
 
-          {error && <p className="login-error">{error}</p>}
+          {error && <p className="login-error">{error}</p>}              
 
           {message && <p className="login-success">{message}</p>}
 

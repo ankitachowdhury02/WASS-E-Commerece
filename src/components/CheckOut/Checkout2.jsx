@@ -9,7 +9,7 @@ const Checkout2 = () => {
       <div className="billing">
         <h1>Billing details</h1>
 
-        <div className="name-row">
+        <div className="name-row">                          
           <div className="field">
             <label>First Name</label>
             <input type="text" />
