@@ -6,6 +6,8 @@ import {
   ShoppingCart,
   ArrowLeft,
   Check,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 import "./SingleProduct.css";
@@ -20,11 +22,11 @@ const SingleProduct = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Selected size and color
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
 
-  // Button state
+  const [selectedImage, setSelectedImage] = useState(0);
+
   const [addedToCart, setAddedToCart] = useState(false);
 
   useEffect(() => {
@@ -49,9 +51,9 @@ const SingleProduct = () => {
 
         setProduct(data);
 
-        // Reset selections when product changes
         setSelectedSize("");
         setSelectedColor("");
+        setSelectedImage(0);
         setAddedToCart(false);
       } catch (error) {
         console.error("Single Product Error:", error);
@@ -67,9 +69,9 @@ const SingleProduct = () => {
     fetchSingleProduct();
   }, [id]);
 
-  // =========================
-  // LOADING
-  // =========================
+  /* =========================
+     LOADING
+  ========================= */
 
   if (loading) {
     return (
@@ -80,9 +82,9 @@ const SingleProduct = () => {
     );
   }
 
-  // =========================
-  // ERROR
-  // =========================
+  /* =========================
+     ERROR
+  ========================= */
 
   if (error) {
     return (
@@ -107,9 +109,9 @@ const SingleProduct = () => {
     );
   }
 
-  // =========================
-  // PRICE
-  // =========================
+  /* =========================
+     PRICE
+  ========================= */
 
   const price = Number(product.price || 0);
 
@@ -132,12 +134,53 @@ const SingleProduct = () => {
       )
     : 0;
 
-  // =========================
-  // ADD TO CART
-  // =========================
+  /* =========================
+     IMAGES
+  ========================= */
+
+  const productImages =
+    Array.isArray(product.images)
+      ? product.images
+      : [];
+
+  const currentImage =
+    productImages.length > 0
+      ? productImages[selectedImage]
+      : "";
+
+  /* =========================
+     PREVIOUS IMAGE
+  ========================= */
+
+  const handlePreviousImage = () => {
+    if (productImages.length <= 1) return;
+
+    setSelectedImage((previous) =>
+      previous === 0
+        ? productImages.length - 1
+        : previous - 1
+    );
+  };
+
+  /* =========================
+     NEXT IMAGE
+  ========================= */
+
+  const handleNextImage = () => {
+    if (productImages.length <= 1) return;
+
+    setSelectedImage((previous) =>
+      previous === productImages.length - 1
+        ? 0
+        : previous + 1
+    );
+  };
+
+  /* =========================
+     ADD TO CART
+  ========================= */
 
   const handleAddToCart = () => {
-    // Check size
     if (
       product.sizes &&
       product.sizes.length > 0 &&
@@ -147,7 +190,6 @@ const SingleProduct = () => {
       return;
     }
 
-    // Check color
     if (
       product.colors &&
       product.colors.length > 0 &&
@@ -161,10 +203,10 @@ const SingleProduct = () => {
       ...product,
 
       image:
-        product.images &&
-        product.images.length > 0
-          ? product.images[0]
-          : "",
+        currentImage ||
+        (productImages.length > 0
+          ? productImages[0]
+          : ""),
 
       price: `₹ ${finalPrice}`,
 
@@ -172,7 +214,6 @@ const SingleProduct = () => {
         ? `₹ ${price}`
         : "",
 
-      // Selected options
       selectedSize: selectedSize,
       selectedColor: selectedColor,
     };
@@ -186,9 +227,9 @@ const SingleProduct = () => {
     );
   };
 
-  // =========================
-  // GO TO CART
-  // =========================
+  /* =========================
+     GO TO CART
+  ========================= */
 
   const handleGoToCart = () => {
     navigate("/cart");
@@ -211,35 +252,121 @@ const SingleProduct = () => {
 
           <span>/</span>
 
-          <span>{product.name}</span>
+          <span>
+            {product.name}
+          </span>
 
         </div>
 
         {/* =========================
-            MAIN PRODUCT
+            MAIN PRODUCT AREA
         ========================= */}
 
         <div className="single-product-main">
 
           {/* =========================
-              IMAGE
+              PRODUCT IMAGES
           ========================= */}
 
-          <div className="single-product-image-box">
+          <div className="single-product-gallery">
 
-            {product.images &&
-            product.images.length > 0 ? (
+            {/* MAIN IMAGE */}
 
-              <img
-                src={product.images[0]}
-                alt={product.name}
-                className="single-product-image"
-              />
+            <div className="single-product-image-box">
 
-            ) : (
+              {productImages.length > 0 ? (
 
-              <div className="no-product-image">
-                <span>Image unavailable</span>
+                <>
+                  <img
+                    src={currentImage}
+                    alt={product.name}
+                    className="single-product-image"
+                  />
+
+                  {/* PREVIOUS */}
+
+                  {productImages.length > 1 && (
+                    <button
+                      type="button"
+                      className="image-arrow image-arrow-left"
+                      onClick={
+                        handlePreviousImage
+                      }
+                    >
+                      <ChevronLeft
+                        size={22}
+                      />
+                    </button>
+                  )}
+
+                  {/* NEXT */}
+
+                  {productImages.length > 1 && (
+                    <button
+                      type="button"
+                      className="image-arrow image-arrow-right"
+                      onClick={
+                        handleNextImage
+                      }
+                    >
+                      <ChevronRight
+                        size={22}
+                      />
+                    </button>
+                  )}
+
+                </>
+
+              ) : (
+
+                <div className="no-product-image">
+                  <span>
+                    Image unavailable
+                  </span>
+                </div>
+
+              )}
+
+            </div>
+
+            {/* =========================
+                ALL IMAGE THUMBNAILS
+            ========================= */}
+
+            {productImages.length > 1 && (
+
+              <div className="product-thumbnail-container">
+
+                {productImages.map(
+                  (image, index) => (
+
+                    <button
+                      type="button"
+                      key={index}
+                      className={`product-thumbnail ${
+                        selectedImage === index
+                          ? "active"
+                          : ""
+                      }`}
+                      onClick={() =>
+                        setSelectedImage(
+                          index
+                        )
+                      }
+                    >
+
+                      <img
+                        src={image}
+                        alt={`${product.name} ${
+                          index + 1
+                        }`}
+                      />
+
+                    </button>
+
+                  )
+                )}
+
               </div>
 
             )}
@@ -269,12 +396,18 @@ const SingleProduct = () => {
             <div className="single-product-price">
 
               <strong>
-                ₹ {finalPrice.toLocaleString("en-IN")}
+                ₹{" "}
+                {finalPrice.toLocaleString(
+                  "en-IN"
+                )}
               </strong>
 
               {hasDiscount && (
                 <del>
-                  ₹ {price.toLocaleString("en-IN")}
+                  ₹{" "}
+                  {price.toLocaleString(
+                    "en-IN"
+                  )}
                 </del>
               )}
 
@@ -301,7 +434,7 @@ const SingleProduct = () => {
 
             </div>
 
-            {/* SKU */}
+            {/* INFORMATION */}
 
             <div className="product-information">
 
@@ -316,8 +449,6 @@ const SingleProduct = () => {
                 </strong>
 
               </div>
-
-              {/* STOCK */}
 
               <div className="information-row">
 
@@ -360,7 +491,9 @@ const SingleProduct = () => {
                               : ""
                           }`}
                           onClick={() =>
-                            setSelectedSize(size)
+                            setSelectedSize(
+                              size
+                            )
                           }
                         >
 
@@ -387,6 +520,7 @@ const SingleProduct = () => {
                   )}
 
                 </div>
+
               )}
 
             {/* =========================
@@ -416,7 +550,9 @@ const SingleProduct = () => {
                               : ""
                           }`}
                           onClick={() =>
-                            setSelectedColor(color)
+                            setSelectedColor(
+                              color
+                            )
                           }
                         >
 
@@ -443,17 +579,20 @@ const SingleProduct = () => {
                   )}
 
                 </div>
+
               )}
 
             {/* =========================
-                ADD TO CART / GO TO CART
+                CART BUTTON
             ========================= */}
 
             {!addedToCart ? (
 
               <button
                 className="single-add-cart-button"
-                onClick={handleAddToCart}
+                onClick={
+                  handleAddToCart
+                }
                 disabled={
                   product.stock === 0
                 }
@@ -473,7 +612,9 @@ const SingleProduct = () => {
 
               <button
                 className="single-go-cart-button"
-                onClick={handleGoToCart}
+                onClick={
+                  handleGoToCart
+                }
               >
 
                 <ShoppingCart
@@ -510,7 +651,7 @@ const SingleProduct = () => {
         </div>
 
         {/* =========================
-            CONTINUE SHOPPING
+            BACK TO SHOP
         ========================= */}
 
         <div className="back-to-shop">
