@@ -15,6 +15,7 @@ import Profile from "./Pages/Profile";
 import AdminLogin from "./Pages/AdminLogin";
 import Admin from "./Pages/Admin";
 import Blog from "./Pages/Blog";
+import SingleProduct from "./components/Single Product/SingleProduct";
 
 function App() {
   return (
@@ -85,6 +86,17 @@ function App() {
             </>
           }
         />
+
+        <Route
+  path="/product/:id"
+  element={
+    <>
+      <Header />
+      <SingleProduct />
+      <Footer />
+    </>
+  }
+/>
 
         <Route
   path="/profile"
