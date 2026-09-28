@@ -15,13 +15,15 @@ import Profile from "./Pages/Profile";
 import AdminLogin from "./Pages/AdminLogin";
 import Admin from "./Pages/Admin";
 import Blog from "./Pages/Blog";
+
 import SingleProduct from "./components/Single Product/SingleProduct";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Pages with Header and Footer */}
+
+        {/* HOME */}
         <Route
           path="/"
           element={
@@ -32,17 +34,20 @@ function App() {
             </>
           }
         />
-        <Route
-  path="/blog"
-  element={
-    <>
-      <Header />
-      <Blog />
-      <Footer />
-    </>
-  }
-/>
 
+        {/* BLOG */}
+        <Route
+          path="/blog"
+          element={
+            <>
+              <Header />
+              <Blog />
+              <Footer />
+            </>
+          }
+        />
+
+        {/* SHOP */}
         <Route
           path="/shop"
           element={
@@ -54,6 +59,19 @@ function App() {
           }
         />
 
+        {/* SINGLE PRODUCT */}
+        <Route
+          path="/product/:id"
+          element={
+            <>
+              <Header />
+              <SingleProduct />
+              <Footer />
+            </>
+          }
+        />
+
+        {/* CONTACT */}
         <Route
           path="/contact"
           element={
@@ -65,6 +83,7 @@ function App() {
           }
         />
 
+        {/* CHECKOUT */}
         <Route
           path="/checkout"
           element={
@@ -76,6 +95,7 @@ function App() {
           }
         />
 
+        {/* CART */}
         <Route
           path="/cart"
           element={
@@ -87,40 +107,42 @@ function App() {
           }
         />
 
+        {/* PROFILE */}
         <Route
-  path="/product/:id"
-  element={
-    <>
-      <Header />
-      <SingleProduct />
-      <Footer />
-    </>
-  }
-/>
+          path="/profile"
+          element={
+            <>
+              <Header />
+              <Profile />
+              <Footer />
+            </>
+          }
+        />
 
+        {/* ADMIN LOGIN */}
         <Route
-  path="/profile"
-  element={
-    <>
-      <Header />
-      <Profile />
-      <Footer />
-    </>
-  }
-/>
-<Route
-  path="/admin-login"
-  element={<AdminLogin />}
-/>
+          path="/admin-login"
+          element={<AdminLogin />}
+        />
 
-<Route
-  path="/admin"
-  element={<Admin />}
-/>
-        {/* Login page - NO Header, NO Footer */}
-        <Route path="/login" element={<Login />} />
+        {/* ADMIN */}
+        <Route
+          path="/admin"
+          element={<Admin />}
+        />
 
-        <Route path="/register" element={<Register />} />
+        {/* LOGIN */}
+        <Route
+          path="/login"
+          element={<Login />}
+        />
+
+        {/* REGISTER */}
+        <Route
+          path="/register"
+          element={<Register />}
+        />
+
       </Routes>
     </BrowserRouter>
   );
