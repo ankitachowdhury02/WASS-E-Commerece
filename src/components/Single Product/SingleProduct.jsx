@@ -1,20 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { toast } from "react-toastify";
-import { ShoppingCart, ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import {
+  ShoppingCart,
+  ArrowLeft,
+  Check,
+} from "lucide-react";
 
 import "./SingleProduct.css";
 
 const SingleProduct = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const { addToCart } = useCart();
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  // Selected size and color
+  const [selectedSize, setSelectedSize] = useState("");
+  const [selectedColor, setSelectedColor] = useState("");
+
+  // Button state
+  const [addedToCart, setAddedToCart] = useState(false);
 
   useEffect(() => {
     const fetchSingleProduct = async () => {
@@ -38,13 +49,16 @@ const SingleProduct = () => {
 
         setProduct(data);
 
+        // Reset selections when product changes
+        setSelectedSize("");
+        setSelectedColor("");
+        setAddedToCart(false);
       } catch (error) {
         console.error("Single Product Error:", error);
 
         setError(
           error.message || "Something went wrong"
         );
-
       } finally {
         setLoading(false);
       }
@@ -53,7 +67,9 @@ const SingleProduct = () => {
     fetchSingleProduct();
   }, [id]);
 
-  /* ---------------- LOADING ---------------- */
+  // =========================
+  // LOADING
+  // =========================
 
   if (loading) {
     return (
@@ -64,7 +80,9 @@ const SingleProduct = () => {
     );
   }
 
-  /* ---------------- ERROR ---------------- */
+  // =========================
+  // ERROR
+  // =========================
 
   if (error) {
     return (
@@ -81,8 +99,6 @@ const SingleProduct = () => {
     );
   }
 
-  /* ---------------- NO PRODUCT ---------------- */
-
   if (!product) {
     return (
       <div className="single-product-error">
@@ -91,7 +107,9 @@ const SingleProduct = () => {
     );
   }
 
-  /* ---------------- PRICE ---------------- */
+  // =========================
+  // PRICE
+  // =========================
 
   const price = Number(product.price || 0);
 
@@ -114,14 +132,37 @@ const SingleProduct = () => {
       )
     : 0;
 
-  /* ---------------- ADD TO CART ---------------- */
+  // =========================
+  // ADD TO CART
+  // =========================
 
   const handleAddToCart = () => {
+    // Check size
+    if (
+      product.sizes &&
+      product.sizes.length > 0 &&
+      !selectedSize
+    ) {
+      toast.error("Please select a size");
+      return;
+    }
+
+    // Check color
+    if (
+      product.colors &&
+      product.colors.length > 0 &&
+      !selectedColor
+    ) {
+      toast.error("Please select a color");
+      return;
+    }
+
     const cartProduct = {
       ...product,
 
       image:
-        product.images?.length > 0
+        product.images &&
+        product.images.length > 0
           ? product.images[0]
           : "",
 
@@ -130,13 +171,27 @@ const SingleProduct = () => {
       oldPrice: hasDiscount
         ? `₹ ${price}`
         : "",
+
+      // Selected options
+      selectedSize: selectedSize,
+      selectedColor: selectedColor,
     };
 
     addToCart(cartProduct);
 
+    setAddedToCart(true);
+
     toast.success(
       `${product.name} added to cart!`
     );
+  };
+
+  // =========================
+  // GO TO CART
+  // =========================
+
+  const handleGoToCart = () => {
+    navigate("/cart");
   };
 
   return (
@@ -144,7 +199,9 @@ const SingleProduct = () => {
 
       <div className="single-product-container">
 
-        {/* BREADCRUMB */}
+        {/* =========================
+            BREADCRUMB
+        ========================= */}
 
         <div className="product-breadcrumb">
 
@@ -158,11 +215,15 @@ const SingleProduct = () => {
 
         </div>
 
-        {/* PRODUCT MAIN AREA */}
+        {/* =========================
+            MAIN PRODUCT
+        ========================= */}
 
         <div className="single-product-main">
 
-          {/* LEFT IMAGE */}
+          {/* =========================
+              IMAGE
+          ========================= */}
 
           <div className="single-product-image-box">
 
@@ -185,7 +246,9 @@ const SingleProduct = () => {
 
           </div>
 
-          {/* RIGHT DETAILS */}
+          {/* =========================
+              PRODUCT DETAILS
+          ========================= */}
 
           <div className="single-product-details">
 
@@ -232,14 +295,13 @@ const SingleProduct = () => {
               </h3>
 
               <p>
-                {product.description
-                  ? product.description
-                  : "No description available for this product."}
+                {product.description ||
+                  "No description available for this product."}
               </p>
 
             </div>
 
-            {/* PRODUCT INFORMATION */}
+            {/* SKU */}
 
             <div className="product-information">
 
@@ -255,6 +317,8 @@ const SingleProduct = () => {
 
               </div>
 
+              {/* STOCK */}
+
               <div className="information-row">
 
                 <span>
@@ -269,7 +333,9 @@ const SingleProduct = () => {
 
             </div>
 
-            {/* SIZES */}
+            {/* =========================
+                SIZE
+            ========================= */}
 
             {product.sizes &&
               product.sizes.length > 0 && (
@@ -285,23 +351,47 @@ const SingleProduct = () => {
                     {product.sizes.map(
                       (size, index) => (
 
-                        <span
+                        <button
+                          type="button"
                           key={index}
-                          className="option-item"
+                          className={`option-item ${
+                            selectedSize === size
+                              ? "selected"
+                              : ""
+                          }`}
+                          onClick={() =>
+                            setSelectedSize(size)
+                          }
                         >
+
                           {size}
-                        </span>
+
+                          {selectedSize ===
+                            size && (
+                            <Check
+                              size={14}
+                            />
+                          )}
+
+                        </button>
 
                       )
                     )}
 
                   </div>
 
-                </div>
+                  {!selectedSize && (
+                    <p className="selection-message">
+                      Please select a size
+                    </p>
+                  )}
 
+                </div>
               )}
 
-            {/* COLORS */}
+            {/* =========================
+                COLOR
+            ========================= */}
 
             {product.colors &&
               product.colors.length > 0 && (
@@ -317,47 +407,92 @@ const SingleProduct = () => {
                     {product.colors.map(
                       (color, index) => (
 
-                        <span
+                        <button
+                          type="button"
                           key={index}
-                          className="option-item"
+                          className={`option-item ${
+                            selectedColor === color
+                              ? "selected"
+                              : ""
+                          }`}
+                          onClick={() =>
+                            setSelectedColor(color)
+                          }
                         >
+
                           {color}
-                        </span>
+
+                          {selectedColor ===
+                            color && (
+                            <Check
+                              size={14}
+                            />
+                          )}
+
+                        </button>
 
                       )
                     )}
 
                   </div>
 
-                </div>
+                  {!selectedColor && (
+                    <p className="selection-message">
+                      Please select a color
+                    </p>
+                  )}
 
+                </div>
               )}
 
-            {/* ADD TO CART */}
+            {/* =========================
+                ADD TO CART / GO TO CART
+            ========================= */}
 
-            <button
-              className="single-add-cart-button"
-              onClick={handleAddToCart}
-              disabled={
-                product.stock === 0
-              }
-            >
+            {!addedToCart ? (
 
-              <ShoppingCart
-                size={20}
-              />
+              <button
+                className="single-add-cart-button"
+                onClick={handleAddToCart}
+                disabled={
+                  product.stock === 0
+                }
+              >
 
-              {product.stock === 0
-                ? "Out of Stock"
-                : "Add to Cart"}
+                <ShoppingCart
+                  size={20}
+                />
 
-            </button>
+                {product.stock === 0
+                  ? "Out of Stock"
+                  : "Add to Cart"}
+
+              </button>
+
+            ) : (
+
+              <button
+                className="single-go-cart-button"
+                onClick={handleGoToCart}
+              >
+
+                <ShoppingCart
+                  size={20}
+                />
+
+                Go to Cart
+
+              </button>
+
+            )}
 
           </div>
 
         </div>
 
-        {/* DESCRIPTION FULL SECTION */}
+        {/* =========================
+            FULL DESCRIPTION
+        ========================= */}
 
         <div className="full-description">
 
@@ -368,14 +503,15 @@ const SingleProduct = () => {
           <div className="description-line"></div>
 
           <p>
-            {product.description
-              ? product.description
-              : "No description available for this product."}
+            {product.description ||
+              "No description available for this product."}
           </p>
 
         </div>
 
-        {/* BACK TO SHOP */}
+        {/* =========================
+            CONTINUE SHOPPING
+        ========================= */}
 
         <div className="back-to-shop">
 
