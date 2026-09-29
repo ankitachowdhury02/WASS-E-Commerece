@@ -70,10 +70,9 @@ const Products3 = ({
         setLoading(true);
         setError("");
 
-        const response = await fetch(
-          "https://ecomm-qy13.onrender.com/api/products?limit=100"
-        );
-
+      const response = await fetch(
+  `https://ecomm-qy13.onrender.com/api/products?page=${currentPage}&limit=16`
+);
         const data = await response.json();
 
         if (!response.ok) {
