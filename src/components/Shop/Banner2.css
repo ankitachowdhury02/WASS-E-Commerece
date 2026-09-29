@@ -32,6 +32,21 @@
   cursor: pointer;
 
   color: #111;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover,
+.icon-btn:hover {
+  color: #b88e2f;
+}
+
+.filter-btn.active-filter {
+  color: #b88e2f;
+  font-weight: 600;
+}
+
+.icon-btn.active {
+  color: #b88e2f;
 }
 
 .filter-btn span {
@@ -56,45 +71,33 @@
 .filter-right {
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: 24px;
+  flex-wrap: wrap;
 }
 
 .show-box,
-.sort-box {
+.sort-box,
+.category-box {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .show-box span,
-.sort-box span {
-  font-size: 16px;
+.sort-box span,
+.category-box span {
+  font-size: 15px;
+  color: #111;
 }
 
 .show-box select {
   width: 55px;
-  height: 55px;
+  height: 50px;
 
   border: none;
   background: white;
 
   text-align: center;
-
-  font-size: 16px;
-  color: #999;
-
-  outline: none;
-}
-
-.sort-box select {
-  min-width: 185px;
-  width: auto;
-  height: 55px;
-
-  border: none;
-  background: white;
-
-  padding: 0 16px;
 
   font-size: 15px;
   color: #555;
@@ -103,16 +106,217 @@
   cursor: pointer;
 }
 
-/* TABLET - 768px */
+.category-box select {
+  min-width: 135px;
+  width: auto;
+  height: 50px;
 
+  border: none;
+  background: white;
+
+  padding: 0 14px;
+
+  font-size: 14px;
+  color: #555;
+
+  outline: none;
+  cursor: pointer;
+}
+
+.sort-box select {
+  min-width: 175px;
+  width: auto;
+  height: 50px;
+
+  border: none;
+  background: white;
+
+  padding: 0 14px;
+
+  font-size: 14px;
+  color: #555;
+
+  outline: none;
+  cursor: pointer;
+}
+
+/* =========================
+   FILTER DRAWER / MODAL
+========================= */
+
+.filter-drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 999;
+  display: flex;
+  justify-content: flex-start;
+  animation: drawerFadeIn 0.2s ease-out;
+}
+
+@keyframes drawerFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.filter-drawer {
+  width: 320px;
+  max-width: 85%;
+  height: 100%;
+  background: #ffffff;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  box-sizing: border-box;
+  animation: drawerSlideIn 0.25s ease-out;
+}
+
+@keyframes drawerSlideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.filter-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.filter-drawer-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.close-drawer-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+
+.close-drawer-btn:hover {
+  color: #000;
+}
+
+.filter-drawer-body {
+  flex: 1;
+  padding: 20px 0;
+  overflow-y: auto;
+}
+
+.filter-drawer-body h4 {
+  margin: 0 0 12px;
+  font-size: 15px;
+  color: #333;
+}
+
+.category-pills {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.category-pill {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid #e5e5e5;
+  background: #fdfdfd;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #444;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.2s ease;
+}
+
+.category-pill:hover {
+  border-color: #b88e2f;
+  background: #fdfaf4;
+  color: #b88e2f;
+}
+
+.category-pill.active {
+  border-color: #b88e2f;
+  background: #b88e2f;
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.filter-drawer-footer {
+  padding-top: 16px;
+  border-top: 1px solid #eeeeee;
+}
+
+.reset-filter-btn {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #b88e2f;
+  background: transparent;
+  color: #b88e2f;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.reset-filter-btn:hover {
+  background: #b88e2f;
+  color: white;
+}
+
+/* =========================
+   RESPONSIVE DESIGN
+========================= */
+
+/* TABLET & SMALL DESKTOP - 992px */
+@media (max-width: 992px) {
+  .filter-bar {
+    padding: 16px 24px;
+    min-height: auto;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .filter-left,
+  .filter-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+/* TABLET - 768px */
 @media (max-width: 768px) {
   .filter-bar {
-    padding: 0 24px;
-    min-height: 72px;
+    padding: 16px 20px;
   }
 
   .filter-left {
     gap: 16px;
+    flex-wrap: wrap;
   }
 
   .filter-left p {
@@ -120,76 +324,71 @@
   }
 
   .filter-right {
-    gap: 16px;
+    gap: 12px;
+    flex-wrap: wrap;
   }
 
   .show-box select {
-    width: 50px;
-    height: 48px;
-    font-size: 14px;
+    width: 48px;
+    height: 44px;
+    font-size: 13px;
+  }
+
+  .category-box select {
+    min-width: 120px;
+    height: 44px;
+    font-size: 13px;
+    padding: 0 10px;
   }
 
   .sort-box select {
     min-width: 145px;
-    width: auto;
-    height: 48px;
+    height: 44px;
     font-size: 13px;
     padding: 0 10px;
   }
 }
 
-/* MOBILE S - 320px */
-
-@media (max-width: 320px) {
+/* MOBILE S - 480px */
+@media (max-width: 480px) {
   .filter-bar {
-    padding: 14px 10px;
-    gap: 14px;
+    padding: 14px 12px;
+    gap: 12px;
   }
 
   .filter-left {
-    gap: 8px;
-  }
-
-  .filter-btn {
-    gap: 6px;
+    gap: 10px;
   }
 
   .filter-btn span {
     font-size: 13px;
   }
 
+  .vertical-line {
+    height: 24px;
+  }
+
   .filter-left p {
-    width: 100%;
-    font-size: 11px;
+    font-size: 12px;
     color: #555;
-    margin-top: 2px;
   }
 
   .filter-right {
     gap: 8px;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
   }
 
-  .show-box,
-  .sort-box {
-    gap: 6px;
+  .show-box {
+    grid-column: span 2;
   }
 
-  .show-box span,
-  .sort-box span {
-    font-size: 12px;
-  }
-
-  .show-box select {
-    width: 42px;
-    height: 38px;
-    font-size: 12px;
-  }
-
+  .show-box select,
+  .category-box select,
   .sort-box select {
-    width: 95px;
-    height: 38px;
+    width: 100%;
+    min-width: auto;
+    height: 40px;
     font-size: 12px;
-    padding: 0 8px;
   }
 }
