@@ -15,11 +15,37 @@ export const CartProvider = ({ children }) => {
   const [cartLoading, setCartLoading] = useState(false);
 
   // =====================================================
-  // GET USER TOKEN
+  // GET LOGIN TOKEN
   // =====================================================
 
   const getToken = () => {
     return localStorage.getItem("token");
+  };
+
+  // =====================================================
+  // GET PRODUCT IMAGE
+  // =====================================================
+
+  const getProductImage = (product) => {
+    if (!product) return "";
+
+    if (Array.isArray(product.images) && product.images.length > 0) {
+      const firstImage = product.images[0];
+
+      if (typeof firstImage === "string") {
+        return firstImage;
+      }
+
+      if (firstImage?.url) {
+        return firstImage.url;
+      }
+
+      if (firstImage?.src) {
+        return firstImage.src;
+      }
+    }
+
+    return product.image || "";
   };
 
   // =====================================================
@@ -37,40 +63,40 @@ export const CartProvider = ({ children }) => {
       items = data.items;
     } else if (Array.isArray(data?.data)) {
       items = data.data;
-    } else if (Array.isArray(data?.data?.items)) {
-      items = data.data.items;
     } else if (Array.isArray(data?.data?.cart)) {
       items = data.data.cart;
+    } else if (Array.isArray(data?.data?.items)) {
+      items = data.data.items;
     }
 
     return items.map((item) => {
-      // Backend cart item may contain product object
-      const product = item.product || item.productDetails || {};
+      const product =
+        item.product ||
+        item.productDetails ||
+        item.productData ||
+        {};
+
+      const productId =
+        product.id ||
+        product.productId ||
+        product._id ||
+        item.productId;
+
+      const cartItemId =
+        item.id ||
+        item.cartItemId ||
+        item._id ||
+        item.cart_id;
 
       return {
-        // IMPORTANT:
-        // cartItemId = backend cart item's ID
-        cartItemId:
-          item.id ||
-          item.cartItemId ||
-          item._id ||
-          item.cart_id ||
-          null,
+        // Backend cart item ID
+        cartItemId: cartItemId,
 
         // Product ID
-        id:
-          product.id ||
-          product.productId ||
-          product._id ||
-          item.productId ||
-          item.product?.id,
+        id: productId,
+        productId: productId,
 
-        productId:
-          product.id ||
-          product.productId ||
-          product._id ||
-          item.productId,
-
+        // Product information
         name:
           product.name ||
           item.name ||
@@ -81,19 +107,22 @@ export const CartProvider = ({ children }) => {
           item.category ||
           "",
 
-        image:
-          Array.isArray(product.images) && product.images.length > 0
-            ? product.images[0]
-            : product.image ||
-              item.image ||
-              item.images?.[0] ||
-              "",
+        description:
+          product.description ||
+          item.description ||
+          "",
 
+        // Image
+        image:
+          getProductImage(product) ||
+          getProductImage(item),
+
+        // Price
         price:
-          product.discountPrice ||
-          product.price ||
-          item.discountPrice ||
-          item.price ||
+          product.discountPrice ??
+          product.price ??
+          item.discountPrice ??
+          item.price ??
           0,
 
         oldPrice:
@@ -101,26 +130,52 @@ export const CartProvider = ({ children }) => {
           item.oldPrice ||
           "",
 
+        // Quantity
         quantity:
           Number(item.quantity) > 0
             ? Number(item.quantity)
             : 1,
 
-        // Keep original backend data
+        // Keep all backend data
         ...item,
+
+        // Make sure these remain available
+        cartItemId: cartItemId,
+        id: productId,
+        productId: productId,
+
+        name:
+          product.name ||
+          item.name ||
+          "Product",
+
+        image:
+          getProductImage(product) ||
+          getProductImage(item),
+
+        price:
+          product.discountPrice ??
+          product.price ??
+          item.discountPrice ??
+          item.price ??
+          0,
+
+        quantity:
+          Number(item.quantity) > 0
+            ? Number(item.quantity)
+            : 1,
       };
     });
   };
 
   // =====================================================
-  // GET MY CART
+  // 1. GET MY CART
   // GET /api/cart
   // =====================================================
 
   const fetchCart = async () => {
     const token = getToken();
 
-    // User not logged in
     if (!token) {
       setCartItems([]);
       return;
@@ -129,12 +184,16 @@ export const CartProvider = ({ children }) => {
     try {
       setCartLoading(true);
 
-      const response = await fetch(`${API_URL}/api/cart`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `${API_URL}/api/cart`,
+        {
+          method: "GET",
+
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       const data = await response.json();
 
@@ -142,27 +201,31 @@ export const CartProvider = ({ children }) => {
       console.log("GET CART RESPONSE:", data);
 
       if (!response.ok) {
-        throw new Error(data.message || "Failed to load cart");
+        throw new Error(
+          data.message || "Failed to load cart."
+        );
       }
 
-      const normalizedItems = normalizeCartItems(data);
+      const items = normalizeCartItems(data);
 
-      setCartItems(normalizedItems);
+      setCartItems(items);
+
     } catch (error) {
       console.error("GET CART ERROR:", error);
 
       setCartItems([]);
 
-      if (error.message) {
-        toast.error(error.message);
-      }
+      toast.error(
+        error.message || "Unable to load cart."
+      );
+
     } finally {
       setCartLoading(false);
     }
   };
 
   // =====================================================
-  // LOAD CART WHEN USER IS LOGGED IN
+  // LOAD CART AFTER PAGE LOAD
   // =====================================================
 
   useEffect(() => {
@@ -170,7 +233,7 @@ export const CartProvider = ({ children }) => {
   }, []);
 
   // =====================================================
-  // ADD PRODUCT TO CART
+  // 2. ADD TO CART
   // POST /api/cart
   // =====================================================
 
@@ -178,72 +241,118 @@ export const CartProvider = ({ children }) => {
     const token = getToken();
 
     if (!token) {
-      toast.error("Please login first to add products to cart.");
-      return;
+      toast.error(
+        "Please login first to add products to cart."
+      );
+
+      return false;
     }
 
     if (!product?.id) {
       toast.error("Product ID is missing.");
-      return;
+
+      return false;
     }
 
     try {
-      const response = await fetch(`${API_URL}/api/cart`, {
-        method: "POST",
+      const response = await fetch(
+        `${API_URL}/api/cart`,
+        {
+          method: "POST",
 
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
 
-        body: JSON.stringify({
-          productId: Number(product.id),
-          quantity: 1,
-        }),
-      });
+          body: JSON.stringify({
+            productId: Number(product.id),
+            quantity: 1,
+          }),
+        }
+      );
 
       const data = await response.json();
 
-      console.log("ADD CART STATUS:", response.status);
-      console.log("ADD CART RESPONSE:", data);
+      console.log(
+        "ADD CART STATUS:",
+        response.status
+      );
+
+      console.log(
+        "ADD CART RESPONSE:",
+        data
+      );
 
       if (!response.ok) {
-        throw new Error(data.message || "Failed to add product to cart");
+        throw new Error(
+          data.message ||
+            "Failed to add product to cart."
+        );
       }
 
-      // Reload cart from backend
+      // Get latest cart from backend
       await fetchCart();
 
-      toast.success(`${product.name} added to cart!`);
+      toast.success(
+        `${product.name} added to cart!`
+      );
+
+      return true;
 
     } catch (error) {
-      console.error("ADD TO CART ERROR:", error);
+      console.error(
+        "ADD TO CART ERROR:",
+        error
+      );
 
       toast.error(
-        error.message || "Unable to add product to cart."
+        error.message ||
+          "Unable to add product to cart."
       );
+
+      return false;
     }
   };
 
   // =====================================================
-  // UPDATE CART QUANTITY
+  // FIND CART ITEM
+  // =====================================================
+
+  const findCartItem = (productId) => {
+    return cartItems.find(
+      (item) =>
+        String(item.id) === String(productId) ||
+        String(item.productId) === String(productId)
+    );
+  };
+
+  // =====================================================
+  // 3. UPDATE CART QUANTITY
   // PATCH /api/cart/:cartItemId
   // =====================================================
 
-  const updateCartQuantity = async (cartItemId, quantity) => {
+  const updateCartQuantity = async (
+    cartItemId,
+    quantity
+  ) => {
     const token = getToken();
 
     if (!token) {
       toast.error("Please login first.");
+
       return false;
     }
 
     if (!cartItemId) {
-      toast.error("Cart item ID is missing.");
+      toast.error(
+        "Cart item ID is missing."
+      );
+
       return false;
     }
 
-    if (quantity < 1) {
+    if (Number(quantity) < 1) {
       return false;
     }
 
@@ -278,18 +387,19 @@ export const CartProvider = ({ children }) => {
 
       if (!response.ok) {
         throw new Error(
-          data.message || "Failed to update cart quantity"
+          data.message ||
+            "Failed to update cart quantity."
         );
       }
 
-      // Reload latest backend cart
+      // Get latest cart
       await fetchCart();
 
       return true;
 
     } catch (error) {
       console.error(
-        "UPDATE CART QUANTITY ERROR:",
+        "UPDATE CART ERROR:",
         error
       );
 
@@ -303,17 +413,17 @@ export const CartProvider = ({ children }) => {
   };
 
   // =====================================================
-  // INCREASE QUANTITY
+  // 4. INCREASE QUANTITY
   // =====================================================
 
   const increaseQuantity = async (productId) => {
-    const item = cartItems.find(
-      (cartItem) =>
-        cartItem.id === productId ||
-        cartItem.productId === productId
-    );
+    const item = findCartItem(productId);
 
     if (!item) {
+      toast.error(
+        "Cart item not found."
+      );
+
       return;
     }
 
@@ -329,17 +439,17 @@ export const CartProvider = ({ children }) => {
   };
 
   // =====================================================
-  // DECREASE QUANTITY
+  // 5. DECREASE QUANTITY
   // =====================================================
 
   const decreaseQuantity = async (productId) => {
-    const item = cartItems.find(
-      (cartItem) =>
-        cartItem.id === productId ||
-        cartItem.productId === productId
-    );
+    const item = findCartItem(productId);
 
     if (!item) {
+      toast.error(
+        "Cart item not found."
+      );
+
       return;
     }
 
@@ -348,11 +458,12 @@ export const CartProvider = ({ children }) => {
     const currentQuantity =
       Number(item.quantity) || 1;
 
-    // Don't send quantity 0
+    // Don't allow quantity below 1
     if (currentQuantity <= 1) {
       toast.info(
-        "Quantity cannot be less than 1."
+        "Minimum quantity is 1."
       );
+
       return;
     }
 
@@ -363,34 +474,95 @@ export const CartProvider = ({ children }) => {
   };
 
   // =====================================================
-  // REMOVE PRODUCT
+  // 6. DELETE PRODUCT FROM CART
+  // DELETE /api/cart/:cartItemId
   // =====================================================
 
-  const removeFromCart = async (productId) => {
-    /*
-      IMPORTANT:
+  const removeFromCart = async (cartItemId) => {
+    const token = getToken();
 
-      Your current Postman collection does NOT show
-      a DELETE /api/cart/:id endpoint.
+    if (!token) {
+      toast.error("Please login first.");
 
-      So we cannot safely invent a DELETE API.
+      return false;
+    }
 
-      For now, remove the item from UI state only.
-    */
+    if (!cartItemId) {
+      toast.error(
+        "Cart item ID is missing."
+      );
 
-    setCartItems((previousItems) =>
-      previousItems.filter(
-        (item) =>
-          item.id !== productId &&
-          item.productId !== productId
-      )
-    );
+      return false;
+    }
 
-    toast.success("Product removed from cart.");
+    try {
+      const response = await fetch(
+        `${API_URL}/api/cart/${cartItemId}`,
+        {
+          method: "DELETE",
+
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Some DELETE APIs return empty response
+      let data = {};
+
+      const text = await response.text();
+
+      if (text) {
+        try {
+          data = JSON.parse(text);
+        } catch {
+          data = {};
+        }
+      }
+
+      console.log(
+        "DELETE CART STATUS:",
+        response.status
+      );
+
+      console.log(
+        "DELETE CART RESPONSE:",
+        data
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+            "Failed to remove product from cart."
+        );
+      }
+
+      // Get latest cart
+      await fetchCart();
+
+      toast.success(
+        "Product removed from cart!"
+      );
+
+      return true;
+
+    } catch (error) {
+      console.error(
+        "DELETE CART ERROR:",
+        error
+      );
+
+      toast.error(
+        error.message ||
+          "Unable to remove product from cart."
+      );
+
+      return false;
+    }
   };
 
   // =====================================================
-  // CLEAR CART LOCAL STATE
+  // CLEAR LOCAL CART
   // =====================================================
 
   const clearCart = () => {
@@ -398,28 +570,30 @@ export const CartProvider = ({ children }) => {
   };
 
   // =====================================================
-  // CONTEXT
+  // CONTEXT PROVIDER
   // =====================================================
 
   return (
     <CartContext.Provider
       value={{
         cartItems,
-
         cartLoading,
 
-        addToCart,
-
+        // GET
         fetchCart,
 
-        increaseQuantity,
+        // POST
+        addToCart,
 
+        // PATCH
+        updateCartQuantity,
+        increaseQuantity,
         decreaseQuantity,
 
-        updateCartQuantity,
-
+        // DELETE
         removeFromCart,
 
+        // Local clear
         clearCart,
       }}
     >
@@ -437,7 +611,7 @@ export const useCart = () => {
 
   if (!context) {
     throw new Error(
-      "useCart must be used inside CartProvider"
+      "useCart must be used inside CartProvider."
     );
   }
 

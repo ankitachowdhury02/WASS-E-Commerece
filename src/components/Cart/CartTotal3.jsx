@@ -167,9 +167,9 @@ const CartTotal3 = () => {
               {/* Delete */}
               <button
                 className="delete-button"
-                onClick={() =>
-                  removeFromCart(item.id)
-                }
+               onClick={() =>
+  removeFromCart(item.cartItemId)
+}
               >
 
                 <Trash2 size={18} />
