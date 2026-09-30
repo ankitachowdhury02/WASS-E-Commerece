@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import { getFallbackProductById } from "../../data/fallbackProducts";
 
 import "./SingleProduct.css";
 
@@ -30,6 +31,8 @@ const SingleProduct = () => {
   const [addedToCart, setAddedToCart] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchSingleProduct = async () => {
       try {
         setLoading(true);
@@ -39,34 +42,77 @@ const SingleProduct = () => {
           `https://ecomm-qy13.onrender.com/api/products/${id}`
         );
 
-        const data = await response.json();
-
-        console.log("Single Product API Response:", data);
-
-        if (!response.ok) {
-          throw new Error(
-            data.message || "Failed to load product"
-          );
+        if (response.ok) {
+          const data = await response.json();
+          if (isMounted) {
+            setProduct(data);
+            setSelectedSize(
+              data.sizes && data.sizes.length > 0 ? data.sizes[0] : ""
+            );
+            setSelectedColor(
+              data.colors && data.colors.length > 0 ? data.colors[0] : ""
+            );
+            setSelectedImage(0);
+            setAddedToCart(false);
+          }
+          return;
         }
 
-        setProduct(data);
+        // If not found in API, check local fallback product catalog
+        const fallback = getFallbackProductById(id);
+        if (fallback) {
+          if (isMounted) {
+            setProduct(fallback);
+            setSelectedSize(
+              fallback.sizes && fallback.sizes.length > 0
+                ? fallback.sizes[0]
+                : ""
+            );
+            setSelectedColor(
+              fallback.colors && fallback.colors.length > 0
+                ? fallback.colors[0]
+                : ""
+            );
+            setSelectedImage(0);
+            setAddedToCart(false);
+          }
+          return;
+        }
 
-        setSelectedSize("");
-        setSelectedColor("");
-        setSelectedImage(0);
-        setAddedToCart(false);
-      } catch (error) {
-        console.error("Single Product Error:", error);
+        throw new Error("Failed to load product");
+      } catch (err) {
+        console.error("Single Product Error:", err);
 
-        setError(
-          error.message || "Something went wrong"
-        );
+        // Check fallback in case of network issue
+        const fallback = getFallbackProductById(id);
+        if (fallback && isMounted) {
+          setProduct(fallback);
+          setSelectedSize(
+            fallback.sizes && fallback.sizes.length > 0 ? fallback.sizes[0] : ""
+          );
+          setSelectedColor(
+            fallback.colors && fallback.colors.length > 0 ? fallback.colors[0] : ""
+          );
+          setSelectedImage(0);
+          setAddedToCart(false);
+          return;
+        }
+
+        if (isMounted) {
+          setError(err.message || "Something went wrong");
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchSingleProduct();
+
+    return () => {
+      isMounted = false;
+    };
   }, [id]);
 
   /* =========================
@@ -113,34 +159,56 @@ const SingleProduct = () => {
      PRICE
   ========================= */
 
-  const price = Number(product.price || 0);
+  const rawPrice =
+    typeof product.price === "number"
+      ? product.price
+      : parseFloat(String(product.price || 0).replace(/[^0-9.]/g, "")) || 0;
 
-  const discountPrice = Number(
-    product.discountPrice || 0
-  );
+  const rawDiscountPrice =
+    product.discountPrice !== undefined &&
+    product.discountPrice !== null &&
+    product.discountPrice !== ""
+      ? typeof product.discountPrice === "number"
+        ? product.discountPrice
+        : parseFloat(String(product.discountPrice).replace(/[^0-9.]/g, "")) || 0
+      : 0;
 
-  const finalPrice =
-    discountPrice > 0
-      ? discountPrice
-      : price;
-
-  const hasDiscount =
-    discountPrice > 0 &&
-    discountPrice < price;
-
-  const discountPercentage = hasDiscount
-    ? Math.round(
-        ((price - discountPrice) / price) * 100
-      )
+  const rawOldPrice = product.oldPrice
+    ? typeof product.oldPrice === "number"
+      ? product.oldPrice
+      : parseFloat(String(product.oldPrice).replace(/[^0-9.]/g, "")) || 0
     : 0;
+
+  let finalPrice = rawPrice;
+  let price = rawOldPrice || rawPrice;
+  let hasDiscount = false;
+  let discountPercentage = 0;
+
+  if (rawDiscountPrice > 0 && rawDiscountPrice < rawPrice) {
+    finalPrice = rawDiscountPrice;
+    price = rawPrice;
+    hasDiscount = true;
+    discountPercentage = Math.round(
+      ((rawPrice - rawDiscountPrice) / rawPrice) * 100
+    );
+  } else if (rawOldPrice > 0 && rawPrice < rawOldPrice) {
+    finalPrice = rawPrice;
+    price = rawOldPrice;
+    hasDiscount = true;
+    discountPercentage = Math.round(
+      ((rawOldPrice - rawPrice) / rawOldPrice) * 100
+    );
+  }
 
   /* =========================
      IMAGES
   ========================= */
 
   const productImages =
-    Array.isArray(product.images)
+    Array.isArray(product.images) && product.images.length > 0
       ? product.images
+      : product.image
+      ? [product.image]
       : [];
 
   const currentImage =

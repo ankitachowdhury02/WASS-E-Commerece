@@ -41,6 +41,13 @@
   overflow: hidden;
 }
 
+.product-image a {
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+}
+
 .product-image img {
   width: 100%;
   height: 100%;
@@ -66,6 +73,7 @@
   font-size: 10px;
 
   z-index: 2;
+  pointer-events: none;
 }
 
 .product-badge.discount {
@@ -96,10 +104,12 @@
   opacity: 0;
 
   transition: 0.3s;
+  pointer-events: none;
 }
 
 .product-card:hover .product-overlay {
   opacity: 1;
+  pointer-events: auto;
 }
 
 .cart-button {

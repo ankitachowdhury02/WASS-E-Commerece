@@ -3,6 +3,7 @@ import "./Products3.css";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useCart } from "../../context/CartContext";
+import ProductCard from "../Common/ProductCard";
 
 import {
   Share2,
@@ -457,126 +458,9 @@ const Products3 = ({
             }`}
             key={currentPage}
           >
-            {products.map((product) => {
-              const price = Number(product.price || 0);
-              const discountPrice = Number(product.discountPrice || 0);
-              const finalPrice = discountPrice > 0 ? discountPrice : price;
-
-              let badge = "";
-              let badgeType = "";
-
-              if (discountPrice > 0 && discountPrice < price) {
-                const discount = Math.round(
-                  ((price - discountPrice) / price) * 100
-                );
-                badge = `-${discount}%`;
-                badgeType = "discount";
-              }
-
-              const cartProduct = {
-                ...product,
-                image:
-                  product.images && product.images.length > 0
-                    ? product.images[0]
-                    : "",
-                price: `₹ ${finalPrice}`,
-                oldPrice:
-                  discountPrice > 0 && discountPrice < price
-                    ? `₹ ${price}`
-                    : "",
-              };
-
-              return (
-                <div className="product-card" key={product.id}>
-                  {/* IMAGE */}
-                  <div className="product-image">
-                    <Link to={`/product/${product.id}`}>
-                      {product.images && product.images.length > 0 ? (
-                        <img src={product.images[0]} alt={product.name} />
-                      ) : (
-                        <div
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            background: "#f5f5f5",
-                            color: "#999",
-                          }}
-                        >
-                          No Image
-                        </div>
-                      )}
-                    </Link>
-
-                    {/* BADGE */}
-                    {badge && (
-                      <span className={`product-badge ${badgeType}`}>
-                        {badge}
-                      </span>
-                    )}
-
-                    {/* HOVER OVERLAY */}
-                    <div className="product-overlay">
-                      {/* ADD TO CART */}
-                      <button
-                        className="cart-button"
-                        onClick={() => {
-                          addToCart(cartProduct);
-                          toast.success(`${product.name} added to cart!`);
-                        }}
-                      >
-                        Add to cart
-                      </button>
-
-                      {/* ACTIONS */}
-                      <div className="product-actions">
-                        <button className="action-btn" type="button">
-                          <Share2 size={14} />
-                          <span>Share</span>
-                        </button>
-
-                        <button className="action-btn" type="button">
-                          <ArrowLeftRight size={14} />
-                          <span>Compare</span>
-                        </button>
-
-                        <button className="action-btn" type="button">
-                          <Heart size={14} />
-                          <span>Like</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* PRODUCT INFO */}
-                  <Link
-                    to={`/product/${product.id}`}
-                    style={{
-                      textDecoration: "none",
-                      color: "inherit",
-                    }}
-                  >
-                    <div className="product-info">
-                      <h3>{product.name}</h3>
-
-                      <p className="product-category">{product.category}</p>
-
-                      <div className="product-price">
-                        <strong>
-                          ₹ {finalPrice.toLocaleString("en-IN")}
-                        </strong>
-
-                        {discountPrice > 0 && discountPrice < price && (
-                          <del>₹ {price.toLocaleString("en-IN")}</del>
-                        )}
-                      </div>
-                    </div>
-                  </Link>
-                </div>
-              );
-            })}
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
           </div>
 
           {/* =========================
