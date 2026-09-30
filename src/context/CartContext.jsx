@@ -76,12 +76,14 @@ export const CartProvider = ({ children }) => {
         item.productData ||
         {};
 
+      // Product ID
       const productId =
         product.id ||
         product.productId ||
         product._id ||
         item.productId;
 
+      // Cart Item ID
       const cartItemId =
         item.id ||
         item.cartItemId ||
@@ -89,7 +91,7 @@ export const CartProvider = ({ children }) => {
         item.cart_id;
 
       return {
-        // Backend cart item ID
+        // Backend Cart Item ID
         cartItemId: cartItemId,
 
         // Product ID
@@ -112,12 +114,12 @@ export const CartProvider = ({ children }) => {
           item.description ||
           "",
 
-        // Image
+        // Product image
         image:
           getProductImage(product) ||
           getProductImage(item),
 
-        // Price
+        // Product price
         price:
           product.discountPrice ??
           product.price ??
@@ -125,6 +127,7 @@ export const CartProvider = ({ children }) => {
           item.price ??
           0,
 
+        // Old price
         oldPrice:
           product.oldPrice ||
           item.oldPrice ||
@@ -136,10 +139,10 @@ export const CartProvider = ({ children }) => {
             ? Number(item.quantity)
             : 1,
 
-        // Keep all backend data
+        // Keep backend data
         ...item,
 
-        // Make sure these remain available
+        // Make sure these values remain available
         cartItemId: cartItemId,
         id: productId,
         productId: productId,
@@ -169,7 +172,7 @@ export const CartProvider = ({ children }) => {
   };
 
   // =====================================================
-  // 1. GET MY CART
+  // 1. GET CART
   // GET /api/cart
   // =====================================================
 
@@ -188,7 +191,6 @@ export const CartProvider = ({ children }) => {
         `${API_URL}/api/cart`,
         {
           method: "GET",
-
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -209,7 +211,6 @@ export const CartProvider = ({ children }) => {
       const items = normalizeCartItems(data);
 
       setCartItems(items);
-
     } catch (error) {
       console.error("GET CART ERROR:", error);
 
@@ -218,14 +219,13 @@ export const CartProvider = ({ children }) => {
       toast.error(
         error.message || "Unable to load cart."
       );
-
     } finally {
       setCartLoading(false);
     }
   };
 
   // =====================================================
-  // LOAD CART AFTER PAGE LOAD
+  // LOAD CART WHEN PAGE LOADS
   // =====================================================
 
   useEffect(() => {
@@ -291,15 +291,14 @@ export const CartProvider = ({ children }) => {
         );
       }
 
-      // Get latest cart from backend
+      // Backend থেকে latest cart নিয়ে আসবে
       await fetchCart();
 
-      toast.success(
-        `${product.name} added to cart!`
-      );
+      // IMPORTANT:
+      // এখানে কোনো toast.success নেই।
+      // এতে frontend থেকে duplicate success message আসবে না।
 
       return true;
-
     } catch (error) {
       console.error(
         "ADD TO CART ERROR:",
@@ -392,11 +391,10 @@ export const CartProvider = ({ children }) => {
         );
       }
 
-      // Get latest cart
+      // Latest cart load
       await fetchCart();
 
       return true;
-
     } catch (error) {
       console.error(
         "UPDATE CART ERROR:",
@@ -458,7 +456,7 @@ export const CartProvider = ({ children }) => {
     const currentQuantity =
       Number(item.quantity) || 1;
 
-    // Don't allow quantity below 1
+    // Quantity 1 এর নিচে যাবে না
     if (currentQuantity <= 1) {
       toast.info(
         "Minimum quantity is 1."
@@ -507,7 +505,7 @@ export const CartProvider = ({ children }) => {
         }
       );
 
-      // Some DELETE APIs return empty response
+      // DELETE API empty response দিতে পারে
       let data = {};
 
       const text = await response.text();
@@ -537,15 +535,13 @@ export const CartProvider = ({ children }) => {
         );
       }
 
-      // Get latest cart
+      // Latest cart load
       await fetchCart();
 
-      toast.success(
-        "Product removed from cart!"
-      );
+      // এখানে success toast রাখা হয়নি
+      // duplicate message avoid করার জন্য
 
       return true;
-
     } catch (error) {
       console.error(
         "DELETE CART ERROR:",
@@ -562,7 +558,7 @@ export const CartProvider = ({ children }) => {
   };
 
   // =====================================================
-  // CLEAR LOCAL CART
+  // 7. CLEAR LOCAL CART
   // =====================================================
 
   const clearCart = () => {
@@ -576,21 +572,22 @@ export const CartProvider = ({ children }) => {
   return (
     <CartContext.Provider
       value={{
+        // Cart data
         cartItems,
         cartLoading,
 
-        // GET
+        // GET API
         fetchCart,
 
-        // POST
+        // POST API
         addToCart,
 
-        // PATCH
+        // PATCH API
         updateCartQuantity,
         increaseQuantity,
         decreaseQuantity,
 
-        // DELETE
+        // DELETE API
         removeFromCart,
 
         // Local clear
