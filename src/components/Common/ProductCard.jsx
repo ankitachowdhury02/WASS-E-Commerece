@@ -78,11 +78,13 @@ const ProductCard = ({ product }) => {
         : "",
   };
 
-  const handleAddToCart = (e) => {
+  const handleAddToCart = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    addToCart(cartProduct);
-    toast.success(`${product.name} added to cart!`);
+    const success = await addToCart(cartProduct);
+    if (success) {
+      toast.success(`${product.name} added to cart!`);
+    }
   };
 
   const handleActionClick = (e, actionType) => {

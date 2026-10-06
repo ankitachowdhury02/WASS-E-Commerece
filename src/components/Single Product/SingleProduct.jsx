@@ -248,7 +248,7 @@ const SingleProduct = () => {
      ADD TO CART
   ========================= */
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (
       product.sizes &&
       product.sizes.length > 0 &&
@@ -286,13 +286,15 @@ const SingleProduct = () => {
       selectedColor: selectedColor,
     };
 
-    addToCart(cartProduct);
+    const success = await addToCart(cartProduct);
 
-    setAddedToCart(true);
+    if (success) {
+      setAddedToCart(true);
 
-    toast.success(
-      `${product.name} added to cart!`
-    );
+      toast.success(
+        `${product.name} added to cart!`
+      );
+    }
   };
 
   /* =========================
