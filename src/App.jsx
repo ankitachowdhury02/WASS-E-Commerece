@@ -15,6 +15,7 @@ import Profile from "./Pages/Profile";
 import AdminLogin from "./Pages/AdminLogin";
 import Admin from "./Pages/Admin";
 import Blog from "./Pages/Blog";
+import About from "./Pages/About";
 
 import SingleProduct from "./components/Single Product/SingleProduct";
 
@@ -42,6 +43,18 @@ function App() {
             <>
               <Header />
               <Blog />
+              <Footer />
+            </>
+          }
+        />
+
+        {/* ABOUT */}
+        <Route
+          path="/about"
+          element={
+            <>
+              <Header />
+              <About />
               <Footer />
             </>
           }
