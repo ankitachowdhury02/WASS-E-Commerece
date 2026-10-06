@@ -1,5 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+
+import {
+  Link,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 
 import {
   UserRound,
@@ -14,25 +23,68 @@ import {
 } from "lucide-react";
 
 import logo from "../../assets/furniro-logo.png";
+
 import "./Header.css";
+
+// Cart Sidebar
+import CartSidebar from "../Cart Sidebar/CartSidebar";
 
 const API_URL = "https://ecomm-qy13.onrender.com";
 
 const Header = () => {
+  // =====================================================
+  // STATES
+  // =====================================================
+
   const [menuOpen, setMenuOpen] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
+
+  const [profileOpen, setProfileOpen] =
+    useState(false);
+
   const [user, setUser] = useState(null);
+
+  // Product Details page-এর Cart Sidebar
+  const [cartSidebarOpen, setCartSidebarOpen] =
+    useState(false);
+
+  // =====================================================
+  // REFS
+  // =====================================================
 
   const profileRef = useRef(null);
 
+  // =====================================================
+  // ROUTER
+  // =====================================================
+
   const navigate = useNavigate();
 
-  /* =====================================================
-     REFRESH ACCESS TOKEN
-  ===================================================== */
+  const location = useLocation();
+
+  // =====================================================
+  // CHECK PRODUCT DETAILS PAGE
+  // =====================================================
+
+  /*
+    Product Details URL যদি হয়:
+
+    /product/1
+    /product/25
+    /product/100
+
+    তাহলে এই condition true হবে।
+  */
+
+  const isProductDetailsPage =
+    location.pathname.startsWith("/product/");
+
+  // =====================================================
+  // REFRESH ACCESS TOKEN
+  // =====================================================
 
   const refreshAccessToken = async () => {
-    const refreshToken = localStorage.getItem("refreshToken");
+    const refreshToken =
+      localStorage.getItem("refreshToken");
 
     if (!refreshToken) {
       return null;
@@ -43,9 +95,11 @@ const Header = () => {
         `${API_URL}/api/auth/refresh`,
         {
           method: "POST",
+
           headers: {
             "Content-Type": "application/json",
           },
+
           body: JSON.stringify({
             refreshToken: refreshToken,
           }),
@@ -54,19 +108,19 @@ const Header = () => {
 
       const data = await response.json();
 
-      console.log("Refresh API Response:", data);
+      console.log(
+        "Refresh API Response:",
+        data
+      );
 
       if (!response.ok) {
         throw new Error(
-          data.message || "Unable to refresh token"
+          data.message ||
+            "Unable to refresh token"
         );
       }
 
-      /*
-        Backend নতুন token যেকোনো common format-এ
-        দিলে handle করার চেষ্টা করবে।
-      */
-
+      // Backend-এর common token formats handle
       const newAccessToken =
         data.token ||
         data.accessToken ||
@@ -85,29 +139,29 @@ const Header = () => {
       );
 
       return newAccessToken;
-
     } catch (error) {
-
       console.error(
         "Refresh Token Error:",
         error
       );
 
       localStorage.removeItem("token");
-      localStorage.removeItem("refreshToken");
+
+      localStorage.removeItem(
+        "refreshToken"
+      );
 
       return null;
     }
   };
 
-
-  /* =====================================================
-     FETCH USER PROFILE
-  ===================================================== */
+  // =====================================================
+  // FETCH USER PROFILE
+  // =====================================================
 
   const fetchUserProfile = async () => {
-
-    let token = localStorage.getItem("token");
+    let token =
+      localStorage.getItem("token");
 
     if (!token) {
       setUser(null);
@@ -115,30 +169,36 @@ const Header = () => {
     }
 
     try {
-
       let response = await fetch(
         `${API_URL}/api/users/profile`,
         {
           method: "GET",
+
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
+            "Content-Type":
+              "application/json",
           },
         }
       );
 
       let data = await response.json();
 
-      console.log("Profile API Status:", response.status);
-      console.log("Profile API Response:", data);
+      console.log(
+        "Profile API Status:",
+        response.status
+      );
 
+      console.log(
+        "Profile API Response:",
+        data
+      );
 
-      /* =================================================
-         TOKEN EXPIRED → REFRESH TOKEN
-      ================================================= */
+      // =================================================
+      // TOKEN EXPIRED
+      // =================================================
 
       if (response.status === 401) {
-
         console.log(
           "Access token expired. Trying refresh token..."
         );
@@ -147,25 +207,20 @@ const Header = () => {
           await refreshAccessToken();
 
         if (!newToken) {
-
           setUser(null);
-
           return;
         }
 
-
-        /*
-          নতুন access token দিয়ে
-          Profile API আবার call
-        */
-
+        // New token দিয়ে আবার profile call
         response = await fetch(
           `${API_URL}/api/users/profile`,
           {
             method: "GET",
+
             headers: {
               Authorization: `Bearer ${newToken}`,
-              "Content-Type": "application/json",
+              "Content-Type":
+                "application/json",
             },
           }
         );
@@ -178,31 +233,16 @@ const Header = () => {
         );
       }
 
-
       if (!response.ok) {
-
         throw new Error(
           data.message ||
-          "Unable to fetch profile"
+            "Unable to fetch profile"
         );
       }
 
-
-      /*
-        Backend যদি দেয়:
-
-        {
-          user: {...}
-        }
-
-        অথবা সরাসরি:
-
-        {
-          name: "...",
-          email: "...",
-          phone: "..."
-        }
-      */
+      // =================================================
+      // GET USER DATA
+      // =================================================
 
       const userData =
         data.user ||
@@ -216,9 +256,7 @@ const Header = () => {
       );
 
       setUser(userData);
-
     } catch (error) {
-
       console.error(
         "Profile Fetch Error:",
         error
@@ -228,26 +266,20 @@ const Header = () => {
     }
   };
 
-
-  /* =====================================================
-     FETCH PROFILE ON PAGE LOAD
-  ===================================================== */
+  // =====================================================
+  // FETCH PROFILE ON PAGE LOAD
+  // =====================================================
 
   useEffect(() => {
-
     fetchUserProfile();
-
   }, []);
 
-
-  /* =====================================================
-     CLOSE DROPDOWN OUTSIDE CLICK
-  ===================================================== */
+  // =====================================================
+  // CLOSE PROFILE DROPDOWN OUTSIDE CLICK
+  // =====================================================
 
   useEffect(() => {
-
     const handleOutsideClick = (event) => {
-
       if (
         profileRef.current &&
         !profileRef.current.contains(
@@ -256,7 +288,6 @@ const Header = () => {
       ) {
         setProfileOpen(false);
       }
-
     };
 
     document.addEventListener(
@@ -265,35 +296,27 @@ const Header = () => {
     );
 
     return () => {
-
       document.removeEventListener(
         "mousedown",
         handleOutsideClick
       );
-
     };
-
   }, []);
 
-
-  /* =====================================================
-     LOGOUT
-  ===================================================== */
+  // =====================================================
+  // LOGOUT
+  // =====================================================
 
   const handleLogout = async () => {
-
     let token =
       localStorage.getItem("token");
 
     try {
-
-      /*
-        প্রথমে current access token দিয়ে
-        logout করার চেষ্টা
-      */
+      // =================================================
+      // LOGOUT API
+      // =================================================
 
       if (token) {
-
         let response = await fetch(
           `${API_URL}/api/auth/logout`,
           {
@@ -301,7 +324,8 @@ const Header = () => {
 
             headers: {
               Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
+              "Content-Type":
+                "application/json",
             },
           }
         );
@@ -318,14 +342,11 @@ const Header = () => {
           data
         );
 
-
-        /*
-          Access token expired হলে
-          refresh করে আবার logout
-        */
+        // =================================================
+        // ACCESS TOKEN EXPIRED
+        // =================================================
 
         if (response.status === 401) {
-
           console.log(
             "Access token expired during logout. Refreshing..."
           );
@@ -334,15 +355,13 @@ const Header = () => {
             await refreshAccessToken();
 
           if (newToken) {
-
             response = await fetch(
               `${API_URL}/api/auth/logout`,
               {
                 method: "POST",
 
                 headers: {
-                  Authorization:
-                    `Bearer ${newToken}`,
+                  Authorization: `Bearer ${newToken}`,
                   "Content-Type":
                     "application/json",
                 },
@@ -357,22 +376,16 @@ const Header = () => {
             );
           }
         }
-
       }
-
     } catch (error) {
-
       console.error(
         "Logout Error:",
         error
       );
-
     } finally {
-
-      /*
-        Backend logout success/error যাই হোক,
-        local session clear হবে
-      */
+      // =================================================
+      // CLEAR LOCAL SESSION
+      // =================================================
 
       localStorage.removeItem("token");
 
@@ -386,298 +399,315 @@ const Header = () => {
 
       setMenuOpen(false);
 
+      // Sidebar বন্ধ
+      setCartSidebarOpen(false);
+
       navigate("/login");
     }
   };
 
-
-  /* =====================================================
-     MOBILE MENU CLOSE
-  ===================================================== */
+  // =====================================================
+  // MOBILE MENU CLOSE
+  // =====================================================
 
   const closeMobileMenu = () => {
     setMenuOpen(false);
   };
 
+  // =====================================================
+  // CART BUTTON FUNCTION
+  // =====================================================
 
-  /* =====================================================
-     JSX
-  ===================================================== */
+  const handleCartClick = () => {
+    /*
+      যদি Product Details page হয়:
+
+      /product/1
+      /product/2
+      /product/100
+
+      তাহলে Cart Sidebar খুলবে।
+    */
+
+    if (isProductDetailsPage) {
+      setCartSidebarOpen(true);
+
+      return;
+    }
+
+    /*
+      অন্য সব page-এ আগের মতো
+      /cart page-এ যাবে।
+    */
+
+    navigate("/cart");
+  };
+
+  // =====================================================
+  // JSX
+  // =====================================================
 
   return (
+    <>
+      <header className="header">
 
-    <header className="header">
+        {/* =================================================
+            LOGO
+        ================================================= */}
 
-      {/* LOGO */}
+        <div className="header-logo">
+          <Link
+            to="/"
+            onClick={closeMobileMenu}
+          >
+            <img
+              src={logo}
+              alt="Furniro Logo"
+            />
+          </Link>
+        </div>
 
-      <div className="header-logo">
+        {/* =================================================
+            NAVBAR
+        ================================================= */}
 
-        <Link
-          to="/"
-          onClick={closeMobileMenu}
+        <nav
+          className={`navbar ${
+            menuOpen ? "active" : ""
+          }`}
         >
+          <Link
+            to="/"
+            onClick={closeMobileMenu}
+          >
+            Home
+          </Link>
 
-          <img
-            src={logo}
-            alt="Furniro Logo"
-          />
+          <Link
+            to="/shop"
+            onClick={closeMobileMenu}
+          >
+            Shop
+          </Link>
 
-        </Link>
+          <Link
+            to="/about"
+            onClick={closeMobileMenu}
+          >
+            About
+          </Link>
 
-      </div>
+          <Link
+            to="/contact"
+            onClick={closeMobileMenu}
+          >
+            Contact
+          </Link>
+        </nav>
 
+        {/* =================================================
+            HEADER ICONS
+        ================================================= */}
 
-      {/* NAVBAR */}
+        <div className="header-icons">
 
-      <nav
-        className={`navbar ${
-          menuOpen ? "active" : ""
-        }`}
-      >
+          {/* =================================================
+              PROFILE
+          ================================================= */}
 
-        <Link
-          to="/"
-          onClick={closeMobileMenu}
-        >
-          Home
-        </Link>
-
-        <Link
-          to="/shop"
-          onClick={closeMobileMenu}
-        >
-          Shop
-        </Link>
-
-        <Link
-          to="/about"
-          onClick={closeMobileMenu}
-        >
-          About
-        </Link>
-
-        <Link
-          to="/contact"
-          onClick={closeMobileMenu}
-        >
-          Contact
-        </Link>
-
-      </nav>
-
-
-      {/* HEADER ICONS */}
-
-      <div className="header-icons">
-
-        {/* PROFILE */}
-
-        <div
-          className="profile-wrapper"
-          ref={profileRef}
-        >
-
-          <button
-            type="button"
-            className={`profile-icon-btn ${
-              profileOpen
-                ? "profile-active"
-                : ""
-            }`}
-            onClick={() =>
-              setProfileOpen(
-                !profileOpen
-              )
-            }
+          <div
+            className="profile-wrapper"
+            ref={profileRef}
           >
 
-            <UserRound size={26} />
+            <button
+              type="button"
+              className={`profile-icon-btn ${
+                profileOpen
+                  ? "profile-active"
+                  : ""
+              }`}
+              onClick={() =>
+                setProfileOpen(
+                  !profileOpen
+                )
+              }
+            >
+              <UserRound size={26} />
+            </button>
 
-          </button>
+            {/* =================================================
+                PROFILE DROPDOWN
+            ================================================= */}
 
+            {profileOpen && (
+              <div className="profile-dropdown">
 
-          {/* PROFILE DROPDOWN */}
+                {/* USER INFO */}
 
-          {profileOpen && (
+                <div className="profile-user-info">
 
-            <div className="profile-dropdown">
+                  <div className="profile-avatar">
+                    <UserRound size={25} />
+                  </div>
 
-              {/* USER INFO */}
+                  <div className="profile-user-text">
 
-              <div className="profile-user-info">
+                    <h3>
+                      {user?.name ||
+                        user?.fullName ||
+                        "User"}
+                    </h3>
 
-                <div className="profile-avatar">
+                    <p>
+                      {user?.phone
+                        ? `+91 ${user.phone}`
+                        : user?.email ||
+                          "Please login"}
+                    </p>
 
-                  <UserRound size={25} />
+                  </div>
 
                 </div>
 
-
-                <div className="profile-user-text">
-
-                  <h3>
-                    {user?.name ||
-                      user?.fullName ||
-                      "User"}
-                  </h3>
-
-                  <p>
-
-                    {user?.phone
-                      ? `+91 ${user.phone}`
-                      : user?.email ||
-                        "Please login"}
-
-                  </p>
-
-                </div>
-
-              </div>
-
-
-              {/* MY ORDERS */}
-
-              <Link
-                to="/profile"
-                className="profile-menu-item"
-                onClick={() =>
-                  setProfileOpen(false)
-                }
-              >
-
-                <Package size={21} />
-
-                <span>
-                  My Orders
-                </span>
-
-              </Link>
-
-
-              {/* MY PROFILE */}
-
-              <Link
-                to="/profile"
-                className="profile-menu-item"
-                onClick={() =>
-                  setProfileOpen(false)
-                }
-              >
-
-                <UserRound size={21} />
-
-                <span>
-                  My Profile
-                </span>
-
-              </Link>
-
-
-              {/* LOGIN / LOGOUT */}
-
-              {user ||
-              localStorage.getItem(
-                "token"
-              ) ? (
-
-                <button
-                  type="button"
-                  className="profile-menu-item logout-item"
-                  onClick={handleLogout}
-                >
-
-                  <LogOut size={21} />
-
-                  <span>
-                    Logout
-                  </span>
-
-                </button>
-
-              ) : (
+                {/* MY ORDERS */}
 
                 <Link
-                  to="/login"
-                  className="profile-menu-item login-item"
+                  to="/profile"
+                  className="profile-menu-item"
                   onClick={() =>
                     setProfileOpen(false)
                   }
                 >
-
-                  <LogIn size={21} />
+                  <Package size={21} />
 
                   <span>
-                    Login / Register
+                    My Orders
                   </span>
-
                 </Link>
 
-              )}
+                {/* MY PROFILE */}
 
-            </div>
+                <Link
+                  to="/profile"
+                  className="profile-menu-item"
+                  onClick={() =>
+                    setProfileOpen(false)
+                  }
+                >
+                  <UserRound size={21} />
 
-          )}
+                  <span>
+                    My Profile
+                  </span>
+                </Link>
+
+                {/* LOGIN / LOGOUT */}
+
+                {user ||
+                localStorage.getItem(
+                  "token"
+                ) ? (
+                  <button
+                    type="button"
+                    className="profile-menu-item logout-item"
+                    onClick={handleLogout}
+                  >
+                    <LogOut size={21} />
+
+                    <span>
+                      Logout
+                    </span>
+                  </button>
+                ) : (
+                  <Link
+                    to="/login"
+                    className="profile-menu-item login-item"
+                    onClick={() =>
+                      setProfileOpen(false)
+                    }
+                  >
+                    <LogIn size={21} />
+
+                    <span>
+                      Login / Register
+                    </span>
+                  </Link>
+                )}
+
+              </div>
+            )}
+
+          </div>
+
+          {/* =================================================
+              SEARCH
+          ================================================= */}
+
+          <button
+            className="icon-btn"
+            type="button"
+          >
+            <Search size={26} />
+          </button>
+
+          {/* =================================================
+              WISHLIST
+          ================================================= */}
+
+          <button
+            className="icon-btn"
+            type="button"
+          >
+            <Heart size={26} />
+          </button>
+
+          {/* =================================================
+              CART
+          ================================================= */}
+
+          <button
+            type="button"
+            className="icon-btn"
+            onClick={handleCartClick}
+          >
+            <ShoppingCart size={26} />
+          </button>
 
         </div>
 
-
-        {/* SEARCH */}
-
-        <button
-          className="icon-btn"
-          type="button"
-        >
-
-          <Search size={26} />
-
-        </button>
-
-
-        {/* WISHLIST */}
+        {/* =================================================
+            MOBILE MENU
+        ================================================= */}
 
         <button
-          className="icon-btn"
           type="button"
+          className="mobile-menu"
+          onClick={() =>
+            setMenuOpen(!menuOpen)
+          }
         >
-
-          <Heart size={26} />
-
+          {menuOpen ? (
+            <X size={28} />
+          ) : (
+            <Menu size={28} />
+          )}
         </button>
 
+      </header>
 
-        {/* CART */}
+      {/* =====================================================
+          PRODUCT DETAILS CART SIDEBAR
+      ===================================================== */}
 
-        <Link
-          to="/cart"
-          className="icon-btn"
-        >
-
-          <ShoppingCart size={26} />
-
-        </Link>
-
-      </div>
-
-
-      {/* MOBILE MENU */}
-
-      <button
-        type="button"
-        className="mobile-menu"
-        onClick={() =>
-          setMenuOpen(!menuOpen)
+      <CartSidebar
+        isOpen={cartSidebarOpen}
+        onClose={() =>
+          setCartSidebarOpen(false)
         }
-      >
+      />
 
-        {menuOpen ? (
-          <X size={28} />
-        ) : (
-          <Menu size={28} />
-        )}
-
-      </button>
-
-    </header>
+    </>
   );
 };
 

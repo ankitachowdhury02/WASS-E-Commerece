@@ -1,0 +1,377 @@
+/* =====================================================
+   OVERLAY
+===================================================== */
+
+.cart-sidebar-overlay {
+  position: fixed;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 100vh;
+
+  background: rgba(0, 0, 0, 0.35);
+
+  z-index: 9998;
+}
+
+
+/* =====================================================
+   SIDEBAR
+===================================================== */
+
+.cart-sidebar {
+  position: fixed;
+
+  top: 0;
+  right: 0;
+
+  width: 390px;
+  max-width: 90vw;
+
+  height: 100vh;
+
+  background: #ffffff;
+
+  z-index: 9999;
+
+  display: flex;
+  flex-direction: column;
+
+  box-shadow: -5px 0 20px rgba(0, 0, 0, 0.15);
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.cart-sidebar-header {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 24px 25px 20px;
+
+  border-bottom: 1px solid #eeeeee;
+}
+
+.cart-sidebar-header h2 {
+  margin: 0;
+
+  font-size: 20px;
+
+  font-weight: 600;
+
+  color: #111111;
+}
+
+.cart-sidebar-close {
+  border: none;
+
+  background: transparent;
+
+  cursor: pointer;
+
+  color: #555555;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cart-sidebar-close:hover {
+  color: #b88e2f;
+}
+
+
+/* =====================================================
+   PRODUCTS
+===================================================== */
+
+.cart-sidebar-products {
+  flex: 1;
+
+  overflow-y: auto;
+
+  padding: 20px 25px;
+}
+
+
+/* =====================================================
+   SINGLE PRODUCT
+===================================================== */
+
+.cart-sidebar-item {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 12px 0;
+
+  border-bottom: 1px solid #eeeeee;
+}
+
+
+/* =====================================================
+   IMAGE
+===================================================== */
+
+.cart-sidebar-image {
+  width: 75px;
+  height: 75px;
+
+  flex-shrink: 0;
+
+  background: #f5f1eb;
+
+  border-radius: 5px;
+
+  overflow: hidden;
+}
+
+.cart-sidebar-image img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  display: block;
+}
+
+
+/* =====================================================
+   DETAILS
+===================================================== */
+
+.cart-sidebar-details {
+  flex: 1;
+
+  min-width: 0;
+}
+
+.cart-sidebar-details h3 {
+  margin: 0 0 6px;
+
+  font-size: 14px;
+
+  font-weight: 500;
+
+  color: #222222;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+.cart-sidebar-details p {
+  margin: 0 0 8px;
+
+  font-size: 12px;
+
+  color: #b88e2f;
+
+  font-weight: 600;
+}
+
+
+/* =====================================================
+   QUANTITY
+===================================================== */
+
+.cart-sidebar-quantity {
+  display: flex;
+
+  align-items: center;
+
+  width: fit-content;
+
+  border: 1px solid #dddddd;
+
+  border-radius: 3px;
+}
+
+.cart-sidebar-quantity button {
+  width: 27px;
+  height: 25px;
+
+  border: none;
+
+  background: transparent;
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cart-sidebar-quantity button:hover {
+  color: #b88e2f;
+}
+
+.cart-sidebar-quantity span {
+  min-width: 25px;
+
+  text-align: center;
+
+  font-size: 12px;
+}
+
+
+/* =====================================================
+   DELETE
+===================================================== */
+
+.cart-sidebar-delete {
+  border: none;
+
+  background: transparent;
+
+  color: #999999;
+
+  cursor: pointer;
+}
+
+.cart-sidebar-delete:hover {
+  color: #d33;
+}
+
+
+/* =====================================================
+   EMPTY
+===================================================== */
+
+.cart-sidebar-empty {
+  text-align: center;
+
+  padding: 60px 20px;
+}
+
+.cart-sidebar-empty p {
+  margin-bottom: 15px;
+
+  color: #666666;
+
+  font-size: 14px;
+}
+
+.cart-sidebar-empty a {
+  color: #b88e2f;
+
+  font-size: 13px;
+
+  text-decoration: underline;
+}
+
+
+/* =====================================================
+   BOTTOM
+===================================================== */
+
+.cart-sidebar-bottom {
+  border-top: 1px solid #eeeeee;
+
+  padding: 20px 25px;
+}
+
+
+/* =====================================================
+   TOTAL
+===================================================== */
+
+.cart-sidebar-total {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 20px;
+}
+
+.cart-sidebar-total span {
+  font-size: 14px;
+
+  color: #555555;
+}
+
+.cart-sidebar-total strong {
+  font-size: 15px;
+
+  color: #b88e2f;
+}
+
+
+/* =====================================================
+   ACTION BUTTONS
+===================================================== */
+
+.cart-sidebar-actions {
+  display: flex;
+
+  gap: 10px;
+}
+
+.cart-sidebar-actions a {
+  flex: 1;
+
+  height: 40px;
+
+  border: 1px solid #222222;
+
+  border-radius: 3px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  text-decoration: none;
+
+  color: #222222;
+
+  font-size: 12px;
+
+  transition: 0.2s;
+}
+
+.cart-sidebar-actions a:hover {
+  background: #b88e2f;
+
+  border-color: #b88e2f;
+
+  color: #ffffff;
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 500px) {
+
+  .cart-sidebar {
+    width: 100%;
+
+    max-width: 100%;
+  }
+
+  .cart-sidebar-header {
+    padding: 20px;
+  }
+
+  .cart-sidebar-products {
+    padding: 15px 20px;
+  }
+
+  .cart-sidebar-bottom {
+    padding: 18px 20px;
+  }
+
+}
