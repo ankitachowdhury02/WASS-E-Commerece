@@ -708,6 +708,9 @@ const Header = () => {
 
       </header>
 
+      {/* FIXED HEADER SPACER */}
+      <div className="header-spacer" aria-hidden="true" />
+
       {/* =====================================================
           PRODUCT DETAILS CART SIDEBAR
       ===================================================== */}
