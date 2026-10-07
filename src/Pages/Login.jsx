@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 import "./Login.css";
 
 const Login = () => {
@@ -128,6 +129,12 @@ const Login = () => {
   return (
     <section className="login-page">
       <div className="login-box">
+        {/* BACK TO HOME */}
+        <Link to="/" className="back-to-home" title="Back to Home">
+          <ArrowLeft size={16} />
+          <span>Back to Home</span>
+        </Link>
+
         <h1>Welcome Back</h1>
 
         <p className="login-subtitle">Please login to your Account</p>

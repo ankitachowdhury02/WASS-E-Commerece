@@ -28,6 +28,36 @@
   box-sizing: border-box;
 }
 
+/* BACK TO HOME BUTTON */
+.back-to-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  margin-bottom: 22px;
+  padding: 8px 14px;
+
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+
+  background: #ffffff;
+  color: #555555;
+
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.back-to-home:hover {
+  color: #b88e2f;
+  border-color: #b88e2f;
+  background: #faf6ee;
+  transform: translateX(-3px);
+}
+
 .login-box h1 {
   margin: 0;
 
@@ -255,6 +285,12 @@
     padding: 30px 20px;
   }
 
+  .back-to-home {
+    margin-bottom: 16px;
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
   .login-box h1 {
     font-size: 25px;
   }
@@ -273,6 +309,13 @@
   .login-box {
     padding: 20px 12px;
     border-radius: 8px;
+  }
+
+  .back-to-home {
+    margin-bottom: 14px;
+    padding: 5px 10px;
+    font-size: 11px;
+    gap: 6px;
   }
 
   .login-box h1 {
