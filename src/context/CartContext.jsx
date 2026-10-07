@@ -248,7 +248,9 @@ export const CartProvider = ({ children }) => {
       return false;
     }
 
-    if (!product?.id) {
+    const prodId = product?.id || product?.productId || product?._id;
+
+    if (!prodId) {
       toast.error("Product ID is missing.");
 
       return false;
@@ -266,7 +268,7 @@ export const CartProvider = ({ children }) => {
           },
 
           body: JSON.stringify({
-            productId: Number(product.id),
+            productId: Number(prodId),
             quantity: 1,
           }),
         }
@@ -285,6 +287,9 @@ export const CartProvider = ({ children }) => {
       );
 
       if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Please login again to continue.");
+        }
         throw new Error(
           data.message ||
             "Failed to add product to cart."
@@ -294,9 +299,10 @@ export const CartProvider = ({ children }) => {
       // Backend থেকে latest cart নিয়ে আসবে
       await fetchCart();
 
-      // IMPORTANT:
-      // এখানে কোনো toast.success নেই।
-      // এতে frontend থেকে duplicate success message আসবে না।
+      const productName = product?.name || data?.product?.name || "Product";
+      toast.success(
+        data?.message || `${productName} added to cart!`
+      );
 
       return true;
     } catch (error) {
@@ -529,6 +535,9 @@ export const CartProvider = ({ children }) => {
       );
 
       if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Please login again to continue.");
+        }
         throw new Error(
           data.message ||
             "Failed to remove product from cart."
@@ -538,8 +547,9 @@ export const CartProvider = ({ children }) => {
       // Latest cart load
       await fetchCart();
 
-      // এখানে success toast রাখা হয়নি
-      // duplicate message avoid করার জন্য
+      toast.success(
+        data?.message || "Product removed from cart!"
+      );
 
       return true;
     } catch (error) {
