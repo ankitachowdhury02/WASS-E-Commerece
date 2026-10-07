@@ -5,6 +5,8 @@ import {
   ShoppingCart,
   Trash2,
   ArrowLeft,
+  Eye,
+  Check,
 } from "lucide-react";
 
 import {
@@ -25,16 +27,12 @@ import {
 import "./Wishlist.css";
 
 
-// =====================================================
-// WISHLIST PAGE
-// =====================================================
-
 const Wishlist = () => {
   const navigate = useNavigate();
 
 
   // =====================================================
-  // WISHLIST CONTEXT
+  // WISHLIST
   // =====================================================
 
   const {
@@ -45,7 +43,7 @@ const Wishlist = () => {
 
 
   // =====================================================
-  // CART CONTEXT
+  // CART
   // =====================================================
 
   const {
@@ -109,16 +107,27 @@ const Wishlist = () => {
 
 
   // =====================================================
-  // GET PRODUCT IMAGE
+  // GET CATEGORY
+  // =====================================================
+
+  const getProductCategory = (item) => {
+    const product = getProduct(item);
+
+    return (
+      product?.category ||
+      item?.category ||
+      "Furniture"
+    );
+  };
+
+
+  // =====================================================
+  // GET IMAGE
   // =====================================================
 
   const getProductImage = (item) => {
     const product = getProduct(item);
 
-
-    // -----------------------------------------------
-    // IMAGES ARRAY
-    // -----------------------------------------------
 
     if (
       Array.isArray(product?.images) &&
@@ -143,10 +152,6 @@ const Wishlist = () => {
     }
 
 
-    // -----------------------------------------------
-    // SINGLE IMAGE
-    // -----------------------------------------------
-
     return (
       product?.image ||
       product?.imageUrl ||
@@ -157,7 +162,7 @@ const Wishlist = () => {
 
 
   // =====================================================
-  // GET PRODUCT PRICE
+  // GET CURRENT PRICE
   // =====================================================
 
   const getProductPrice = (item) => {
@@ -179,6 +184,89 @@ const Wishlist = () => {
         )
       ) || 0
     );
+  };
+
+
+  // =====================================================
+  // GET OLD PRICE
+  // =====================================================
+
+  const getOldPrice = (item) => {
+    const product = getProduct(item);
+
+    const oldPrice =
+      product?.oldPrice ??
+      product?.originalPrice ??
+      product?.mrp ??
+      item?.oldPrice ??
+      item?.originalPrice ??
+      item?.mrp ??
+      0;
+
+
+    return (
+      parseFloat(
+        String(oldPrice).replace(
+          /[^0-9.]/g,
+          ""
+        )
+      ) || 0
+    );
+  };
+
+
+  // =====================================================
+  // GET DISCOUNT
+  // =====================================================
+
+  const getDiscount = (item) => {
+    const product = getProduct(item);
+
+    const discount =
+      product?.discount ??
+      product?.discountPercentage ??
+      item?.discount ??
+      item?.discountPercentage;
+
+
+    if (
+      discount !== undefined &&
+      discount !== null &&
+      discount !== ""
+    ) {
+      const value = parseFloat(
+        String(discount).replace(
+          /[^0-9.]/g,
+          ""
+        )
+      );
+
+      if (!isNaN(value) && value > 0) {
+        return Math.round(value);
+      }
+    }
+
+
+    const price =
+      getProductPrice(item);
+
+    const oldPrice =
+      getOldPrice(item);
+
+
+    if (
+      oldPrice > price &&
+      price > 0
+    ) {
+      return Math.round(
+        ((oldPrice - price) /
+          oldPrice) *
+          100
+      );
+    }
+
+
+    return 0;
   };
 
 
@@ -240,9 +328,7 @@ const Wishlist = () => {
         getProductPrice(item),
 
       category:
-        product?.category ||
-        item?.category ||
-        "",
+        getProductCategory(item),
     };
 
 
@@ -260,25 +346,22 @@ const Wishlist = () => {
     return (
       <div className="wishlist-page">
 
-        <div className="wishlist-container">
+        <div className="wishlist-loading">
 
-          <div className="wishlist-loading">
-
+          <div className="wishlist-loading-icon">
             <Heart
-              size={45}
+              size={32}
               strokeWidth={1.5}
             />
-
-            <h2>
-              Loading Wishlist...
-            </h2>
-
-            <p>
-              Please wait while we load
-              your saved products.
-            </p>
-
           </div>
+
+          <h2>
+            Loading your wishlist
+          </h2>
+
+          <p>
+            Please wait a moment.
+          </p>
 
         </div>
 
@@ -298,72 +381,42 @@ const Wishlist = () => {
     return (
       <div className="wishlist-page">
 
-        <div className="wishlist-container">
+        <div className="wishlist-empty">
 
-          {/* HEADER */}
-
-          <div className="wishlist-header">
-
-            <div>
-
-              <span className="wishlist-subtitle">
-                YOUR COLLECTION
-              </span>
-
-              <h1>
-                My Wishlist
-              </h1>
-
-            </div>
-
+          <div className="wishlist-empty-symbol">
 
             <Heart
-              size={42}
-              strokeWidth={1.5}
+              size={40}
+              strokeWidth={1.3}
             />
 
           </div>
 
 
-          {/* EMPTY CONTENT */}
-
-          <div className="wishlist-empty">
-
-            <div className="wishlist-empty-icon">
-
-              <Heart
-                size={42}
-                strokeWidth={1.5}
-              />
-
-            </div>
+          <span className="wishlist-eyebrow">
+            YOUR COLLECTION
+          </span>
 
 
-            <h2>
-              Your wishlist is empty
-            </h2>
+          <h1>
+            My Wishlist
+          </h1>
 
 
-            <p>
-              Save products you love and
-              come back to them anytime.
-            </p>
+          <p>
+            Your favourite pieces will
+            appear here.
+          </p>
 
 
-            <Link
-              to="/shop"
-              className="wishlist-shop-button"
-            >
+          <Link
+            to="/shop"
+            className="wishlist-empty-button"
+          >
+            <ShoppingCart size={17} />
 
-              <ShoppingCart
-                size={18}
-              />
-
-              Continue Shopping
-
-            </Link>
-
-          </div>
+            Explore Products
+          </Link>
 
         </div>
 
@@ -373,7 +426,7 @@ const Wishlist = () => {
 
 
   // =====================================================
-  // WISHLIST PAGE WITH PRODUCTS
+  // MAIN PAGE
   // =====================================================
 
   return (
@@ -381,15 +434,16 @@ const Wishlist = () => {
 
       <div className="wishlist-container">
 
+
         {/* =================================================
-            HEADER
+            PAGE HEADER
         ================================================= */}
 
-        <div className="wishlist-header">
+        <section className="wishlist-page-header">
 
-          <div>
+          <div className="wishlist-heading">
 
-            <span className="wishlist-subtitle">
+            <span className="wishlist-eyebrow">
               YOUR COLLECTION
             </span>
 
@@ -397,22 +451,40 @@ const Wishlist = () => {
               My Wishlist
             </h1>
 
+            <p>
+              Pieces you've saved for later.
+            </p>
+
           </div>
 
 
-          <Heart
-            size={42}
-            strokeWidth={1.5}
-          />
+          <div className="wishlist-count">
 
-        </div>
+            <Heart
+              size={20}
+              strokeWidth={1.5}
+            />
+
+            <span>
+              {wishlistItems.length}
+            </span>
+
+            <small>
+              {wishlistItems.length === 1
+                ? "Item Saved"
+                : "Items Saved"}
+            </small>
+
+          </div>
+
+        </section>
 
 
         {/* =================================================
             PRODUCT GRID
         ================================================= */}
 
-        <div className="wishlist-grid">
+        <section className="wishlist-grid">
 
           {wishlistItems.map(
             (item, index) => {
@@ -423,15 +495,24 @@ const Wishlist = () => {
               const productName =
                 getProductName(item);
 
-              const productImage =
+              const category =
+                getProductCategory(item);
+
+              const image =
                 getProductImage(item);
 
-              const productPrice =
+              const price =
                 getProductPrice(item);
+
+              const oldPrice =
+                getOldPrice(item);
+
+              const discount =
+                getDiscount(item);
 
 
               return (
-                <div
+                <article
                   className="wishlist-card"
                   key={
                     productId ||
@@ -440,29 +521,87 @@ const Wishlist = () => {
                   }
                 >
 
+
                   {/* =================================================
-                      PRODUCT IMAGE
+                      IMAGE
                   ================================================= */}
 
-                  <div className="wishlist-card-image">
+                  <div className="wishlist-image-wrapper">
 
-                    {productImage ? (
+
+                    {image ? (
 
                       <img
-                        src={productImage}
+                        src={image}
                         alt={productName}
+                        className="wishlist-product-image"
                       />
 
                     ) : (
 
-                      <div className="wishlist-no-image">
+                      <div className="wishlist-image-placeholder">
 
                         <Heart
-                          size={35}
-                          strokeWidth={1.5}
+                          size={38}
+                          strokeWidth={1.2}
                         />
 
                       </div>
+
+                    )}
+
+
+                    {/* DISCOUNT */}
+
+                    {discount > 0 && (
+
+                      <span className="wishlist-discount">
+
+                        -{discount}%
+
+                      </span>
+
+                    )}
+
+
+                    {/* WISHLIST ICON */}
+
+                    <button
+                      type="button"
+                      className="wishlist-heart-button"
+                      onClick={() =>
+                        handleRemove(item)
+                      }
+                      title="Remove from wishlist"
+                    >
+
+                      <Heart
+                        size={18}
+                        fill="currentColor"
+                      />
+
+                    </button>
+
+
+                    {/* HOVER VIEW */}
+
+                    {productId && (
+
+                      <button
+                        type="button"
+                        className="wishlist-image-view"
+                        onClick={() =>
+                          navigate(
+                            `/product/${productId}`
+                          )
+                        }
+                      >
+
+                        <Eye size={16} />
+
+                        View Product
+
+                      </button>
 
                     )}
 
@@ -470,46 +609,65 @@ const Wishlist = () => {
 
 
                   {/* =================================================
-                      PRODUCT INFORMATION
+                      PRODUCT DETAILS
                   ================================================= */}
 
-                  <div className="wishlist-card-content">
+                  <div className="wishlist-product-info">
 
-                    <h3>
+
+                    <span className="wishlist-category">
+                      {category}
+                    </span>
+
+
+                    <h2>
                       {productName}
-                    </h3>
+                    </h2>
 
 
-                    <p className="wishlist-price">
+                    <div className="wishlist-price-row">
 
-                      ₹{" "}
-                      {productPrice.toLocaleString(
-                        "en-IN"
+                      <strong>
+                        ₹{" "}
+                        {price.toLocaleString(
+                          "en-IN"
+                        )}
+                      </strong>
+
+
+                      {oldPrice > price && (
+
+                        <del>
+                          ₹{" "}
+                          {oldPrice.toLocaleString(
+                            "en-IN"
+                          )}
+                        </del>
+
                       )}
 
-                    </p>
+                    </div>
 
 
                     {/* =================================================
-                        BUTTONS
+                        ACTION BUTTONS
                     ================================================= */}
 
-                    <div className="wishlist-actions">
+                    <div className="wishlist-card-actions">
+
 
                       {/* ADD TO CART */}
 
                       <button
                         type="button"
-                        className="wishlist-cart-button"
+                        className="wishlist-add-cart"
                         onClick={() =>
-                          handleAddToCart(
-                            item
-                          )
+                          handleAddToCart(item)
                         }
                       >
 
                         <ShoppingCart
-                          size={17}
+                          size={16}
                         />
 
                         <span>
@@ -519,20 +677,18 @@ const Wishlist = () => {
                       </button>
 
 
-                      {/* REMOVE PRODUCT */}
+                      {/* REMOVE */}
 
                       <button
                         type="button"
-                        className="wishlist-remove-button"
+                        className="wishlist-remove"
                         onClick={() =>
-                          handleRemove(
-                            item
-                          )
+                          handleRemove(item)
                         }
                       >
 
                         <Trash2
-                          size={17}
+                          size={16}
                         />
 
                         <span>
@@ -544,9 +700,7 @@ const Wishlist = () => {
                     </div>
 
 
-                    {/* =================================================
-                        VIEW PRODUCT
-                    ================================================= */}
+                    {/* VIEW PRODUCT */}
 
                     {productId && (
 
@@ -559,31 +713,36 @@ const Wishlist = () => {
                           )
                         }
                       >
+
                         View Product
+
                       </button>
 
                     )}
 
                   </div>
 
-                </div>
+                </article>
               );
             }
           )}
 
-        </div>
+        </section>
 
 
         {/* =================================================
-            BACK TO SHOP
+            FOOTER ACTION
         ================================================= */}
 
-        <div className="wishlist-back">
+        <div className="wishlist-footer">
 
-          <Link to="/shop">
+          <Link
+            to="/shop"
+            className="wishlist-back-shop"
+          >
 
             <ArrowLeft
-              size={18}
+              size={17}
             />
 
             Continue Shopping
