@@ -1,20 +1,45 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { Share2, ArrowLeftRight, Heart } from "lucide-react";
+import {
+  Share2,
+  ArrowLeftRight,
+  Heart,
+} from "lucide-react";
+
 import { useCart } from "../../context/CartContext";
+import { useWishlist } from "../../context/WishlistContext";
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
+
+  const {
+    addToWishlist,
+    removeFromWishlist,
+    isInWishlist,
+  } = useWishlist();
+
   const navigate = useNavigate();
 
   if (!product) return null;
 
-  // Extract numeric price and discount values accurately across API and local formats
+  // ==========================================
+  // PRICE
+  // ==========================================
+
   const rawPrice =
     typeof product.price === "number"
       ? product.price
-      : parseFloat(String(product.price || 0).replace(/[^0-9.]/g, "")) || 0;
+      : parseFloat(
+          String(product.price || 0).replace(
+            /[^0-9.]/g,
+            ""
+          )
+        ) || 0;
+
+  // ==========================================
+  // DISCOUNT PRICE
+  // ==========================================
 
   const rawDiscountPrice =
     product.discountPrice !== undefined &&
@@ -22,77 +47,168 @@ const ProductCard = ({ product }) => {
     product.discountPrice !== ""
       ? typeof product.discountPrice === "number"
         ? product.discountPrice
-        : parseFloat(String(product.discountPrice).replace(/[^0-9.]/g, "")) || 0
+        : parseFloat(
+            String(product.discountPrice).replace(
+              /[^0-9.]/g,
+              ""
+            )
+          ) || 0
       : 0;
+
+  // ==========================================
+  // OLD PRICE
+  // ==========================================
 
   const rawOldPrice = product.oldPrice
     ? typeof product.oldPrice === "number"
       ? product.oldPrice
-      : parseFloat(String(product.oldPrice).replace(/[^0-9.]/g, "")) || 0
+      : parseFloat(
+          String(product.oldPrice).replace(
+            /[^0-9.]/g,
+            ""
+          )
+        ) || 0
     : 0;
+
+  // ==========================================
+  // FINAL PRICE CALCULATION
+  // ==========================================
 
   let finalPrice = rawPrice;
   let originalPrice = rawOldPrice;
   let hasDiscount = false;
   let discountPercentage = 0;
 
-  if (rawDiscountPrice > 0 && rawDiscountPrice < rawPrice) {
+  if (
+    rawDiscountPrice > 0 &&
+    rawDiscountPrice < rawPrice
+  ) {
     finalPrice = rawDiscountPrice;
     originalPrice = rawPrice;
+
     hasDiscount = true;
+
     discountPercentage = Math.round(
-      ((rawPrice - rawDiscountPrice) / rawPrice) * 100
+      ((rawPrice - rawDiscountPrice) /
+        rawPrice) *
+        100
     );
-  } else if (rawOldPrice > 0 && rawPrice < rawOldPrice) {
+  } else if (
+    rawOldPrice > 0 &&
+    rawPrice < rawOldPrice
+  ) {
     finalPrice = rawPrice;
     originalPrice = rawOldPrice;
+
     hasDiscount = true;
+
     discountPercentage = Math.round(
-      ((rawOldPrice - rawPrice) / rawOldPrice) * 100
+      ((rawOldPrice - rawPrice) /
+        rawOldPrice) *
+        100
     );
   }
 
-  // Determine badge text and CSS modifier class
+  // ==========================================
+  // BADGE
+  // ==========================================
+
   let badge = product.badge || "";
   let badgeType = product.badgeType || "";
 
-  if (!badge && hasDiscount && discountPercentage > 0) {
+  if (
+    !badge &&
+    hasDiscount &&
+    discountPercentage > 0
+  ) {
     badge = `-${discountPercentage}%`;
     badgeType = "discount";
   }
 
-  // Pick first available image (from array or direct string)
+  // ==========================================
+  // PRODUCT IMAGE
+  // ==========================================
+
   const primaryImage =
-    Array.isArray(product.images) && product.images.length > 0
+    Array.isArray(product.images) &&
+    product.images.length > 0
       ? product.images[0]
       : product.image || "";
 
-  // Prepare standard cart product payload
+  // ==========================================
+  // CART PRODUCT
+  // ==========================================
+
   const cartProduct = {
     ...product,
+
     image: primaryImage,
-    price: `₹ ${finalPrice.toLocaleString("en-IN")}`,
+
+    price: `₹ ${finalPrice.toLocaleString(
+      "en-IN"
+    )}`,
+
     oldPrice:
-      hasDiscount && originalPrice > finalPrice
-        ? `₹ ${originalPrice.toLocaleString("en-IN")}`
+      hasDiscount &&
+      originalPrice > finalPrice
+        ? `₹ ${originalPrice.toLocaleString(
+            "en-IN"
+          )}`
         : "",
   };
+
+  // ==========================================
+  // ADD TO CART
+  // ==========================================
 
   const handleAddToCart = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    const success = await addToCart(cartProduct);
-    if (success) {
-      toast.success(`${product.name} added to cart!`);
-    }
+
+    await addToCart(cartProduct);
   };
 
-  const handleActionClick = (e, actionType) => {
+  // ==========================================
+  // WISHLIST
+  // ==========================================
+
+  const handleWishlist = async (e) => {
     e.preventDefault();
     e.stopPropagation();
 
+    const productId = product.id;
+
+    if (!productId) {
+      toast.error("Product ID not found");
+      return;
+    }
+
+    const alreadyInWishlist =
+      isInWishlist(productId);
+
+    if (alreadyInWishlist) {
+      await removeFromWishlist(productId);
+    } else {
+      await addToWishlist(productId);
+    }
+  };
+
+  // ==========================================
+  // SHARE / COMPARE
+  // ==========================================
+
+  const handleActionClick = (
+    e,
+    actionType
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // SHARE
     if (actionType === "Share") {
-      const shareUrl = `${window.location.origin}/product/${product.id}`;
+      const shareUrl =
+        `${window.location.origin}/product/${product.id}`;
+
       if (navigator.share) {
         navigator
           .share({
@@ -101,43 +217,94 @@ const ProductCard = ({ product }) => {
           })
           .catch(() => {});
       } else if (navigator.clipboard) {
-        navigator.clipboard.writeText(shareUrl);
-        toast.info("Product link copied to clipboard!");
+        navigator.clipboard
+          .writeText(shareUrl)
+          .then(() => {
+            toast.info(
+              "Product link copied to clipboard!"
+            );
+          })
+          .catch(() => {
+            toast.info(
+              `Sharing: ${product.name}`
+            );
+          });
       } else {
-        toast.info(`Sharing: ${product.name}`);
+        toast.info(
+          `Sharing: ${product.name}`
+        );
       }
-    } else if (actionType === "Compare") {
-      toast.info(`Added ${product.name} to comparison!`);
-    } else if (actionType === "Like") {
-      toast.success(`Added ${product.name} to wishlist!`);
+    }
+
+    // COMPARE
+    else if (actionType === "Compare") {
+      toast.info(
+        `Added ${product.name} to comparison!`
+      );
     }
   };
 
+  // ==========================================
+  // CARD CLICK
+  // ==========================================
+
   const handleCardClick = (e) => {
-    // If the click originated from an interactive button, do not navigate
-    if (e.target.closest("button") || e.target.closest(".action-btn")) {
+    if (
+      e.target.closest("button") ||
+      e.target.closest(".action-btn")
+    ) {
       return;
     }
-    navigate(`/product/${product.id}`);
+
+    navigate(
+      `/product/${product.id}`
+    );
   };
+
+  // ==========================================
+  // WISHLIST STATUS
+  // ==========================================
+
+  const wishlistActive =
+    isInWishlist(product.id);
+
+  // ==========================================
+  // RETURN
+  // ==========================================
 
   return (
     <div
       className="product-card"
       key={product.id}
       onClick={handleCardClick}
-      style={{ cursor: "pointer" }}
+      style={{
+        cursor: "pointer",
+      }}
     >
-      {/* IMAGE CONTAINER */}
+      {/* ==========================================
+          IMAGE CONTAINER
+      ========================================== */}
+
       <div className="product-image">
+
         <Link
           to={`/product/${product.id}`}
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) =>
+            e.stopPropagation()
+          }
           aria-label={`View details of ${product.name}`}
-          style={{ display: "block", width: "100%", height: "100%" }}
+          style={{
+            display: "block",
+            width: "100%",
+            height: "100%",
+          }}
         >
           {primaryImage ? (
-            <img src={primaryImage} alt={product.name} loading="lazy" />
+            <img
+              src={primaryImage}
+              alt={product.name}
+              loading="lazy"
+            />
           ) : (
             <div
               style={{
@@ -155,14 +322,28 @@ const ProductCard = ({ product }) => {
           )}
         </Link>
 
-        {/* BADGE */}
+        {/* ==========================================
+            BADGE
+        ========================================== */}
+
         {badge && (
-          <span className={`product-badge ${badgeType}`}>{badge}</span>
+          <span
+            className={`product-badge ${badgeType}`}
+          >
+            {badge}
+          </span>
         )}
 
-        {/* HOVER / TOUCH OVERLAY */}
+        {/* ==========================================
+            HOVER / TOUCH OVERLAY
+        ========================================== */}
+
         <div className="product-overlay">
-          {/* ADD TO CART */}
+
+          {/* ==========================================
+              ADD TO CART
+          ========================================== */}
+
           <button
             type="button"
             className="cart-button"
@@ -171,42 +352,97 @@ const ProductCard = ({ product }) => {
             Add to cart
           </button>
 
-          {/* ACTIONS */}
+          {/* ==========================================
+              ACTIONS
+          ========================================== */}
+
           <div className="product-actions">
+
+            {/* SHARE */}
+
             <button
               className="action-btn"
               type="button"
-              onClick={(e) => handleActionClick(e, "Share")}
+              onClick={(e) =>
+                handleActionClick(
+                  e,
+                  "Share"
+                )
+              }
               title="Share product"
             >
               <Share2 size={14} />
-              <span>Share</span>
+
+              <span>
+                Share
+              </span>
             </button>
+
+            {/* COMPARE */}
 
             <button
               className="action-btn"
               type="button"
-              onClick={(e) => handleActionClick(e, "Compare")}
+              onClick={(e) =>
+                handleActionClick(
+                  e,
+                  "Compare"
+                )
+              }
               title="Compare product"
             >
               <ArrowLeftRight size={14} />
-              <span>Compare</span>
+
+              <span>
+                Compare
+              </span>
             </button>
 
+            {/* WISHLIST */}
+
             <button
-              className="action-btn"
+              className={`action-btn ${
+                wishlistActive
+                  ? "wishlist-active"
+                  : ""
+              }`}
               type="button"
-              onClick={(e) => handleActionClick(e, "Like")}
-              title="Add to wishlist"
+              onClick={handleWishlist}
+              title={
+                wishlistActive
+                  ? "Remove from wishlist"
+                  : "Add to wishlist"
+              }
+              aria-label={
+                wishlistActive
+                  ? "Remove from wishlist"
+                  : "Add to wishlist"
+              }
             >
-              <Heart size={14} />
-              <span>Like</span>
+              <Heart
+                size={14}
+                fill={
+                  wishlistActive
+                    ? "currentColor"
+                    : "none"
+              }
+              />
+
+              <span>
+                {wishlistActive
+                  ? "Liked"
+                  : "Like"}
+              </span>
             </button>
+
           </div>
         </div>
       </div>
 
-      {/* PRODUCT INFO CONTAINER */}
+      {/* ==========================================
+          PRODUCT INFO
+      ========================================== */}
+
       <Link
         to={`/product/${product.id}`}
         style={{
@@ -216,21 +452,43 @@ const ProductCard = ({ product }) => {
           flexDirection: "column",
           flexGrow: 1,
         }}
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e) =>
+          e.stopPropagation()
+        }
         aria-label={`View details of ${product.name}`}
       >
         <div className="product-info">
-          <h3>{product.name}</h3>
 
-          <p className="product-category">{product.category}</p>
+          <h3>
+            {product.name}
+          </h3>
+
+          <p className="product-category">
+            {product.category}
+          </p>
 
           <div className="product-price">
-            <strong>₹ {finalPrice.toLocaleString("en-IN")}</strong>
 
-            {hasDiscount && originalPrice > finalPrice && (
-              <del>₹ {originalPrice.toLocaleString("en-IN")}</del>
-            )}
+            <strong>
+              ₹{" "}
+              {finalPrice.toLocaleString(
+                "en-IN"
+              )}
+            </strong>
+
+            {hasDiscount &&
+              originalPrice >
+                finalPrice && (
+                <del>
+                  ₹{" "}
+                  {originalPrice.toLocaleString(
+                    "en-IN"
+                  )}
+                </del>
+              )}
+
           </div>
+
         </div>
       </Link>
     </div>

@@ -625,7 +625,58 @@
 
   cursor: pointer;
 }
+/* ==========================================
+   SINGLE PRODUCT WISHLIST
+========================================== */
 
+.single-product-wishlist-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  width: fit-content;
+  min-height: 44px;
+
+  padding: 10px 18px;
+
+  border: 1px solid #b88e2f;
+  border-radius: 4px;
+
+  background: transparent;
+  color: #b88e2f;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.2s ease;
+}
+
+.single-product-wishlist-button:hover {
+  background: #b88e2f;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.single-product-wishlist-button.active {
+  background: #b88e2f;
+  color: #ffffff;
+}
+
+.single-product-wishlist-button.active:hover {
+  background: transparent;
+  color: #b88e2f;
+}
+
+.single-product-wishlist-button svg {
+  flex-shrink: 0;
+}
 /* =========================
    TABLET
 ========================= */

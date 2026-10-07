@@ -16,6 +16,7 @@ import AdminLogin from "./Pages/AdminLogin";
 import Admin from "./Pages/Admin";
 import Blog from "./Pages/Blog";
 import About from "./Pages/About";
+import Wishlist from "./Pages/Wishlist";
 
 import SingleProduct from "./components/Single Product/SingleProduct";
 
@@ -83,7 +84,10 @@ function App() {
             </>
           }
         />
-
+<Route
+  path="/wishlist"
+  element={<Wishlist />}
+/>
         {/* CONTACT */}
         <Route
           path="/contact"

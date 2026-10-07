@@ -121,6 +121,7 @@ const Header = () => {
       }
 
       // Backend-এর common token formats handle
+
       const newAccessToken =
         data.token ||
         data.accessToken ||
@@ -212,6 +213,7 @@ const Header = () => {
         }
 
         // New token দিয়ে আবার profile call
+
         response = await fetch(
           `${API_URL}/api/users/profile`,
           {
@@ -400,6 +402,7 @@ const Header = () => {
       setMenuOpen(false);
 
       // Sidebar বন্ধ
+
       setCartSidebarOpen(false);
 
       navigate("/login");
@@ -441,6 +444,14 @@ const Header = () => {
     */
 
     navigate("/cart");
+  };
+
+  // =====================================================
+  // WISHLIST BUTTON FUNCTION
+  // =====================================================
+
+  const handleWishlistClick = () => {
+    navigate("/wishlist");
   };
 
   // =====================================================
@@ -658,6 +669,7 @@ const Header = () => {
           <button
             className="icon-btn"
             type="button"
+            onClick={handleWishlistClick}
           >
             <Heart size={26} />
           </button>

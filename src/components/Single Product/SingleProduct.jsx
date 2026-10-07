@@ -1,14 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+
 import { useCart } from "../../context/CartContext";
+import {
+  useWishlist,
+} from "../../context/WishlistContext";
+
 import { toast } from "react-toastify";
+
 import {
   ShoppingCart,
   ArrowLeft,
   Check,
   ChevronLeft,
   ChevronRight,
+  Heart,
 } from "lucide-react";
+
 import { getFallbackProductById } from "../../data/fallbackProducts";
 
 import "./SingleProduct.css";
@@ -17,18 +25,54 @@ const SingleProduct = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  // ==========================================
+  // CART
+  // ==========================================
+
   const { addToCart } = useCart();
+
+  // ==========================================
+  // WISHLIST
+  // ==========================================
+
+  const {
+    addToWishlist,
+    removeFromWishlist,
+    isInWishlist,
+  } = useWishlist();
+
+  // ==========================================
+  // PRODUCT STATES
+  // ==========================================
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // ==========================================
+  // PRODUCT OPTIONS
+  // ==========================================
+
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
 
-  const [selectedImage, setSelectedImage] = useState(0);
+  // ==========================================
+  // IMAGE
+  // ==========================================
 
-  const [addedToCart, setAddedToCart] = useState(false);
+  const [selectedImage, setSelectedImage] =
+    useState(0);
+
+  // ==========================================
+  // CART STATE
+  // ==========================================
+
+  const [addedToCart, setAddedToCart] =
+    useState(false);
+
+  // ==========================================
+  // FETCH PRODUCT
+  // ==========================================
 
   useEffect(() => {
     let isMounted = true;
@@ -44,62 +88,107 @@ const SingleProduct = () => {
 
         if (response.ok) {
           const data = await response.json();
+
           if (isMounted) {
             setProduct(data);
+
             setSelectedSize(
-              data.sizes && data.sizes.length > 0 ? data.sizes[0] : ""
+              data.sizes &&
+                data.sizes.length > 0
+                ? data.sizes[0]
+                : ""
             );
+
             setSelectedColor(
-              data.colors && data.colors.length > 0 ? data.colors[0] : ""
+              data.colors &&
+                data.colors.length > 0
+                ? data.colors[0]
+                : ""
             );
+
             setSelectedImage(0);
             setAddedToCart(false);
           }
+
           return;
         }
 
-        // If not found in API, check local fallback product catalog
-        const fallback = getFallbackProductById(id);
+        // ======================================
+        // FALLBACK PRODUCT
+        // ======================================
+
+        const fallback =
+          getFallbackProductById(id);
+
         if (fallback) {
           if (isMounted) {
             setProduct(fallback);
+
             setSelectedSize(
-              fallback.sizes && fallback.sizes.length > 0
+              fallback.sizes &&
+                fallback.sizes.length > 0
                 ? fallback.sizes[0]
                 : ""
             );
+
             setSelectedColor(
-              fallback.colors && fallback.colors.length > 0
+              fallback.colors &&
+                fallback.colors.length > 0
                 ? fallback.colors[0]
                 : ""
             );
+
             setSelectedImage(0);
             setAddedToCart(false);
           }
+
           return;
         }
 
-        throw new Error("Failed to load product");
+        throw new Error(
+          "Failed to load product"
+        );
       } catch (err) {
-        console.error("Single Product Error:", err);
+        console.error(
+          "Single Product Error:",
+          err
+        );
 
-        // Check fallback in case of network issue
-        const fallback = getFallbackProductById(id);
+        // ======================================
+        // NETWORK FALLBACK
+        // ======================================
+
+        const fallback =
+          getFallbackProductById(id);
+
         if (fallback && isMounted) {
           setProduct(fallback);
+
           setSelectedSize(
-            fallback.sizes && fallback.sizes.length > 0 ? fallback.sizes[0] : ""
+            fallback.sizes &&
+              fallback.sizes.length > 0
+              ? fallback.sizes[0]
+              : ""
           );
+
           setSelectedColor(
-            fallback.colors && fallback.colors.length > 0 ? fallback.colors[0] : ""
+            fallback.colors &&
+              fallback.colors.length > 0
+              ? fallback.colors[0]
+              : ""
           );
+
           setSelectedImage(0);
           setAddedToCart(false);
+
           return;
         }
 
         if (isMounted) {
-          setError(err.message || "Something went wrong");
+          setError(
+            err.message ||
+              "Something went wrong"
+          );
         }
       } finally {
         if (isMounted) {
@@ -115,27 +204,33 @@ const SingleProduct = () => {
     };
   }, [id]);
 
-  /* =========================
-     LOADING
-  ========================= */
+  // ==========================================
+  // LOADING
+  // ==========================================
 
   if (loading) {
     return (
       <div className="single-product-loading">
         <div className="loader"></div>
-        <p>Loading product...</p>
+
+        <p>
+          Loading product...
+        </p>
       </div>
     );
   }
 
-  /* =========================
-     ERROR
-  ========================= */
+  // ==========================================
+  // ERROR
+  // ==========================================
 
   if (error) {
     return (
       <div className="single-product-error">
-        <h2>Product Not Found</h2>
+        <h2>
+          Product Not Found
+        </h2>
+
         <p>{error}</p>
 
         <Link to="/shop">
@@ -147,65 +242,116 @@ const SingleProduct = () => {
     );
   }
 
+  // ==========================================
+  // PRODUCT NOT AVAILABLE
+  // ==========================================
+
   if (!product) {
     return (
       <div className="single-product-error">
-        <h2>Product not available</h2>
+        <h2>
+          Product not available
+        </h2>
       </div>
     );
   }
 
-  /* =========================
-     PRICE
-  ========================= */
+  // ==========================================
+  // PRICE
+  // ==========================================
 
   const rawPrice =
     typeof product.price === "number"
       ? product.price
-      : parseFloat(String(product.price || 0).replace(/[^0-9.]/g, "")) || 0;
+      : parseFloat(
+          String(
+            product.price || 0
+          ).replace(/[^0-9.]/g, "")
+        ) || 0;
 
   const rawDiscountPrice =
-    product.discountPrice !== undefined &&
+    product.discountPrice !==
+      undefined &&
     product.discountPrice !== null &&
     product.discountPrice !== ""
-      ? typeof product.discountPrice === "number"
+      ? typeof product.discountPrice ===
+        "number"
         ? product.discountPrice
-        : parseFloat(String(product.discountPrice).replace(/[^0-9.]/g, "")) || 0
+        : parseFloat(
+            String(
+              product.discountPrice
+            ).replace(
+              /[^0-9.]/g,
+              ""
+            )
+          ) || 0
       : 0;
 
-  const rawOldPrice = product.oldPrice
-    ? typeof product.oldPrice === "number"
-      ? product.oldPrice
-      : parseFloat(String(product.oldPrice).replace(/[^0-9.]/g, "")) || 0
-    : 0;
+  const rawOldPrice =
+    product.oldPrice
+      ? typeof product.oldPrice ===
+        "number"
+        ? product.oldPrice
+        : parseFloat(
+            String(
+              product.oldPrice
+            ).replace(
+              /[^0-9.]/g,
+              ""
+            )
+          ) || 0
+      : 0;
 
   let finalPrice = rawPrice;
-  let price = rawOldPrice || rawPrice;
+  let price =
+    rawOldPrice || rawPrice;
+
   let hasDiscount = false;
   let discountPercentage = 0;
 
-  if (rawDiscountPrice > 0 && rawDiscountPrice < rawPrice) {
-    finalPrice = rawDiscountPrice;
+  if (
+    rawDiscountPrice > 0 &&
+    rawDiscountPrice < rawPrice
+  ) {
+    finalPrice =
+      rawDiscountPrice;
+
     price = rawPrice;
+
     hasDiscount = true;
-    discountPercentage = Math.round(
-      ((rawPrice - rawDiscountPrice) / rawPrice) * 100
-    );
-  } else if (rawOldPrice > 0 && rawPrice < rawOldPrice) {
+
+    discountPercentage =
+      Math.round(
+        ((rawPrice -
+          rawDiscountPrice) /
+          rawPrice) *
+          100
+      );
+  } else if (
+    rawOldPrice > 0 &&
+    rawPrice < rawOldPrice
+  ) {
     finalPrice = rawPrice;
     price = rawOldPrice;
+
     hasDiscount = true;
-    discountPercentage = Math.round(
-      ((rawOldPrice - rawPrice) / rawOldPrice) * 100
-    );
+
+    discountPercentage =
+      Math.round(
+        ((rawOldPrice -
+          rawPrice) /
+          rawOldPrice) *
+          100
+      );
   }
 
-  /* =========================
-     IMAGES
-  ========================= */
+  // ==========================================
+  // IMAGES
+  // ==========================================
 
   const productImages =
-    Array.isArray(product.images) && product.images.length > 0
+    Array.isArray(product.images) &&
+    product.images.length > 0
       ? product.images
       : product.image
       ? [product.image]
@@ -216,37 +362,75 @@ const SingleProduct = () => {
       ? productImages[selectedImage]
       : "";
 
-  /* =========================
-     PREVIOUS IMAGE
-  ========================= */
+  // ==========================================
+  // PREVIOUS IMAGE
+  // ==========================================
 
   const handlePreviousImage = () => {
-    if (productImages.length <= 1) return;
+    if (
+      productImages.length <= 1
+    ) {
+      return;
+    }
 
-    setSelectedImage((previous) =>
-      previous === 0
-        ? productImages.length - 1
-        : previous - 1
+    setSelectedImage(
+      (previous) =>
+        previous === 0
+          ? productImages.length - 1
+          : previous - 1
     );
   };
 
-  /* =========================
-     NEXT IMAGE
-  ========================= */
+  // ==========================================
+  // NEXT IMAGE
+  // ==========================================
 
   const handleNextImage = () => {
-    if (productImages.length <= 1) return;
+    if (
+      productImages.length <= 1
+    ) {
+      return;
+    }
 
-    setSelectedImage((previous) =>
-      previous === productImages.length - 1
-        ? 0
-        : previous + 1
+    setSelectedImage(
+      (previous) =>
+        previous ===
+        productImages.length - 1
+          ? 0
+          : previous + 1
     );
   };
 
-  /* =========================
-     ADD TO CART
-  ========================= */
+  // ==========================================
+  // WISHLIST
+  // ==========================================
+
+  const wishlistActive =
+    isInWishlist(product.id);
+
+  const handleWishlist = async () => {
+    if (!product.id) {
+      toast.error(
+        "Product ID not found"
+      );
+
+      return;
+    }
+
+    if (wishlistActive) {
+      await removeFromWishlist(
+        product.id
+      );
+    } else {
+      await addToWishlist(
+        product.id
+      );
+    }
+  };
+
+  // ==========================================
+  // ADD TO CART
+  // ==========================================
 
   const handleAddToCart = async () => {
     if (
@@ -254,7 +438,10 @@ const SingleProduct = () => {
       product.sizes.length > 0 &&
       !selectedSize
     ) {
-      toast.error("Please select a size");
+      toast.error(
+        "Please select a size"
+      );
+
       return;
     }
 
@@ -263,7 +450,10 @@ const SingleProduct = () => {
       product.colors.length > 0 &&
       !selectedColor
     ) {
-      toast.error("Please select a color");
+      toast.error(
+        "Please select a color"
+      );
+
       return;
     }
 
@@ -282,37 +472,46 @@ const SingleProduct = () => {
         ? `₹ ${price}`
         : "",
 
-      selectedSize: selectedSize,
-      selectedColor: selectedColor,
+      selectedSize:
+        selectedSize,
+
+      selectedColor:
+        selectedColor,
     };
 
-    const success = await addToCart(cartProduct);
+    const success =
+      await addToCart(
+        cartProduct
+      );
 
     if (success) {
       setAddedToCart(true);
 
-      toast.success(
-        `${product.name} added to cart!`
-      );
+      // CartContext handles the
+      // success toast.
     }
   };
 
-  /* =========================
-     GO TO CART
-  ========================= */
+  // ==========================================
+  // GO TO CART
+  // ==========================================
 
   const handleGoToCart = () => {
     navigate("/cart");
   };
+
+  // ==========================================
+  // RETURN
+  // ==========================================
 
   return (
     <section className="single-product-page">
 
       <div className="single-product-container">
 
-        {/* =========================
+        {/* ======================================
             BREADCRUMB
-        ========================= */}
+        ====================================== */}
 
         <div className="product-breadcrumb">
 
@@ -328,15 +527,15 @@ const SingleProduct = () => {
 
         </div>
 
-        {/* =========================
+        {/* ======================================
             MAIN PRODUCT AREA
-        ========================= */}
+        ====================================== */}
 
         <div className="single-product-main">
 
-          {/* =========================
-              PRODUCT IMAGES
-          ========================= */}
+          {/* ====================================
+              PRODUCT GALLERY
+          ==================================== */}
 
           <div className="single-product-gallery">
 
@@ -344,8 +543,8 @@ const SingleProduct = () => {
 
             <div className="single-product-image-box">
 
-              {productImages.length > 0 ? (
-
+              {productImages.length >
+              0 ? (
                 <>
                   <img
                     src={currentImage}
@@ -355,13 +554,15 @@ const SingleProduct = () => {
 
                   {/* PREVIOUS */}
 
-                  {productImages.length > 1 && (
+                  {productImages.length >
+                    1 && (
                     <button
                       type="button"
                       className="image-arrow image-arrow-left"
                       onClick={
                         handlePreviousImage
                       }
+                      aria-label="Previous image"
                     >
                       <ChevronLeft
                         size={22}
@@ -371,50 +572,51 @@ const SingleProduct = () => {
 
                   {/* NEXT */}
 
-                  {productImages.length > 1 && (
+                  {productImages.length >
+                    1 && (
                     <button
                       type="button"
                       className="image-arrow image-arrow-right"
                       onClick={
                         handleNextImage
                       }
+                      aria-label="Next image"
                     >
                       <ChevronRight
                         size={22}
                       />
                     </button>
                   )}
-
                 </>
-
               ) : (
-
                 <div className="no-product-image">
                   <span>
                     Image unavailable
                   </span>
                 </div>
-
               )}
 
             </div>
 
-            {/* =========================
-                ALL IMAGE THUMBNAILS
-            ========================= */}
+            {/* ==================================
+                THUMBNAILS
+            ================================== */}
 
-            {productImages.length > 1 && (
-
+            {productImages.length >
+              1 && (
               <div className="product-thumbnail-container">
 
                 {productImages.map(
-                  (image, index) => (
-
+                  (
+                    image,
+                    index
+                  ) => (
                     <button
                       type="button"
                       key={index}
                       className={`product-thumbnail ${
-                        selectedImage === index
+                        selectedImage ===
+                        index
                           ? "active"
                           : ""
                       }`}
@@ -424,32 +626,28 @@ const SingleProduct = () => {
                         )
                       }
                     >
-
                       <img
                         src={image}
                         alt={`${product.name} ${
                           index + 1
                         }`}
                       />
-
                     </button>
-
                   )
                 )}
 
               </div>
-
             )}
 
           </div>
 
-          {/* =========================
+          {/* ====================================
               PRODUCT DETAILS
-          ========================= */}
+          ==================================== */}
 
           <div className="single-product-details">
 
-            {/* NAME */}
+            {/* PRODUCT NAME */}
 
             <h1 className="single-product-title">
               {product.name}
@@ -489,7 +687,50 @@ const SingleProduct = () => {
 
             </div>
 
-            {/* DESCRIPTION */}
+            {/* ==================================
+                WISHLIST BUTTON
+            ================================== */}
+
+            <button
+              type="button"
+              className={`single-product-wishlist-button ${
+                wishlistActive
+                  ? "active"
+                  : ""
+              }`}
+              onClick={
+                handleWishlist
+              }
+              aria-label={
+                wishlistActive
+                  ? "Remove from wishlist"
+                  : "Add to wishlist"
+              }
+              title={
+                wishlistActive
+                  ? "Remove from wishlist"
+                  : "Add to wishlist"
+              }
+            >
+              <Heart
+                size={20}
+                fill={
+                  wishlistActive
+                    ? "currentColor"
+                    : "none"
+                }
+              />
+
+              <span>
+                {wishlistActive
+                  ? "Remove from Wishlist"
+                  : "Add to Wishlist"}
+              </span>
+            </button>
+
+            {/* ==================================
+                DESCRIPTION
+            ================================== */}
 
             <div className="product-description-section">
 
@@ -504,7 +745,9 @@ const SingleProduct = () => {
 
             </div>
 
-            {/* INFORMATION */}
+            {/* ==================================
+                INFORMATION
+            ================================== */}
 
             <div className="product-information">
 
@@ -515,7 +758,8 @@ const SingleProduct = () => {
                 </span>
 
                 <strong>
-                  {product.sku || "N/A"}
+                  {product.sku ||
+                    "N/A"}
                 </strong>
 
               </div>
@@ -527,20 +771,21 @@ const SingleProduct = () => {
                 </span>
 
                 <strong>
-                  {product.stock ?? "N/A"}
+                  {product.stock ??
+                    "N/A"}
                 </strong>
 
               </div>
 
             </div>
 
-            {/* =========================
+            {/* ==================================
                 SIZE
-            ========================= */}
+            ================================== */}
 
             {product.sizes &&
-              product.sizes.length > 0 && (
-
+              product.sizes.length >
+                0 && (
                 <div className="product-option">
 
                   <h3>
@@ -550,13 +795,16 @@ const SingleProduct = () => {
                   <div className="option-list">
 
                     {product.sizes.map(
-                      (size, index) => (
-
+                      (
+                        size,
+                        index
+                      ) => (
                         <button
                           type="button"
                           key={index}
                           className={`option-item ${
-                            selectedSize === size
+                            selectedSize ===
+                            size
                               ? "selected"
                               : ""
                           }`}
@@ -566,7 +814,6 @@ const SingleProduct = () => {
                             )
                           }
                         >
-
                           {size}
 
                           {selectedSize ===
@@ -575,9 +822,7 @@ const SingleProduct = () => {
                               size={14}
                             />
                           )}
-
                         </button>
-
                       )
                     )}
 
@@ -590,16 +835,15 @@ const SingleProduct = () => {
                   )}
 
                 </div>
-
               )}
 
-            {/* =========================
+            {/* ==================================
                 COLOR
-            ========================= */}
+            ================================== */}
 
             {product.colors &&
-              product.colors.length > 0 && (
-
+              product.colors.length >
+                0 && (
                 <div className="product-option">
 
                   <h3>
@@ -609,13 +853,16 @@ const SingleProduct = () => {
                   <div className="option-list">
 
                     {product.colors.map(
-                      (color, index) => (
-
+                      (
+                        color,
+                        index
+                      ) => (
                         <button
                           type="button"
                           key={index}
                           className={`option-item ${
-                            selectedColor === color
+                            selectedColor ===
+                            color
                               ? "selected"
                               : ""
                           }`}
@@ -625,7 +872,6 @@ const SingleProduct = () => {
                             )
                           }
                         >
-
                           {color}
 
                           {selectedColor ===
@@ -634,9 +880,7 @@ const SingleProduct = () => {
                               size={14}
                             />
                           )}
-
                         </button>
-
                       )
                     )}
 
@@ -649,15 +893,13 @@ const SingleProduct = () => {
                   )}
 
                 </div>
-
               )}
 
-            {/* =========================
+            {/* ==================================
                 CART BUTTON
-            ========================= */}
+            ================================== */}
 
             {!addedToCart ? (
-
               <button
                 className="single-add-cart-button"
                 onClick={
@@ -667,43 +909,37 @@ const SingleProduct = () => {
                   product.stock === 0
                 }
               >
-
                 <ShoppingCart
                   size={20}
                 />
 
-                {product.stock === 0
+                {product.stock ===
+                0
                   ? "Out of Stock"
                   : "Add to Cart"}
-
               </button>
-
             ) : (
-
               <button
                 className="single-go-cart-button"
                 onClick={
                   handleGoToCart
                 }
               >
-
                 <ShoppingCart
                   size={20}
                 />
 
                 Go to Cart
-
               </button>
-
             )}
 
           </div>
 
         </div>
 
-        {/* =========================
+        {/* ======================================
             FULL DESCRIPTION
-        ========================= */}
+        ====================================== */}
 
         <div className="full-description">
 
@@ -720,15 +956,17 @@ const SingleProduct = () => {
 
         </div>
 
-        {/* =========================
+        {/* ======================================
             BACK TO SHOP
-        ========================= */}
+        ====================================== */}
 
         <div className="back-to-shop">
 
           <Link to="/shop">
 
-            <ArrowLeft size={18} />
+            <ArrowLeft
+              size={18}
+            />
 
             Continue Shopping
 
