@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   Heart,
@@ -7,6 +7,7 @@ import {
   ArrowLeft,
   Eye,
   Check,
+  X,
 } from "lucide-react";
 
 import {
@@ -30,6 +31,22 @@ import "./Wishlist.css";
 const Wishlist = () => {
   const navigate = useNavigate();
 
+  // State for popup message when item added to cart
+  const [cartPopup, setCartPopup] = useState(null);
+
+  // State to track recently added products so button changes immediately
+  const [addedProductIds, setAddedProductIds] = useState([]);
+
+  // Auto-dismiss popup message after 5 seconds
+  useEffect(() => {
+    if (cartPopup) {
+      const timer = setTimeout(() => {
+        setCartPopup(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [cartPopup]);
+
 
   // =====================================================
   // WISHLIST
@@ -47,8 +64,39 @@ const Wishlist = () => {
   // =====================================================
 
   const {
+    cartItems,
     addToCart,
   } = useCart();
+
+
+  // =====================================================
+  // CHECK IF PRODUCT IS IN CART
+  // =====================================================
+
+  const isItemInCart = (item) => {
+    const productId = getProductId(item);
+    if (!productId) return false;
+
+    // 1. Check if added during this session
+    if (addedProductIds.includes(String(productId))) {
+      return true;
+    }
+
+    // 2. Check if already present in cartItems from CartContext
+    if (Array.isArray(cartItems)) {
+      return cartItems.some((cartItem) => {
+        const cId =
+          cartItem?.productId ||
+          cartItem?.id ||
+          cartItem?._id ||
+          cartItem?.product?.id ||
+          cartItem?.product?._id;
+        return String(cId) === String(productId);
+      });
+    }
+
+    return false;
+  };
 
 
   // =====================================================
@@ -314,6 +362,8 @@ const Wishlist = () => {
       return;
     }
 
+    // Immediately mark as added so button instantly updates to "Item in Cart"
+    setAddedProductIds((prev) => [...prev, String(productId)]);
 
     const cartProduct = {
       id: productId,
@@ -335,6 +385,12 @@ const Wishlist = () => {
     await addToCart(
       cartProduct
     );
+
+    // Show popup message: click to go directly to cart
+    setCartPopup({
+      name: cartProduct.name,
+      image: cartProduct.image,
+    });
   };
 
 
@@ -432,6 +488,68 @@ const Wishlist = () => {
   return (
     <div className="wishlist-page">
 
+      {/* =================================================
+          POPUP MESSAGE: ITEM ADDED TO CART -> GO TO CART
+      ================================================= */}
+      {cartPopup && (
+        <div
+          className="wishlist-cart-popup"
+          onClick={() => navigate("/cart")}
+          title="Click to go to Cart"
+        >
+          <div className="wishlist-cart-popup-left">
+            {cartPopup.image ? (
+              <img
+                src={cartPopup.image}
+                alt={cartPopup.name}
+                className="wishlist-cart-popup-img"
+              />
+            ) : (
+              <div className="wishlist-cart-popup-icon">
+                <ShoppingCart size={20} />
+              </div>
+            )}
+
+            <div className="wishlist-cart-popup-info">
+              <span className="wishlist-cart-popup-badge">
+                <Check size={14} /> Added to Cart
+              </span>
+              <p className="wishlist-cart-popup-name">
+                {cartPopup.name}
+              </p>
+              <span className="wishlist-cart-popup-cta">
+                Click here to go to Cart &rarr;
+              </span>
+            </div>
+          </div>
+
+          <div className="wishlist-cart-popup-actions">
+            <button
+              type="button"
+              className="wishlist-cart-popup-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate("/cart");
+              }}
+            >
+              Go to Cart
+            </button>
+
+            <button
+              type="button"
+              className="wishlist-cart-popup-close"
+              onClick={(e) => {
+                e.stopPropagation();
+                setCartPopup(null);
+              }}
+              title="Close"
+            >
+              <X size={18} />
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="wishlist-container">
 
 
@@ -510,6 +628,8 @@ const Wishlist = () => {
               const discount =
                 getDiscount(item);
 
+              const inCart =
+                isItemInCart(item);
 
               return (
                 <article
@@ -656,69 +776,47 @@ const Wishlist = () => {
                     <div className="wishlist-card-actions">
 
 
-                      {/* ADD TO CART */}
+                      {/* ADD TO CART / ITEM IN CART */}
 
                       <button
                         type="button"
-                        className="wishlist-add-cart"
-                        onClick={() =>
-                          handleAddToCart(item)
-                        }
+                        className={`wishlist-add-cart ${
+                          inCart ? "in-cart" : ""
+                        }`}
+                        onClick={() => {
+                          if (inCart) {
+                            navigate("/cart");
+                          } else {
+                            handleAddToCart(item);
+                          }
+                        }}
                       >
 
-                        <ShoppingCart
-                          size={16}
-                        />
+                        {inCart ? (
+                          <>
+                            <Check
+                              size={16}
+                            />
 
-                        <span>
-                          Add to Cart
-                        </span>
+                            <span>
+                              Item in Cart
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <ShoppingCart
+                              size={16}
+                            />
 
-                      </button>
-
-
-                      {/* REMOVE */}
-
-                      <button
-                        type="button"
-                        className="wishlist-remove"
-                        onClick={() =>
-                          handleRemove(item)
-                        }
-                      >
-
-                        <Trash2
-                          size={16}
-                        />
-
-                        <span>
-                          Remove
-                        </span>
+                            <span>
+                              Add to Cart
+                            </span>
+                          </>
+                        )}
 
                       </button>
 
                     </div>
-
-
-                    {/* VIEW PRODUCT */}
-
-                    {productId && (
-
-                      <button
-                        type="button"
-                        className="wishlist-view-button"
-                        onClick={() =>
-                          navigate(
-                            `/product/${productId}`
-                          )
-                        }
-                      >
-
-                        View Product
-
-                      </button>
-
-                    )}
 
                   </div>
 

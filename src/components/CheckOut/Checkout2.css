@@ -75,6 +75,10 @@
   font-size: 13px;
 }
 
+.product-row {
+  margin-bottom: 12px;
+}
+
 .product-row p:first-child {
   color: #999;
 }

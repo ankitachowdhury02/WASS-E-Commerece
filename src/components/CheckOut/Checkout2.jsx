@@ -1,7 +1,66 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useCart } from "../../context/CartContext";
 import "./Checkout2.css";
 
 const Checkout2 = () => {
+  const location = useLocation();
+  const { cartItems } = useCart();
+
+  // Helper to convert price to number
+  const getPrice = (price) => {
+    if (price === null || price === undefined || price === "") {
+      return 0;
+    }
+    return Number(String(price).replace(/[^0-9.-]/g, "")) || 0;
+  };
+
+  // Helper to format price
+  const formatPrice = (price) => {
+    return Number(price || 0).toLocaleString("en-IN");
+  };
+
+  // Check if a single product was sent from "Buy Now" button
+  const buyNowProduct = location.state?.product;
+
+  // If "Buy Now" product exists, bill ONLY this product!
+  // Otherwise, fallback to cart items or sample product
+  let billingItems = [];
+
+  if (buyNowProduct) {
+    billingItems = [
+      {
+        name: buyNowProduct.name || "Product",
+        quantity: buyNowProduct.quantity || 1,
+        price: getPrice(buyNowProduct.price),
+      },
+    ];
+  } else if (cartItems && cartItems.length > 0) {
+    billingItems = cartItems.map((item) => ({
+      name: item.name || item.title || "Product",
+      quantity: item.quantity || 1,
+      price: getPrice(item.price),
+    }));
+  } else {
+    billingItems = [
+      {
+        name: "Syltherine Sheesham Chair",
+        quantity: 1,
+        price: 2499,
+      },
+    ];
+  }
+
+  // Calculate total billing amount
+  const subtotal = billingItems.reduce((sum, item) => {
+    return sum + item.price * item.quantity;
+  }, 0);
+
+  const handlePlaceOrder = () => {
+    toast.success("Order placed successfully!");
+  };
+
   return (
     <section className="checkout">
 
@@ -93,19 +152,23 @@ const Checkout2 = () => {
           <h2>Subtotal</h2>
         </div>
 
-        <div className="product-row">
-          <p>Syltherine Sheesham Chair&nbsp;&nbsp; × 1</p>
-          <p>₹ 2,499.00</p>
-        </div>
+        {billingItems.map((item, index) => (
+          <div className="product-row" key={index}>
+            <p>
+              {item.name}&nbsp;&nbsp; × {item.quantity}
+            </p>
+            <p>₹ {formatPrice(item.price * item.quantity)}</p>
+          </div>
+        ))}
 
         <div className="subtotal-row">
           <p>Subtotal</p>
-          <p>₹ 2,499.00</p>
+          <p>₹ {formatPrice(subtotal)}</p>
         </div>
 
         <div className="total-row">
           <p>Total</p>
-          <strong>₹ 2,499.00</strong>
+          <strong>₹ {formatPrice(subtotal)}</strong>
         </div>
 
         <hr />
@@ -137,7 +200,7 @@ const Checkout2 = () => {
           and for other purposes described in our <b>privacy policy.</b>
         </p>
 
-        <button className="place-order">
+        <button className="place-order" onClick={handlePlaceOrder}>
           Place order
         </button>
 

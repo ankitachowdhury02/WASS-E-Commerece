@@ -782,9 +782,26 @@ const logout = () => {
 
       if (hasImageChanges) {
         const formData = new FormData();
-        Object.entries(payload).forEach(([key, value]) => {
-          formData.append(key, Array.isArray(value) ? value.join(",") : value);
-        });
+       // Object.entries(payload).forEach(([key, value]) => {
+       //   formData.append(key, Array.isArray(value) ? value.join(",") : value);
+      //  });
+
+formData.append("name", payload.name);
+formData.append("sku", payload.sku);
+formData.append("category", payload.category);
+formData.append("description", payload.description);
+formData.append("price", String(payload.price));
+formData.append("discountPrice", String(payload.discountPrice));
+formData.append("stock", String(payload.stock));
+
+payload.sizes.forEach((size) => {
+  formData.append("sizes", size);
+});
+
+payload.colors.forEach((color) => {
+  formData.append("colors", color);
+});
+
         editNewImages.forEach((image) => formData.append("images", image));
 
         const existingImages = getProductImages(selectedProduct);
