@@ -17,7 +17,7 @@ import Admin from "./Pages/Admin";
 import Blog from "./Pages/Blog";
 import About from "./Pages/About";
 import Wishlist from "./Pages/Wishlist";
-
+import Orders from "./Pages/Orders";
 import SingleProduct from "./components/Single Product/SingleProduct";
 
 function App() {
@@ -48,7 +48,7 @@ function App() {
             </>
           }
         />
-
+<Route path="/orders" element={<Orders />} />
         {/* ABOUT */}
         <Route
           path="/about"

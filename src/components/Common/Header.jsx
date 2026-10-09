@@ -12,7 +12,6 @@ import {
 
 import {
   UserRound,
-  Search,
   Heart,
   ShoppingCart,
   Menu,
@@ -447,6 +446,14 @@ const Header = () => {
   };
 
   // =====================================================
+  // ORDERS BUTTON FUNCTION
+  // =====================================================
+
+  const handleOrdersClick = () => {
+    navigate("/orders");
+  };
+
+  // =====================================================
   // WISHLIST BUTTON FUNCTION
   // =====================================================
 
@@ -584,7 +591,7 @@ const Header = () => {
                 {/* MY ORDERS */}
 
                 <Link
-                  to="/profile"
+                  to="/orders"
                   className="profile-menu-item"
                   onClick={() =>
                     setProfileOpen(false)
@@ -652,14 +659,17 @@ const Header = () => {
           </div>
 
           {/* =================================================
-              SEARCH
+              ORDERS
           ================================================= */}
 
           <button
             className="icon-btn"
             type="button"
+            onClick={handleOrdersClick}
+            title="My Orders"
+            aria-label="My Orders"
           >
-            <Search size={26} />
+            <Package size={26} />
           </button>
 
           {/* =================================================
